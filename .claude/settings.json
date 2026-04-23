@@ -1,0 +1,6 @@
+{
+  "permissions": {
+    "allow": ["WebSearch", "Read(*)", "Glob(*)", "Grep(*)"],
+    "defaultMode": "acceptEdits"
+  }
+}

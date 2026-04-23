@@ -1,10 +1,36 @@
 # TrustTrace
 
-## Development Guidelines
-- Do not push directly to `main`. All changes must go through a Pull Request.
-- Each PR must:
-  - reference an Issue (e.g., `Closes #12`)
-  - have at least **1 approval**
-  - pass all CI checks
-- Merge method: **Squash merge** only. Delete the branch after merging.
-- Keep PRs small and focused.
+Evidence-oriented credibility checking service. Submit a URL or text, the system gathers evidence from web-grounded LLM providers, and presents cues, uncertainty, and source context instead of a binary true/false verdict.
+
+## Status
+
+- **Current:** `apps/web` — Vue 3 frontend running with demo/static data.
+- **Planned:** `apps/server` and `packages/shared` — TypeScript backend and shared Zod schemas.
+- **Archived:** `archive/` — legacy Python backend and frontend references.
+
+## Commands
+
+```sh
+bun install          # install workspace dependencies
+bun run dev          # start the frontend dev server
+bun run format       # format files
+bun run lint         # lint checks
+bun run typecheck    # type checks
+bun run test         # run tests
+bun run build        # type-check and build
+bun run check        # full quality gate: format:check → lint → test → build
+```
+
+## Project Structure
+
+```txt
+apps/web/            # @trusttrace/web — Vue 3 frontend
+apps/server/         # Planned: @trusttrace/server — Hono backend
+packages/shared/     # Planned: @trusttrace/shared — Zod schemas + types
+docs/                # Project documentation
+archive/             # Legacy implementation references
+```
+
+## Documentation
+
+See [docs/](docs/) for conventions, architecture, and roadmap.

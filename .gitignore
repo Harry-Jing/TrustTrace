@@ -1,0 +1,17 @@
+node_modules
+dist
+coverage
+.vite
+.vite-temp
+.eslintcache
+*.tsbuildinfo
+
+.env
+.env.*
+!.env.example
+
+.DS_Store
+
+# Python cache artifacts
+__pycache__/
+*.py[cod]
