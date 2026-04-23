@@ -1,0 +1,64 @@
+# Contributing
+
+Thanks for contributing to TrustTrace. Please keep changes small, focused, and easy to review.
+
+## Setup
+
+```sh
+bun install
+bun run dev
+```
+
+## Before Opening a PR
+
+Run the quality gate:
+
+```sh
+bun run check
+```
+
+For quicker local checks:
+
+```sh
+bun run format
+bun run lint
+bun run typecheck
+bun run test
+bun run build
+```
+
+Use `bun run test`, not bare `bun test`, so archived code is not included.
+
+## Commit Messages
+
+Commits must follow [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/):
+
+```txt
+<type>[optional scope]: <description>
+```
+
+Allowed types: `build`, `chore`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `revert`, `style`, `test`.
+
+Examples:
+
+```txt
+feat(web): add evidence summary
+fix(router): preserve query params
+docs: add contributing guide
+```
+
+For breaking changes, use `!` or a `BREAKING CHANGE:` footer:
+
+```txt
+feat(api)!: rename score field
+```
+
+## PR Guidelines
+
+- Explain what changed and why.
+- Link related issues when applicable.
+- Include screenshots for UI changes.
+- Mention the checks you ran.
+- Update docs when changing behavior, workflow, APIs, tooling, or conventions.
+
+Do not commit secrets, API keys, credentials, or local environment files.
