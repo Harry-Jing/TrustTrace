@@ -11,11 +11,15 @@ import { useRecentChecks } from '@/features/checks/composables/useRecentChecks'
 import type { CheckInputDraft, RecentCheckItem } from '@/features/checks/types'
 
 const router = useRouter()
-const { createCheck } = useCreateCheck()
+const { createCheck, isSubmitting, submitError } = useCreateCheck()
 const { recentChecks } = useRecentChecks()
 
-function submit(input: CheckInputDraft) {
-  void createCheck(input)
+async function submit(input: CheckInputDraft) {
+  try {
+    await createCheck(input)
+  } catch {
+    // useCreateCheck exposes submitError for the input card.
+  }
 }
 
 function selectRecentCheck(item: RecentCheckItem) {
@@ -51,7 +55,7 @@ function selectRecentCheck(item: RecentCheckItem) {
 
       <!-- Right: input card -->
       <div class="w-full lg:w-[440px] lg:shrink-0">
-        <ClaimInputCard @submit="submit" />
+        <ClaimInputCard :submitting="isSubmitting" :error="submitError" @submit="submit" />
       </div>
     </div>
 

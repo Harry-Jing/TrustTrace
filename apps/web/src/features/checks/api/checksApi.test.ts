@@ -21,6 +21,15 @@ describe('checksApi backend-shaped mock', () => {
     expect(record.progress.eventSeq).toBe(1)
   })
 
+  it('returns a failed not-found record for unknown mock check ids', async () => {
+    const record = await getCheck('unknown-check-id')
+
+    expect(record.checkId).toBe('unknown-check-id')
+    expect(record.status).toBe('failed')
+    expect(record.result).toBeNull()
+    expect(record.error?.code).toBe('CHECK_NOT_FOUND')
+  })
+
   it('streams mock progress events through completion', async () => {
     vi.useFakeTimers()
     const response = await createCheck({ mode: 'text', value: 'A claim to stream' })

@@ -3,6 +3,12 @@ import { computed, ref } from 'vue'
 
 import type { CheckInputDraft, CheckInputMode } from '@/features/checks/types'
 
+const props = defineProps<{
+  disabled?: boolean
+  submitting?: boolean
+  error?: unknown | null
+}>()
+
 const emit = defineEmits<{
   submit: [input: CheckInputDraft]
 }>()
@@ -12,22 +18,40 @@ const value = ref('')
 const inputFocused = ref(false)
 const inputId = 'claim-input'
 
+const normalizedValue = computed(() => value.value.trim())
 const charCount = computed(() => value.value.length)
-const URL_PATTERN = /\w+\.\w{2,}/
+const isDisabled = computed(() => props.disabled === true || props.submitting === true)
+const errorMessage = computed(() => {
+  if (!props.error) return null
+  if (props.error instanceof Error) return props.error.message
+  return 'Could not start this check. Please try again.'
+})
+
+function isHttpUrl(input: string) {
+  try {
+    const url = new URL(input)
+    return url.protocol === 'http:' || url.protocol === 'https:'
+  } catch {
+    return false
+  }
+}
+
 const isValid = computed(() =>
   mode.value === 'url'
-    ? URL_PATTERN.test(value.value.trim())
-    : charCount.value >= 3 && charCount.value <= 10000,
+    ? isHttpUrl(normalizedValue.value)
+    : normalizedValue.value.length >= 3 && normalizedValue.value.length <= 10000,
 )
 
 function switchMode(nextMode: CheckInputMode) {
+  if (isDisabled.value) return
+
   mode.value = nextMode
   value.value = ''
 }
 
 function submit() {
-  if (!isValid.value) return
-  emit('submit', { mode: mode.value, value: value.value })
+  if (!isValid.value || isDisabled.value) return
+  emit('submit', { mode: mode.value, value: normalizedValue.value })
 }
 </script>
 
@@ -60,6 +84,7 @@ function submit() {
           class="claim-mode-toggle__button text-body-sm relative z-10 min-w-16 rounded-full border-none bg-transparent px-5 py-[7px] font-mono font-medium tracking-[0.04em] uppercase transition-colors duration-200"
           :class="mode === m ? 'claim-mode-toggle__button--active' : ''"
           :aria-pressed="mode === m"
+          :disabled="isDisabled"
           @click="switchMode(m)"
         >
           {{ m }}
@@ -84,6 +109,7 @@ function submit() {
       type="text"
       placeholder="https://example.com/article-to-check"
       class="w-full border-none bg-transparent py-2.5 text-base leading-relaxed text-ink outline-none"
+      :disabled="isDisabled"
     />
     <textarea
       v-else
@@ -92,24 +118,29 @@ function submit() {
       placeholder="Paste the claim or excerpt you want to double-check…"
       :rows="3"
       class="max-h-[200px] min-h-20 w-full resize-y border-none bg-transparent text-[15px] leading-[1.7] text-ink outline-none"
+      :disabled="isDisabled"
     />
+
+    <p v-if="errorMessage" class="mt-3 text-xs leading-relaxed text-warn" role="alert">
+      {{ errorMessage }}
+    </p>
 
     <!-- Submit row -->
     <div class="mt-3.5 flex items-center justify-between border-t border-line pt-3.5">
       <span class="font-mono text-[11px] tracking-[0.03em] text-muted">
-        {{ mode === 'url' ? 'paste a full URL' : 'min 3 characters' }}
+        {{ mode === 'url' ? 'paste a full http(s) URL' : 'min 3 characters' }}
       </span>
       <button
         type="submit"
         class="tt-btn rounded-lg border-none px-7 py-2.5 text-sm font-semibold transition-all duration-250"
         :class="
-          isValid
+          isValid && !isDisabled
             ? 'cursor-pointer bg-accent text-white'
             : 'cursor-default bg-surface-alt text-muted'
         "
-        :disabled="!isValid"
+        :disabled="!isValid || isDisabled"
       >
-        Run credibility check
+        {{ submitting ? 'Starting…' : 'Run credibility check' }}
       </button>
     </div>
   </form>

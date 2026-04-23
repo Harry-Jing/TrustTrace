@@ -5,12 +5,16 @@ import { useRoute, useRouter } from 'vue-router'
 import PageFooter from '@/components/PageFooter.vue'
 import TagBadge from '@/components/TagBadge.vue'
 import { getCheck } from '@/features/checks/api/checksApi'
+import { useCreateCheck } from '@/features/checks/composables/useCreateCheck'
+import { useChecksStore } from '@/features/checks/stores/checks.store'
 import type { CheckApiError } from '@/features/checks/types'
 import { useAsyncData } from '@/shared/composables/useAsyncData'
 
 const route = useRoute()
 const router = useRouter()
 const showDetail = ref(false)
+const checks = useChecksStore()
+const { createCheck, isSubmitting, submitError } = useCreateCheck()
 const detailId = 'error-detail'
 
 const checkId = computed(() => String(route.params.checkId ?? ''))
@@ -25,6 +29,17 @@ const errorMessage = computed(
 )
 const traceId = computed(() => error.value?.traceId ?? null)
 const isRetryable = computed(() => error.value?.retryable ?? true)
+const canRetry = computed(() => isRetryable.value && checks.currentInput !== null)
+const retryHelp = computed(() => {
+  if (canRetry.value) return 'You can retry with the same claim.'
+  if (isRetryable.value) return 'Return to the claim editor to start a new check.'
+  return 'Please try again with a different claim.'
+})
+const retryErrorMessage = computed(() => {
+  if (!submitError.value) return null
+  if (submitError.value instanceof Error) return submitError.value.message
+  return 'Could not retry this check. Please edit the claim and try again.'
+})
 
 const ERROR_EXPLANATIONS: Record<string, string> = {
   PROVIDER_TIMEOUT:
@@ -40,6 +55,16 @@ const errorExplanation = computed(
     ERROR_EXPLANATIONS[errorCode.value] ??
     'An unexpected error occurred while processing your check. If this keeps happening, the service may be experiencing issues.',
 )
+
+async function retryCheck() {
+  if (!checks.currentInput) return
+
+  try {
+    await createCheck(checks.currentInput)
+  } catch {
+    // useCreateCheck exposes submitError for this page.
+  }
+}
 </script>
 
 <template>
@@ -83,20 +108,17 @@ const errorExplanation = computed(
       </h2>
 
       <p class="mx-auto mb-7 max-w-[400px] text-sm leading-[1.75] text-muted">
-        {{
-          isRetryable
-            ? 'You can retry with the same claim.'
-            : 'Please try again with a different claim.'
-        }}
+        {{ retryHelp }}
       </p>
 
       <div class="flex justify-center gap-2.5">
         <button
-          v-if="isRetryable"
+          v-if="canRetry"
           class="tt-btn rounded-md border-none bg-ink px-7 py-[11px] text-sm font-semibold text-surface"
-          @click="router.push({ name: 'loading', params: { checkId } })"
+          :disabled="isSubmitting"
+          @click="retryCheck"
         >
-          Retry check
+          {{ isSubmitting ? 'Retrying…' : 'Retry check' }}
         </button>
         <button
           class="tt-btn rounded-md border border-line-strong bg-transparent px-5 py-[11px] text-sm text-ink-2"
@@ -105,6 +127,10 @@ const errorExplanation = computed(
           Edit claim
         </button>
       </div>
+
+      <p v-if="retryErrorMessage" class="mt-5 text-xs leading-relaxed text-warn" role="alert">
+        {{ retryErrorMessage }}
+      </p>
 
       <div v-if="traceId" class="mt-7">
         <span class="font-mono text-[10px] tracking-[0.06em] text-muted"

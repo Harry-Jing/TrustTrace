@@ -31,11 +31,13 @@ src/router/                      # Vue Router configuration
 
 ## Current Behavior
 
-- Mock API functions in `checksApi.ts` (`createCheck`, `getCheck`, `getCheckHistory`, `getRecentChecks`, `subscribeCheckEvents`) are backed by fixture data in `fixtures/demoChecks.ts`; no real HTTP/SSE client yet.
-- Creating a check is modeled as an async operation returning a generated `checkId`; routes are driven by `/checks/:checkId/*`.
+- `checksApi.ts` is the stable frontend API boundary. It selects `mockChecksClient.ts` or `realChecksClient.ts` based on `VITE_TRUSTTRACE_API_MODE`.
+- Creating a check is modeled as an async operation returning a `checkId`; routes are driven by `/checks/:checkId/*`, and submit failures are surfaced in the input card.
 - `checks.store.ts` is a lightweight cache for current check metadata and progress by check ID.
 - `useAsyncData.ts` tracks `idle/loading/success/error` status with a sequence counter to discard stale responses on rapid `reload()` calls, preventing race conditions.
-- `vite.config.ts` proxies `/v1` to `http://127.0.0.1:8000` for future same-origin API/SSE development.
+- Mock/demo controls are shown only when `showDevTools` is true (`DEV && apiMode === 'mock'`), so local real-backend debugging keeps production-like loading redirects.
+- API mode defaults to `mock` during `bun run dev` and `real` in production. Override with `VITE_TRUSTTRACE_API_MODE=mock|real`.
+- `VITE_TRUSTTRACE_API_BASE_URL` controls the real API base URL and defaults to same-origin `/v1`; `vite.config.ts` proxies `/v1` to `http://127.0.0.1:8000` for local backend development.
 - Theme preference persists to `localStorage` via `preferences.store.ts` and is applied with the root `data-theme` attribute.
 
 ## Commands

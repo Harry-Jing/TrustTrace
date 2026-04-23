@@ -17,7 +17,7 @@ function phaseIndexOf(phase: CheckPhase) {
   return Math.max(0, CHECK_PHASES.indexOf(phase))
 }
 
-/** DEV ONLY — Build a synthetic progress object for manual phase switching. */
+/** MOCK DEV ONLY — Build a synthetic progress object for manual phase switching. */
 function makeDevProgress(checkId: string, phase: CheckPhase): CheckProgress {
   const phaseIndex = phaseIndexOf(phase)
   const percent =
@@ -84,28 +84,32 @@ export function useCheckProgress() {
     })
   }
 
+  async function loadCheckRecord(nextCheckId: string | null) {
+    closeSubscription()
+    progress.value = null
+    eventError.value = null
+
+    if (!nextCheckId) {
+      await recordState.reload()
+      return
+    }
+
+    checks.setCurrentCheckId(nextCheckId)
+    const record = await recordState.reload()
+
+    if (!record || checkId.value !== nextCheckId) return
+
+    recordProgress(record.progress)
+
+    if (record.status === 'queued' || record.status === 'running') {
+      subscribe(nextCheckId)
+    }
+  }
+
   watch(
     checkId,
-    async (nextCheckId) => {
-      closeSubscription()
-      progress.value = null
-      eventError.value = null
-
-      if (!nextCheckId) {
-        void recordState.reload()
-        return
-      }
-
-      checks.setCurrentCheckId(nextCheckId)
-      const record = await recordState.reload()
-
-      if (!record || checkId.value !== nextCheckId) return
-
-      recordProgress(record.progress)
-
-      if (record.status === 'queued' || record.status === 'running') {
-        subscribe(nextCheckId)
-      }
+    (nextCheckId) => {
+      void loadCheckRecord(nextCheckId)
     },
     { immediate: true },
   )
@@ -121,11 +125,16 @@ export function useCheckProgress() {
   const phaseIndex = computed(() => phaseIndexOf(phase.value))
   const tip = computed(() => CHECK_TIPS[phaseIndex.value % CHECK_TIPS.length] ?? CHECK_TIPS[0])
   const evidenceItems = computed(() => getProgressEvidenceForPhase(phaseIndex.value))
+  const progressError = computed(() => eventError.value ?? recordState.error.value)
 
-  /** DEV ONLY — Manually override the current phase for dev inspection. */
+  /** MOCK DEV ONLY — Manually override the current phase for dev inspection. */
   function setPhase(nextPhase: CheckPhase) {
     const currentCheckId = checkId.value ?? checks.currentCheckId ?? 'demo-check'
     recordProgress(makeDevProgress(currentCheckId, nextPhase))
+  }
+
+  async function retry() {
+    await loadCheckRecord(checkId.value)
   }
 
   return {
@@ -142,7 +151,9 @@ export function useCheckProgress() {
     isError: recordState.isError,
     error: recordState.error,
     eventError,
+    progressError,
     reload: recordState.reload,
+    retry,
     setPhase,
   }
 }

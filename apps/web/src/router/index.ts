@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import AppShell from '@/app/AppShell.vue'
-import { isDevMode } from '@/app/env'
+import { showDevTools } from '@/app/env'
 import CheckHomePage from '@/features/checks/pages/CheckHomePage.vue'
 import { DEMO_CHECK_ID } from '@/features/checks/fixtures/demoChecks'
 
@@ -29,7 +29,7 @@ export const router = createRouter({
           meta: { depth: 0 },
         },
         // DEV ONLY — shorthand redirects to demo check pages
-        ...(isDevMode
+        ...(showDevTools
           ? [
               { path: 'loading', redirect: `/checks/${DEMO_CHECK_ID}/loading` },
               { path: 'result', redirect: `/checks/${DEMO_CHECK_ID}/result` },

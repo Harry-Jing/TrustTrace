@@ -17,8 +17,8 @@ P0 items (API contract, checksApi reshape, async useCreateCheck, checkId-driven 
 
 | # | Improvement | Why it matters | Primary files |
 |---|---|---|---|
-| 6 | Add basic URL validation and submit trimming | Current URL check accepts `foobar`; require `http(s)://` and trim. | `ClaimInputCard.vue` |
-| 7 | Add create-check submitting/error state | Real POST can be slow, fail, or double-submitted. | `useCreateCheck.ts`, `CheckHomePage.vue`, `ClaimInputCard.vue` |
+| 6 | Add basic URL validation and submit trimming | Implemented for `http(s)://` URL input and trimmed submissions. | `ClaimInputCard.vue` |
+| 7 | Add create-check submitting/error state | Implemented for the landing input path; retry/error-page polish remains backend-dependent. | `useCreateCheck.ts`, `CheckHomePage.vue`, `ClaimInputCard.vue` |
 | 8 | Replace hardcoded error page with real error model | Backend errors need codes, trace IDs, retryability. | `CheckErrorPage.vue`, `checksApi.ts` |
 | 9 | Revisit privacy and local-only copy | "Nothing leaves your browser" may become inaccurate with a backend. | `features/checks/**/*` |
 | 10 | Separate API result semantics from UI display fields | Backend shouldn't own bar widths and CSS colors. | `types.ts`, `ResultSummary.vue`, `useCheckResult.ts` |
@@ -37,14 +37,14 @@ P0 items (API contract, checksApi reshape, async useCreateCheck, checkId-driven 
 
 | # | Improvement | Why it matters | Primary files |
 |---|---|---|---|
-| 16 | Further isolate demo/prod mode | Fixture fallback vs real API needs a clear switch. | `app/env.ts`, `AppNav.vue` |
-| 17 | Finalize API base URL and environment config | Deployment needs explicit env strategy beyond Vite proxy. | `vite.config.ts` |
+| 16 | Further isolate demo/prod mode | Implemented with `VITE_TRUSTTRACE_API_MODE=mock|real`; dev tools are mock-mode only. | `app/env.ts`, `checksApi.ts`, `AppShell.vue` |
+| 17 | Finalize API base URL and environment config | Basic `VITE_TRUSTTRACE_API_BASE_URL` support exists; deployment-specific values remain to be finalized. | `app/env.ts`, `vite.config.ts` |
 | 18 | Address accessibility polish | Tooltip IDs, loading semantics, icon labels, reduced-motion. | shared UI and check components |
 
 ### Acceptance criteria before wiring the real backend
 
 - Loading, result, error, and history routes work from direct URL navigation and browser refresh.
-- URL submissions reject obvious non-URLs.
+- URL submissions reject obvious non-URLs and require `http(s)://`.
 - User-facing copy does not claim browser-only processing if the backend receives input.
 - Tests cover the create/check/result happy path and at least one API failure path.
 
@@ -53,7 +53,7 @@ P0 items (API contract, checksApi reshape, async useCreateCheck, checkId-driven 
 - Whether history is local-only, server-backed, or hybrid.
 - Exact shared-schema package timing.
 - Whether to reintroduce frontend i18n.
-- Whether demo controls remain dev-only or move to a dedicated mock mode.
+- Final real backend result DTO shape and ViewModel adapter boundary.
 
 ## Backlog
 

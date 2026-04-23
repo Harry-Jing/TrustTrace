@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 
 import AppNav from '@/app/AppNav.vue'
 import DevNav from '@/app/DevNav.vue'
-import { isDevMode } from '@/app/env'
+import { showDevTools } from '@/app/env'
 import { usePreferencesStore } from '@/stores/preferences.store'
 
 const router = useRouter()
@@ -66,6 +66,6 @@ watch(
       </RouterView>
     </main>
 
-    <DevNav v-if="isDevMode" />
+    <DevNav v-if="showDevTools" />
   </div>
 </template>
