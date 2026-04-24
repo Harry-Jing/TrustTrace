@@ -3,7 +3,7 @@ const columns = [
   { title: 'What you get', description: 'Source cues, evidence items, and uncertainty notes.' },
   {
     title: "What you don't",
-    description: 'No binary verdict. No truth score. No server-side history.',
+    description: 'No binary verdict. No truth score. No context-free certainty.',
   },
   {
     title: 'Open by design',

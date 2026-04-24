@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import type { CheckHistorySort } from '@/features/checks/types'
+import type { CheckListSort } from '@/features/checks/types'
 
 defineProps<{
   search: string
-  sortBy: CheckHistorySort
+  sortBy: CheckListSort
 }>()
 
 const emit = defineEmits<{
   'update:search': [value: string]
-  'update:sortBy': [value: CheckHistorySort]
+  'update:sortBy': [value: CheckListSort]
 }>()
 </script>
 

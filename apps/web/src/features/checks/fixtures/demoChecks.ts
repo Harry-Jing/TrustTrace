@@ -1,11 +1,10 @@
 import type {
-  CheckHistoryItem,
+  CheckListItem,
   CheckPhase,
   CheckResult,
   CredibilityCue,
   EvidenceItem,
   ProgressEvidenceItem,
-  RecentCheckItem,
 } from '@/features/checks/types'
 
 export const DEMO_CHECK_ID = 'demo-seat-belts'
@@ -26,30 +25,12 @@ export const CHECK_TIPS = [
   'How would you explain this claim to a skeptical friend?',
 ] as const
 
-export const LANDING_RECENT_CHECKS = [
-  {
-    id: DEMO_CHECK_ID,
-    claim: 'Seat belts reduce serious injury in crashes',
-    time: '2 min ago',
-    cue: 'evidence strong',
-    tone: 'accent',
-  },
-  {
-    id: 'demo-vitamin-c-colds',
-    claim: 'Vitamin C prevents common colds',
-    time: '1 hour ago',
-    cue: 'mixed',
-    tone: 'default',
-  },
-] as const satisfies readonly RecentCheckItem[]
-
-export const CHECK_HISTORY = [
+export const DEMO_CHECKS = [
   {
     id: DEMO_CHECK_ID,
     claim: 'Seat belts reduce serious injury in crashes',
     snippet: 'Multiple sources confirm 40–55% reduction in fatal injury for belted occupants.',
-    date: 'Apr 19, 2026',
-    ts: 6,
+    createdAt: '2026-04-19T14:32:00.000Z',
     cue: 'evidence strong',
     tone: 'accent',
   },
@@ -57,8 +38,7 @@ export const CHECK_HISTORY = [
     id: 'demo-vitamin-c-colds',
     claim: 'Vitamin C prevents common colds',
     snippet: 'Some evidence for symptom duration, but prevention claims lack strong support.',
-    date: 'Apr 18, 2026',
-    ts: 5,
+    createdAt: '2026-04-18T11:15:00.000Z',
     cue: 'mixed evidence',
     tone: 'default',
   },
@@ -66,8 +46,7 @@ export const CHECK_HISTORY = [
     id: 'demo-handwritten-notes',
     claim: 'Students retain 65% more info from handwritten notes',
     snippet: 'The cited 65% figure traces to one study with limited sample size.',
-    date: 'Apr 18, 2026',
-    ts: 4,
+    createdAt: '2026-04-18T08:40:00.000Z',
     cue: 'weak evidence',
     tone: 'warn',
   },
@@ -76,8 +55,7 @@ export const CHECK_HISTORY = [
     claim: 'Coffee shortens lifespan by 3 years',
     snippet:
       'Major cohort studies associate moderate coffee intake with neutral or positive outcomes.',
-    date: 'Apr 17, 2026',
-    ts: 3,
+    createdAt: '2026-04-17T16:20:00.000Z',
     cue: 'contradicted',
     tone: 'warn',
   },
@@ -85,8 +63,7 @@ export const CHECK_HISTORY = [
     id: 'demo-ev-batteries',
     claim: 'EV batteries pollute more than gas cars over lifetime',
     snippet: 'Lifecycle analyses vary by region and energy mix; headline claim oversimplifies.',
-    date: 'Apr 16, 2026',
-    ts: 2,
+    createdAt: '2026-04-16T09:55:00.000Z',
     cue: 'mixed evidence',
     tone: 'default',
   },
@@ -94,12 +71,13 @@ export const CHECK_HISTORY = [
     id: 'demo-dim-light-eyesight',
     claim: 'Reading in dim light permanently damages eyesight',
     snippet: 'Ophthalmology consensus: temporary strain yes, permanent damage no.',
-    date: 'Apr 15, 2026',
-    ts: 1,
+    createdAt: '2026-04-15T13:10:00.000Z',
     cue: 'contradicted',
     tone: 'warn',
   },
-] as const satisfies readonly CheckHistoryItem[]
+] as const satisfies readonly CheckListItem[]
+
+export const DEMO_CHECK_IDS: ReadonlySet<string> = new Set(DEMO_CHECKS.map((c) => c.id))
 
 export const CUE_ORDER: Record<string, number> = {
   'evidence strong': 0,

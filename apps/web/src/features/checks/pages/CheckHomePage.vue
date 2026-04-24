@@ -8,7 +8,7 @@ import LandingInfoColumns from '@/features/checks/components/LandingInfoColumns.
 import RecentChecksList from '@/features/checks/components/RecentChecksList.vue'
 import { useCreateCheck } from '@/features/checks/composables/useCreateCheck'
 import { useRecentChecks } from '@/features/checks/composables/useRecentChecks'
-import type { CheckInputDraft, RecentCheckItem } from '@/features/checks/types'
+import type { CheckInputDraft, CheckListItem } from '@/features/checks/types'
 
 const router = useRouter()
 const { createCheck, isSubmitting, submitError } = useCreateCheck()
@@ -22,7 +22,7 @@ async function submit(input: CheckInputDraft) {
   }
 }
 
-function selectRecentCheck(item: RecentCheckItem) {
+function selectRecentCheck(item: CheckListItem) {
   void router.push({ name: 'result', params: { checkId: item.id } })
 }
 </script>

@@ -4,8 +4,9 @@ import type {
   CheckEventHandlers,
   CheckEventSubscription,
   CheckEventSubscriptionOptions,
-  CheckHistoryItem,
   CheckInputDraft,
+  CheckListItem,
+  CheckListParams,
   CheckPhase,
   CheckProgress,
   CheckRecord,
@@ -13,7 +14,6 @@ import type {
   CheckStatus,
   CreateCheckResponse,
   ProgressEvent,
-  RecentCheckItem,
 } from '@/features/checks/types'
 
 const CHECK_STATUSES = new Set<CheckStatus>(['queued', 'running', 'completed', 'failed'])
@@ -64,36 +64,24 @@ function asObject(value: unknown): Record<string, unknown> {
     : {}
 }
 
-function readString(source: Record<string, unknown>, keys: readonly string[], fallback = '') {
-  for (const key of keys) {
-    const value = source[key]
-    if (typeof value === 'string') return value
-  }
-
-  return fallback
+function readString(source: Record<string, unknown>, key: string, fallback = '') {
+  const value = source[key]
+  return typeof value === 'string' ? value : fallback
 }
 
-function readNumber(source: Record<string, unknown>, keys: readonly string[], fallback = 0) {
-  for (const key of keys) {
-    const value = source[key]
-    if (typeof value === 'number' && Number.isFinite(value)) return value
-  }
-
-  return fallback
+function readNumber(source: Record<string, unknown>, key: string, fallback = 0) {
+  const value = source[key]
+  return typeof value === 'number' && Number.isFinite(value) ? value : fallback
 }
 
-function readNullableString(source: Record<string, unknown>, keys: readonly string[]) {
-  const value = readString(source, keys, '')
+function readNullableString(source: Record<string, unknown>, key: string) {
+  const value = readString(source, key, '')
   return value || null
 }
 
-function readBoolean(source: Record<string, unknown>, keys: readonly string[], fallback = false) {
-  for (const key of keys) {
-    const value = source[key]
-    if (typeof value === 'boolean') return value
-  }
-
-  return fallback
+function readBoolean(source: Record<string, unknown>, key: string, fallback = false) {
+  const value = source[key]
+  return typeof value === 'boolean' ? value : fallback
 }
 
 function coerceStatus(value: unknown): CheckStatus {
@@ -116,14 +104,14 @@ function toCheckApiError(value: unknown): CheckApiError | null {
   if (!value) return null
 
   const source = asObject(value)
-  const occurredAt = readString(source, ['occurredAt', 'occurred_at'], new Date().toISOString())
+  const occurredAt = readString(source, 'occurredAt', new Date().toISOString())
 
   return {
-    code: readString(source, ['code'], 'UNKNOWN_ERROR'),
-    category: readString(source, ['category'], 'unknown error'),
-    message: readString(source, ['message'], 'The request failed.'),
-    retryable: readBoolean(source, ['retryable'], false),
-    traceId: readNullableString(source, ['traceId', 'trace_id']),
+    code: readString(source, 'code', 'UNKNOWN_ERROR'),
+    category: readString(source, 'category', 'unknown error'),
+    message: readString(source, 'message', 'The request failed.'),
+    retryable: readBoolean(source, 'retryable', false),
+    traceId: readNullableString(source, 'traceId'),
     occurredAt,
   }
 }
@@ -134,21 +122,17 @@ function toCheckProgress(value: unknown, checkId: string): CheckProgress {
   const phase = coercePhase(source.phase, status)
 
   return {
-    checkId: readString(source, ['checkId', 'check_id'], checkId),
+    checkId: readString(source, 'checkId', checkId),
     status,
     phase,
-    percent: readNumber(
-      source,
-      ['percent'],
-      status === 'completed' || status === 'failed' ? 100 : 0,
-    ),
+    percent: readNumber(source, 'percent', status === 'completed' || status === 'failed' ? 100 : 0),
     message: readString(
       source,
-      ['message'],
+      'message',
       status === 'completed' ? 'Check complete.' : 'Check in progress.',
     ),
-    eventSeq: readNumber(source, ['eventSeq', 'event_seq'], 0),
-    updatedAt: readString(source, ['updatedAt', 'updated_at'], new Date().toISOString()),
+    eventSeq: readNumber(source, 'eventSeq', 0),
+    updatedAt: readString(source, 'updatedAt', new Date().toISOString()),
   }
 }
 
@@ -156,25 +140,21 @@ function toProgressEvent(value: unknown, fallbackCheckId: string): ProgressEvent
   const source = asObject(value)
   const status = coerceStatus(source.status)
   const phase = coercePhase(source.phase, status)
-  const createdAt = readString(source, ['createdAt', 'created_at'], new Date().toISOString())
+  const createdAt = readString(source, 'createdAt', new Date().toISOString())
 
   return {
-    seq: readNumber(source, ['seq'], 0),
-    checkId: readString(source, ['checkId', 'check_id'], fallbackCheckId),
+    seq: readNumber(source, 'seq', 0),
+    checkId: readString(source, 'checkId', fallbackCheckId),
     status,
     phase,
-    percent: readNumber(
-      source,
-      ['percent'],
-      status === 'completed' || status === 'failed' ? 100 : 0,
-    ),
+    percent: readNumber(source, 'percent', status === 'completed' || status === 'failed' ? 100 : 0),
     message: readString(
       source,
-      ['message'],
+      'message',
       status === 'completed' ? 'Check complete.' : 'Check in progress.',
     ),
-    provider: readNullableString(source, ['provider']),
-    stepCode: readNullableString(source, ['stepCode', 'step_code']),
+    provider: readNullableString(source, 'provider'),
+    stepCode: readNullableString(source, 'stepCode'),
     error: toCheckApiError(source.error),
     createdAt,
   }
@@ -205,7 +185,7 @@ async function requestJson(path: string, init?: RequestInit): Promise<unknown> {
   if (!response.ok) {
     const errorBody = asObject(body)
     throw new HttpApiError(
-      readString(errorBody, ['message'], `Request failed with status ${response.status}.`),
+      readString(errorBody, 'message', `Request failed with status ${response.status}.`),
       response.status,
     )
   }
@@ -215,21 +195,21 @@ async function requestJson(path: string, init?: RequestInit): Promise<unknown> {
 
 function toCreateCheckResponse(value: unknown): CreateCheckResponse {
   const source = asObject(value)
-  const checkId = readString(source, ['checkId', 'check_id'])
-  const createdAt = readString(source, ['createdAt', 'created_at'], new Date().toISOString())
+  const checkId = readString(source, 'checkId')
+  const createdAt = readString(source, 'createdAt', new Date().toISOString())
 
   return {
     checkId,
     status: coerceStatus(source.status),
     progress: toCheckProgress(source.progress, checkId),
-    eventsUrl: readString(source, ['eventsUrl', 'events_url'], `/v1/checks/${checkId}/events`),
+    eventsUrl: readString(source, 'eventsUrl', `/v1/checks/${checkId}/events`),
     createdAt,
   }
 }
 
 function toCheckRecord(value: unknown): CheckRecord {
   const source = asObject(value)
-  const checkId = readString(source, ['checkId', 'check_id'])
+  const checkId = readString(source, 'checkId')
   const status = coerceStatus(source.status)
 
   return {
@@ -238,9 +218,9 @@ function toCheckRecord(value: unknown): CheckRecord {
     progress: toCheckProgress(source.progress, checkId),
     result: source.result ? (source.result as CheckResult) : null,
     error: toCheckApiError(source.error),
-    createdAt: readString(source, ['createdAt', 'created_at'], new Date().toISOString()),
-    updatedAt: readString(source, ['updatedAt', 'updated_at'], new Date().toISOString()),
-    completedAt: readNullableString(source, ['completedAt', 'completed_at']),
+    createdAt: readString(source, 'createdAt', new Date().toISOString()),
+    updatedAt: readString(source, 'updatedAt', new Date().toISOString()),
+    completedAt: readNullableString(source, 'completedAt'),
   }
 }
 
@@ -274,12 +254,12 @@ export async function getCheck(checkId: string): Promise<CheckRecord> {
   return toCheckRecord(await requestJson(`/checks/${encodeURIComponent(checkId)}`))
 }
 
-export async function getCheckHistory(): Promise<readonly CheckHistoryItem[]> {
-  return readArray(await requestJson('/checks/history')) as readonly CheckHistoryItem[]
-}
-
-export async function getRecentChecks(): Promise<readonly RecentCheckItem[]> {
-  return readArray(await requestJson('/checks/recent')) as readonly RecentCheckItem[]
+export async function listChecks(params?: CheckListParams): Promise<readonly CheckListItem[]> {
+  const query = new URLSearchParams()
+  if (params?.limit != null) query.set('limit', String(params.limit))
+  if (params?.offset != null) query.set('offset', String(params.offset))
+  const qs = query.toString()
+  return readArray(await requestJson(`/checks${qs ? `?${qs}` : ''}`)) as readonly CheckListItem[]
 }
 
 export function subscribeCheckEvents(

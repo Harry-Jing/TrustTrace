@@ -1,17 +1,25 @@
 <script setup lang="ts">
 import TagBadge from '@/components/TagBadge.vue'
-import type { CheckHistoryItem } from '@/features/checks/types'
+import type { CheckListItem } from '@/features/checks/types'
 
 defineProps<{
-  items: readonly CheckHistoryItem[]
+  items: readonly CheckListItem[]
   search: string
 }>()
 
 const emit = defineEmits<{
-  select: [item: CheckHistoryItem]
+  select: [item: CheckListItem]
 }>()
 
-function toneBorderClass(tone: CheckHistoryItem['tone']) {
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  })
+}
+
+function toneBorderClass(tone: CheckListItem['tone']) {
   if (tone === 'accent') return 'border-t-accent'
   if (tone === 'warn') return 'border-t-warn'
   if (tone === 'dark') return 'border-t-ink'
@@ -51,7 +59,7 @@ function onBeforeEnter(el: Element) {
     >
       <div class="p-5">
         <div class="mb-2 flex items-center justify-between">
-          <span class="font-mono text-[10px] text-muted">{{ h.date }}</span>
+          <span class="font-mono text-[10px] text-muted">{{ formatDate(h.createdAt) }}</span>
         </div>
         <div class="mb-1.5 text-[15px] leading-snug font-semibold">{{ h.claim }}</div>
         <div class="mb-3 text-xs leading-relaxed text-muted">{{ h.snippet }}</div>

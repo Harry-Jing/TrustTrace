@@ -1,15 +1,12 @@
-import {
-  CHECK_HISTORY,
-  CHECK_RESULT,
-  LANDING_RECENT_CHECKS,
-} from '@/features/checks/fixtures/demoChecks'
+import { CHECK_RESULT, DEMO_CHECK_IDS, DEMO_CHECKS } from '@/features/checks/fixtures/demoChecks'
 import type {
   CheckApiError,
   CheckEventHandlers,
   CheckEventSubscription,
   CheckEventSubscriptionOptions,
-  CheckHistoryItem,
   CheckInputDraft,
+  CheckListItem,
+  CheckListParams,
   CheckPhase,
   CheckProgress,
   CheckRecord,
@@ -17,7 +14,6 @@ import type {
   CheckStatus,
   CreateCheckResponse,
   ProgressEvent,
-  RecentCheckItem,
 } from '@/features/checks/types'
 
 /**
@@ -67,10 +63,7 @@ const MOCK_PROGRESS_SCRIPT = [
 
 const mockRecords = new Map<string, CheckRecord>()
 const mockInputs = new Map<string, CheckInputDraft>()
-const knownDemoCheckIds = new Set<string>([
-  ...CHECK_HISTORY.map((check) => check.id),
-  ...LANDING_RECENT_CHECKS.map((check) => check.id),
-])
+const knownDemoCheckIds = DEMO_CHECK_IDS
 let mockIdSequence = 0
 
 async function resolveMock<T>(value: T): Promise<T> {
@@ -332,12 +325,10 @@ export function devSetCheckFailed(checkId: string): void {
   mockRecords.set(checkId, makeFailedRecord(checkId))
 }
 
-export function getCheckHistory(): Promise<readonly CheckHistoryItem[]> {
-  return resolveMock(CHECK_HISTORY)
-}
-
-export function getRecentChecks(): Promise<readonly RecentCheckItem[]> {
-  return resolveMock(LANDING_RECENT_CHECKS)
+export function listChecks(params?: CheckListParams): Promise<readonly CheckListItem[]> {
+  const limit = params?.limit ?? DEMO_CHECKS.length
+  const offset = params?.offset ?? 0
+  return resolveMock(DEMO_CHECKS.slice(offset, offset + limit))
 }
 
 export function subscribeCheckEvents(

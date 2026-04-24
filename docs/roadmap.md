@@ -20,7 +20,7 @@ P0 items (API contract, checksApi reshape, async useCreateCheck, checkId-driven 
 | 6 | Add basic URL validation and submit trimming | Implemented for `http(s)://` URL input and trimmed submissions. | `ClaimInputCard.vue` |
 | 7 | Add create-check submitting/error state | Implemented for the landing input path; retry/error-page polish remains backend-dependent. | `useCreateCheck.ts`, `CheckHomePage.vue`, `ClaimInputCard.vue` |
 | 8 | Replace hardcoded error page with backend error model | Backend errors need codes, trace IDs, retryability. | `CheckErrorPage.vue`, `checksApi.ts` |
-| 9 | Revisit privacy and local-only copy | "Nothing leaves your browser" may become inaccurate with a backend. | `features/checks/**/*` |
+| 9 | Revisit privacy and local-only copy | Implemented for current UI copy; claims about browser-only or no server-side storage were removed. | `features/checks/**/*` |
 | 10 | Separate API result semantics from UI display fields | Backend shouldn't own bar widths and CSS colors. | `types.ts`, `ResultSummary.vue`, `useCheckResult.ts` |
 
 ### P2 — Important after the main API path is stable
@@ -28,7 +28,7 @@ P0 items (API contract, checksApi reshape, async useCreateCheck, checkId-driven 
 | # | Improvement | Why it matters | Primary files |
 |---|---|---|---|
 | 11 | Improve evidence semantics | Evidence shouldn't always display as "supports"; links shouldn't be `#` placeholders. | `EvidenceItemsList.vue`, `types.ts` |
-| 12 | Decide history strategy | Local-only vs server-backed vs hybrid. | `useCheckHistory.ts`, `CheckHistoryPage.vue` |
+| 12 | Decide history strategy | Local-only vs server-backed vs hybrid. | `useCheckHistory.ts`, `CheckHistoryPage.vue` (now uses unified `listChecks()` via `GET /v1/checks`) |
 | 13 | Add tests for the core check flow | Cover create → loading → result, API errors, URL validation, history. | composables, check pages |
 | 14 | Handle clipboard failures | Don't show copy success when Clipboard API fails. | `CheckResultPage.vue`, `ResultActions.vue`, `ResultSummary.vue` |
 | 15 | Harden external evidence links | Safe external-link attributes; non-link fallback when absent. | `EvidenceItemsList.vue` |
@@ -51,7 +51,6 @@ P0 items (API contract, checksApi reshape, async useCreateCheck, checkId-driven 
 ### Deferred decisions
 
 - Whether history is local-only, server-backed, or hybrid.
-- Exact shared-schema package timing.
 - Whether to reintroduce frontend i18n.
 - Final backend result DTO shape and ViewModel adapter boundary.
 

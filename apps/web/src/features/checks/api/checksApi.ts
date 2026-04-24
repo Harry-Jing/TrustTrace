@@ -5,11 +5,11 @@ import type {
   CheckEventHandlers,
   CheckEventSubscription,
   CheckEventSubscriptionOptions,
-  CheckHistoryItem,
   CheckInputDraft,
+  CheckListItem,
+  CheckListParams,
   CheckRecord,
   CreateCheckResponse,
-  RecentCheckItem,
 } from '@/features/checks/types'
 
 const client = isMockApiMode ? mockClient : backendClient
@@ -22,12 +22,8 @@ export function getCheck(checkId: string): Promise<CheckRecord> {
   return client.getCheck(checkId)
 }
 
-export function getCheckHistory(): Promise<readonly CheckHistoryItem[]> {
-  return client.getCheckHistory()
-}
-
-export function getRecentChecks(): Promise<readonly RecentCheckItem[]> {
-  return client.getRecentChecks()
+export function listChecks(params?: CheckListParams): Promise<readonly CheckListItem[]> {
+  return client.listChecks(params)
 }
 
 export function subscribeCheckEvents(

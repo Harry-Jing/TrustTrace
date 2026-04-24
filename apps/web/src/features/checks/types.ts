@@ -9,7 +9,12 @@ export type CheckPhase =
   | 'persisting'
   | 'completed'
   | 'failed'
-export type CheckHistorySort = 'date' | 'cue'
+export type CheckListSort = 'date' | 'cue'
+
+export interface CheckListParams {
+  limit?: number
+  offset?: number
+}
 
 export interface CheckInputDraft {
   mode: CheckInputMode
@@ -71,20 +76,11 @@ export interface CheckEventSubscriptionOptions {
   afterSeq?: number
 }
 
-export interface RecentCheckItem {
-  id: string
-  claim: string
-  time: string
-  cue: string
-  tone: BadgeTone
-}
-
-export interface CheckHistoryItem {
+export interface CheckListItem {
   id: string
   claim: string
   snippet: string
-  date: string
-  ts: number
+  createdAt: string
   cue: string
   tone: BadgeTone
 }

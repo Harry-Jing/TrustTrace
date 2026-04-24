@@ -1,14 +1,25 @@
 <script setup lang="ts">
 import TagBadge from '@/components/TagBadge.vue'
-import type { RecentCheckItem } from '@/features/checks/types'
+import type { CheckListItem } from '@/features/checks/types'
 
 defineProps<{
-  items: readonly RecentCheckItem[]
+  items: readonly CheckListItem[]
 }>()
 
 const emit = defineEmits<{
-  select: [item: RecentCheckItem]
+  select: [item: CheckListItem]
 }>()
+
+function formatRelativeTime(iso: string) {
+  const seconds = Math.floor((Date.now() - new Date(iso).getTime()) / 1000)
+  if (seconds < 60) return 'just now'
+  const minutes = Math.floor(seconds / 60)
+  if (minutes < 60) return `${minutes} min ago`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `${hours} hr ago`
+  const days = Math.floor(hours / 24)
+  return `${days}d ago`
+}
 </script>
 
 <template>
@@ -26,7 +37,9 @@ const emit = defineEmits<{
     >
       <TagBadge :tone="r.tone" class="shrink-0 text-[9px]">{{ r.cue }}</TagBadge>
       <span class="text-body-sm flex-1 truncate font-medium">{{ r.claim }}</span>
-      <span class="shrink-0 font-mono text-[10px] text-muted">{{ r.time }}</span>
+      <span class="shrink-0 font-mono text-[10px] text-muted">{{
+        formatRelativeTime(r.createdAt)
+      }}</span>
     </button>
   </div>
 </template>

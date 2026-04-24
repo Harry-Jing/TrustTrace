@@ -5,14 +5,14 @@ Evidence-oriented credibility checking service. Submit a URL or text, query LLM 
 ## Repository Status
 
 - **Current:** `apps/web` is the active Vue 3 frontend, running with static/demo data.
-- **Planned:** `apps/server` and `packages/shared` for the TypeScript rewrite architecture.
+- **Planned:** `apps/server` for the TypeScript backend.
 - **Archived:** `archive/` and `docs/archive/` contain legacy implementation references only.
 
 ## Tech Stack
 
 Current frontend: Vue 3, TypeScript, Vite, Tailwind CSS v4, Vue Router, Pinia, vue-tsc, Oxlint, ESLint, Prettier, Vitest.
 
-Planned backend/shared: Bun, Hono, Zod, Drizzle, SQLite (dev) / PostgreSQL (prod), pino, OpenAPI tooling, OpenAI and Gemini provider SDKs.
+Planned backend: Bun, Hono, Zod, Drizzle, SQLite, pino, OpenAI and Gemini provider SDKs.
 
 ## Commands
 
@@ -34,7 +34,6 @@ Use `bun run test`, not bare `bun test` — archived code under `archive/` would
 ```txt
 apps/web/            # Current: @trusttrace/web — Vue 3 frontend
 apps/server/         # Planned: @trusttrace/server — Hono backend
-packages/shared/     # Planned: @trusttrace/shared — Zod schemas + types
 docs/                # Project documentation
 archive/             # Legacy implementation references
 ```
@@ -51,6 +50,6 @@ archive/             # Legacy implementation references
 
 - [conventions.md](conventions.md) — Bun runtime, frontend quality tooling, CSS architecture
 - [dev-tooling.md](dev-tooling.md) — dev-only FAB navigation, loading phase controls, guard pattern
-- [backend-typescript-rewrite.md](backend-typescript-rewrite.md) — planned TypeScript backend/shared architecture
+- [backend-typescript-rewrite.md](backend-typescript-rewrite.md) — backend plan and implementation phases
 - [roadmap.md](roadmap.md) — frontend readiness priorities and backlog
 - [archive/python-backend.md](archive/python-backend.md) — archived Python backend reference
