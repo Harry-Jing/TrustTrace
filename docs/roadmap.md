@@ -21,7 +21,7 @@ P0 items (API contract, checksApi reshape, async useCreateCheck, checkId-driven 
 | 7 | Add create-check submitting/error state | Implemented for the landing input path; retry/error-page polish remains backend-dependent. | `useCreateCheck.ts`, `CheckHomePage.vue`, `ClaimInputCard.vue` |
 | 8 | Replace hardcoded error page with backend error model | Backend errors need codes, trace IDs, retryability. | `CheckErrorPage.vue`, `checksApi.ts` |
 | 9 | Revisit privacy and local-only copy | Implemented for current UI copy; claims about browser-only or no server-side storage were removed. | `features/checks/**/*` |
-| 10 | Separate API result semantics from UI display fields | Backend shouldn't own bar widths and CSS colors. | `types.ts`, `ResultSummary.vue`, `useCheckResult.ts` |
+| 10 | Separate API result semantics from UI display fields | Frontend types are now split into focused API/event/progress/evidence/list/ViewModel files; backend DTO/schema alignment remains deferred. | `features/checks/types/`, `ResultSummary.vue`, `useCheckResult.ts` |
 
 ### P2 — Important after the main API path is stable
 
@@ -52,7 +52,7 @@ P0 items (API contract, checksApi reshape, async useCreateCheck, checkId-driven 
 
 - Whether history is local-only, server-backed, or hybrid.
 - Whether to reintroduce frontend i18n.
-- Final backend result DTO shape and ViewModel adapter boundary.
+- Final backend result DTO shape, shared schema, and frontend ViewModel adapter boundary.
 
 ## Backlog
 

@@ -37,7 +37,7 @@ All dev-only components live in `apps/web/src/app/` and are prefixed with `Dev`:
 `apps/web/src/features/checks/api/checksApi.ts` is the public frontend API boundary. It delegates to:
 
 - `mockChecksClient.ts` — mock-only in-memory data and timers for demo/debug flows.
-- `backendChecksClient.ts` — fetch/EventSource client for the TypeScript backend. It uses a check's `eventsUrl` when available, retries transient stream disconnects, and resumes with `after_seq` from the last accepted progress event.
+- `backendChecksClient.ts` — fetch/EventSource client for the TypeScript backend. It uses a check's `eventsUrl` when available, retries transient stream disconnects, and resumes with `afterSeq` from the last accepted progress event.
 
 Dev helpers exported from `checksApi.ts` are mock-only and should only be called from UI guarded by `showDevTools`.
 

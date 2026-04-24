@@ -54,13 +54,32 @@ The frontend in `apps/web` follows the `create-vue` tooling baseline. Project-sp
 - `prettier-plugin-tailwindcss` with `tailwindStylesheet: "./src/style.css"` for theme-aware class sorting.
 - `eslint.config.mjs` kept as JavaScript to avoid adding `jiti` for config loading.
 
+### Naming
+
+- Use `camelCase` for TypeScript identifiers and app-owned JSON/API payload fields.
+- Keep framework/configuration conventions where required (for example Vite environment variables and TypeScript config paths).
+- Name shared app-level UI primitives with the `Base*` prefix (for example `BaseTagBadge` and `BasePageFooter`).
+- Keep check feature type boundaries explicit: API DTOs, events, progress, evidence, list items, and result ViewModels live in focused files under `features/checks/types/`.
+- CSS naming follows the utility-first rules below.
+
 ### CSS architecture
 
 - `apps/web/src/style.css` owns theme custom properties, the Tailwind `@theme` bridge, base defaults, shared component classes, and motion utilities.
-- Keep custom selectors in Tailwind-aware layers: `@layer base` for global defaults, `@layer components` for reusable UI, `@utility` for animation helpers.
+- Prefer Tailwind utility classes directly in Vue templates for layout, spacing, color, typography, state, and responsive behavior.
+- When utility combinations become meaningfully duplicated, prefer extracting a Vue component before adding a global CSS class.
+- Add custom CSS only when utilities or component extraction would be less clear: theme tokens, global base defaults, Vue transition class names, reusable cross-component behavior, and motion helpers.
+- Keep custom CSS in Tailwind-aware layers: `@layer base` for global defaults, `@layer components` for reusable UI, and `@utility` for reusable utility-style helpers.
+- Use lower-kebab-case for custom CSS class names, keyframes, and custom identifiers. Use the `tt-` prefix for app-wide shared classes such as `tt-btn`.
+- Use `--tt-*` lower-kebab-case custom properties for app tokens, and expose user-facing utility names through Tailwind's `@theme` bridge.
+- Do not keep no-op marker classes in templates. A class should either be a Tailwind utility, a Vue transition class, or have a rule in `style.css`.
+- Avoid BEM by default in new code. It is acceptable for complex class-based global selectors, but prefer utilities, state/data/ARIA variants, or component extraction first.
 - Prefer semantic Tailwind tokens/classes in Vue templates. Don't pass raw CSS color strings through fixtures, stores, or API-shaped data.
 - Avoid static inline `style` attributes. Bind narrow CSS custom properties only (animation delays, progress ratios) and keep actual rules in `style.css`.
 - `!important` is an accessibility escape hatch only (e.g. `prefers-reduced-motion` override).
+- Prefer semantic attributes over style class names in tests (for example `aria-pressed` instead of an active-state CSS class).
+- Revisit and remove unused custom CSS utilities/keyframes when templates no longer reference them.
+
+References: [Tailwind utility-first](https://tailwindcss.com/docs/utility-first), [Tailwind custom styles](https://tailwindcss.com/docs/adding-custom-styles), [Vue SFC CSS features](https://vuejs.org/api/sfc-css-features), [Vue component-scoped styling](https://vuejs.org/style-guide/rules-essential.html#use-component-scoped-styling), [MDN CSS casing](https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Code_style_guide/CSS#casing), [BEM naming](https://getbem.com/naming/).
 
 ### Quality gate
 
