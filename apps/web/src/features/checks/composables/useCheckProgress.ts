@@ -1,6 +1,7 @@
 import { computed, onScopeDispose, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
+import { showDevTools } from '@/app/env'
 import { getCheck, subscribeCheckEvents } from '@/features/checks/api/checksApi'
 import {
   CHECK_PHASES,
@@ -66,22 +67,43 @@ export function useCheckProgress() {
 
   function subscribe(checkIdToSubscribe: string) {
     closeSubscription()
-    subscription = subscribeCheckEvents(checkIdToSubscribe, {
-      onEvent: (event) => {
-        recordProgress({
-          checkId: event.checkId,
-          status: event.status,
-          phase: event.phase,
-          percent: event.percent,
-          message: event.message,
-          eventSeq: event.seq,
-          updatedAt: event.createdAt,
-        })
+    subscription = subscribeCheckEvents(
+      checkIdToSubscribe,
+      {
+        onEvent: (event) => {
+          recordProgress({
+            checkId: event.checkId,
+            status: event.status,
+            phase: event.phase,
+            percent: event.percent,
+            message: event.message,
+            eventSeq: event.seq,
+            updatedAt: event.createdAt,
+          })
+        },
+        onError: (error) => {
+          void handleStreamError(checkIdToSubscribe, error)
+        },
       },
-      onError: (error) => {
-        eventError.value = error
+      {
+        afterSeq: progress.value?.eventSeq ?? 0,
+        eventsUrl: checks.eventsUrlByCheckId[checkIdToSubscribe],
       },
-    })
+    )
+  }
+
+  async function handleStreamError(checkIdToReload: string, error: unknown) {
+    const record = await recordState.reload()
+
+    if (!record || checkId.value !== checkIdToReload) return
+
+    recordProgress(record.progress)
+
+    if (record.status === 'queued' || record.status === 'running') {
+      eventError.value = error
+    } else {
+      eventError.value = null
+    }
   }
 
   async function loadCheckRecord(nextCheckId: string | null) {
@@ -124,7 +146,9 @@ export function useCheckProgress() {
   )
   const phaseIndex = computed(() => phaseIndexOf(phase.value))
   const tip = computed(() => CHECK_TIPS[phaseIndex.value % CHECK_TIPS.length] ?? CHECK_TIPS[0])
-  const evidenceItems = computed(() => getProgressEvidenceForPhase(phaseIndex.value))
+  const evidenceItems = computed(() =>
+    showDevTools ? getProgressEvidenceForPhase(phaseIndex.value) : [],
+  )
   const progressError = computed(() => eventError.value ?? recordState.error.value)
 
   /** MOCK DEV ONLY — Manually override the current phase for dev inspection. */

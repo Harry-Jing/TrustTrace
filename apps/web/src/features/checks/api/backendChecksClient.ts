@@ -3,6 +3,7 @@ import type {
   CheckApiError,
   CheckEventHandlers,
   CheckEventSubscription,
+  CheckEventSubscriptionOptions,
   CheckHistoryItem,
   CheckInputDraft,
   CheckPhase,
@@ -24,6 +25,7 @@ const CHECK_PHASES = new Set<CheckPhase>([
   'completed',
   'failed',
 ])
+const STREAM_RECONNECT_DELAYS_MS = [500, 1000, 2000] as const
 
 class HttpApiError extends Error {
   readonly status: number
@@ -37,6 +39,23 @@ class HttpApiError extends Error {
 
 function apiUrl(path: string) {
   return `${apiBaseUrl.replace(/\/$/, '')}${path}`
+}
+
+function resolveEventsUrl(checkId: string, eventsUrl?: string) {
+  if (!eventsUrl) return apiUrl(`/checks/${encodeURIComponent(checkId)}/events`)
+
+  if (/^https?:\/\//.test(eventsUrl) || eventsUrl.startsWith('/')) {
+    return eventsUrl
+  }
+
+  return apiUrl(`/${eventsUrl.replace(/^\/+/, '')}`)
+}
+
+function appendAfterSeq(url: string, afterSeq: number) {
+  if (afterSeq <= 0) return url
+
+  const separator = url.includes('?') ? '&' : '?'
+  return `${url}${separator}after_seq=${encodeURIComponent(String(afterSeq))}`
 }
 
 function asObject(value: unknown): Record<string, unknown> {
@@ -266,6 +285,7 @@ export async function getRecentChecks(): Promise<readonly RecentCheckItem[]> {
 export function subscribeCheckEvents(
   checkId: string,
   handlers: CheckEventHandlers,
+  options: CheckEventSubscriptionOptions = {},
 ): CheckEventSubscription {
   if (typeof EventSource === 'undefined') {
     queueMicrotask(() =>
@@ -274,19 +294,39 @@ export function subscribeCheckEvents(
     return { close() {} }
   }
 
-  const eventSource = new EventSource(apiUrl(`/checks/${encodeURIComponent(checkId)}/events`))
+  const baseEventsUrl = resolveEventsUrl(checkId, options.eventsUrl)
+  let eventSource: EventSource | null = null
   let closed = false
+  let reconnectTimer: ReturnType<typeof setTimeout> | null = null
+  let reconnectAttempt = 0
+  let lastSeq = options.afterSeq ?? 0
 
-  function close() {
+  function clearReconnectTimer() {
+    if (!reconnectTimer) return
+    clearTimeout(reconnectTimer)
+    reconnectTimer = null
+  }
+
+  function closeCurrentStream() {
+    eventSource?.close()
+    eventSource = null
+  }
+
+  function close(notify = true) {
     if (closed) return
     closed = true
-    eventSource.close()
-    handlers.onClose?.()
+    clearReconnectTimer()
+    closeCurrentStream()
+    if (notify) handlers.onClose?.()
   }
 
   function handleMessage(event: MessageEvent<string>) {
     try {
       const progressEvent = toProgressEvent(JSON.parse(event.data) as unknown, checkId)
+      if (progressEvent.seq <= lastSeq) return
+
+      lastSeq = progressEvent.seq
+      reconnectAttempt = 0
       handlers.onEvent?.(progressEvent)
 
       if (progressEvent.status === 'completed' || progressEvent.status === 'failed') {
@@ -298,12 +338,31 @@ export function subscribeCheckEvents(
     }
   }
 
-  eventSource.addEventListener('progress', handleMessage)
-  eventSource.onmessage = handleMessage
-  eventSource.onerror = () => {
-    handlers.onError?.(new Error('Lost connection to the check progress stream.'))
-    close()
+  function openStream() {
+    if (closed) return
+
+    closeCurrentStream()
+    eventSource = new EventSource(appendAfterSeq(baseEventsUrl, lastSeq))
+    eventSource.addEventListener('progress', handleMessage)
+    eventSource.onmessage = handleMessage
+    eventSource.onerror = () => {
+      if (closed) return
+
+      closeCurrentStream()
+      const delay = STREAM_RECONNECT_DELAYS_MS[reconnectAttempt]
+
+      if (delay !== undefined) {
+        reconnectAttempt += 1
+        reconnectTimer = setTimeout(openStream, delay)
+        return
+      }
+
+      handlers.onError?.(new Error('Lost connection to the check progress stream.'))
+      close()
+    }
   }
+
+  openStream()
 
   return { close }
 }

@@ -7,6 +7,7 @@ import type {
   CheckApiError,
   CheckEventHandlers,
   CheckEventSubscription,
+  CheckEventSubscriptionOptions,
   CheckHistoryItem,
   CheckInputDraft,
   CheckPhase,
@@ -21,7 +22,7 @@ import type {
 
 /**
  * MOCK ONLY — In-memory API client used for local demo/debug flows.
- * Real backend calls live in realChecksClient.ts and are selected via apiMode.
+ * Backend API calls live in backendChecksClient.ts and are selected via apiMode.
  */
 
 interface MockProgressStep {
@@ -342,6 +343,7 @@ export function getRecentChecks(): Promise<readonly RecentCheckItem[]> {
 export function subscribeCheckEvents(
   checkId: string,
   handlers: CheckEventHandlers,
+  _options?: CheckEventSubscriptionOptions,
 ): CheckEventSubscription {
   const timers: ReturnType<typeof setTimeout>[] = []
   let closed = false

@@ -1,9 +1,10 @@
 import { isMockApiMode } from '@/app/env'
 import * as mockClient from '@/features/checks/api/mockChecksClient'
-import * as realClient from '@/features/checks/api/realChecksClient'
+import * as backendClient from '@/features/checks/api/backendChecksClient'
 import type {
   CheckEventHandlers,
   CheckEventSubscription,
+  CheckEventSubscriptionOptions,
   CheckHistoryItem,
   CheckInputDraft,
   CheckRecord,
@@ -11,7 +12,7 @@ import type {
   RecentCheckItem,
 } from '@/features/checks/types'
 
-const client = isMockApiMode ? mockClient : realClient
+const client = isMockApiMode ? mockClient : backendClient
 
 export function createCheck(input: CheckInputDraft): Promise<CreateCheckResponse> {
   return client.createCheck(input)
@@ -32,8 +33,9 @@ export function getRecentChecks(): Promise<readonly RecentCheckItem[]> {
 export function subscribeCheckEvents(
   checkId: string,
   handlers: CheckEventHandlers,
+  options?: CheckEventSubscriptionOptions,
 ): CheckEventSubscription {
-  return client.subscribeCheckEvents(checkId, handlers)
+  return client.subscribeCheckEvents(checkId, handlers, options)
 }
 
 /** MOCK ONLY — Reset a mock check record for demo/debug navigation. */

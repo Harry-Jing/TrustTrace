@@ -66,6 +66,11 @@ export interface CheckEventSubscription {
   close: () => void
 }
 
+export interface CheckEventSubscriptionOptions {
+  eventsUrl?: string
+  afterSeq?: number
+}
+
 export interface RecentCheckItem {
   id: string
   claim: string

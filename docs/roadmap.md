@@ -19,7 +19,7 @@ P0 items (API contract, checksApi reshape, async useCreateCheck, checkId-driven 
 |---|---|---|---|
 | 6 | Add basic URL validation and submit trimming | Implemented for `http(s)://` URL input and trimmed submissions. | `ClaimInputCard.vue` |
 | 7 | Add create-check submitting/error state | Implemented for the landing input path; retry/error-page polish remains backend-dependent. | `useCreateCheck.ts`, `CheckHomePage.vue`, `ClaimInputCard.vue` |
-| 8 | Replace hardcoded error page with real error model | Backend errors need codes, trace IDs, retryability. | `CheckErrorPage.vue`, `checksApi.ts` |
+| 8 | Replace hardcoded error page with backend error model | Backend errors need codes, trace IDs, retryability. | `CheckErrorPage.vue`, `checksApi.ts` |
 | 9 | Revisit privacy and local-only copy | "Nothing leaves your browser" may become inaccurate with a backend. | `features/checks/**/*` |
 | 10 | Separate API result semantics from UI display fields | Backend shouldn't own bar widths and CSS colors. | `types.ts`, `ResultSummary.vue`, `useCheckResult.ts` |
 
@@ -37,11 +37,11 @@ P0 items (API contract, checksApi reshape, async useCreateCheck, checkId-driven 
 
 | # | Improvement | Why it matters | Primary files |
 |---|---|---|---|
-| 16 | Further isolate demo/prod mode | Implemented with `VITE_TRUSTTRACE_API_MODE=mock|real`; dev tools are mock-mode only. | `app/env.ts`, `checksApi.ts`, `AppShell.vue` |
+| 16 | Further isolate demo/prod mode | Implemented with `VITE_TRUSTTRACE_API_MODE=mock|backend`; dev tools are mock-mode only. | `app/env.ts`, `checksApi.ts`, `AppShell.vue` |
 | 17 | Finalize API base URL and environment config | Basic `VITE_TRUSTTRACE_API_BASE_URL` support exists; deployment-specific values remain to be finalized. | `app/env.ts`, `vite.config.ts` |
 | 18 | Address accessibility polish | Tooltip IDs, loading semantics, icon labels, reduced-motion. | shared UI and check components |
 
-### Acceptance criteria before wiring the real backend
+### Acceptance criteria before wiring the backend
 
 - Loading, result, error, and history routes work from direct URL navigation and browser refresh.
 - URL submissions reject obvious non-URLs and require `http(s)://`.
@@ -53,11 +53,11 @@ P0 items (API contract, checksApi reshape, async useCreateCheck, checkId-driven 
 - Whether history is local-only, server-backed, or hybrid.
 - Exact shared-schema package timing.
 - Whether to reintroduce frontend i18n.
-- Final real backend result DTO shape and ViewModel adapter boundary.
+- Final backend result DTO shape and ViewModel adapter boundary.
 
 ## Backlog
 
-Items to revisit only after the real backend powers the core check flow, API/data contracts are settled, and basic tests exist.
+Items to revisit only after the backend powers the core check flow, API/data contracts are settled, and basic tests exist.
 
 - **i18n/localization** — revisit for a real multilingual launch or customer need.
 - **Design system cleanup** — extract shared components after UI patterns settle.
