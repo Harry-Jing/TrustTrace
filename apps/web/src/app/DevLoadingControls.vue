@@ -23,18 +23,18 @@ const emit = defineEmits<{
     </span>
     <div class="flex flex-wrap gap-1">
       <button
-        v-for="p in phases.slice(0, 4)"
-        :key="p"
+        v-for="phaseOption in phases.slice(0, 4)"
+        :key="phaseOption"
         class="tt-btn rounded px-2 py-[3px] font-mono text-[10px]"
         :class="
-          phase === p
+          phase === phaseOption
             ? 'border border-ink bg-ink text-surface'
             : 'border border-line bg-transparent text-muted'
         "
-        :aria-pressed="phase === p"
-        @click="emit('setPhase', p)"
+        :aria-pressed="phase === phaseOption"
+        @click="emit('setPhase', phaseOption)"
       >
-        {{ p }}
+        {{ phaseOption }}
       </button>
       <button
         class="tt-btn rounded border border-accent bg-transparent px-2 py-[3px] font-mono text-[10px] text-accent"

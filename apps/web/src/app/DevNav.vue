@@ -44,17 +44,17 @@ function navigateTo(path: string) {
         class="mb-1 flex flex-col gap-1 rounded-lg bg-ink/90 p-1.5 shadow-lg backdrop-blur-sm"
       >
         <button
-          v-for="p in pages"
-          :key="p.name"
+          v-for="page in pages"
+          :key="page.name"
           class="rounded-md border-none px-3 py-1.5 text-left font-mono text-[11px] tracking-wide transition-colors duration-150"
           :class="
-            currentPage === p.name
+            currentPage === page.name
               ? 'bg-accent font-semibold text-white'
               : 'bg-transparent text-surface/70 hover:bg-surface/10 hover:text-surface'
           "
-          @click="navigateTo(p.path)"
+          @click="navigateTo(page.path)"
         >
-          {{ p.label }}
+          {{ page.label }}
         </button>
       </div>
     </Transition>

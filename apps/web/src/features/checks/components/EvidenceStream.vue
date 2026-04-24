@@ -20,12 +20,17 @@ function onBeforeEnter(el: Element) {
     </div>
 
     <TransitionGroup name="evidence" tag="div" @before-enter="onBeforeEnter">
-      <div v-for="(item, i) in items" :key="item.src + '-' + i" :data-index="i" class="mb-0.5 flex">
+      <div
+        v-for="(item, index) in items"
+        :key="item.sourceName + '-' + index"
+        :data-index="index"
+        class="mb-0.5 flex"
+      >
         <div class="w-[3px] shrink-0 rounded-l-[3px] bg-accent opacity-60" />
         <div class="flex-1 border-b border-line bg-card px-5 py-4 transition-colors duration-400">
           <div class="mb-1 flex items-center justify-between">
             <span class="font-mono text-xs font-medium tracking-[0.03em] text-accent">{{
-              item.src
+              item.sourceName
             }}</span>
             <span class="font-mono text-[10px] tracking-[0.03em] text-muted">{{ item.time }}</span>
           </div>

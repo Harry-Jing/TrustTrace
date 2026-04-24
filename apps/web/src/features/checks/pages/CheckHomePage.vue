@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 
-import PageFooter from '@/components/PageFooter.vue'
+import BasePageFooter from '@/components/BasePageFooter.vue'
 import ClaimInputCard from '@/features/checks/components/ClaimInputCard.vue'
 import HowItWorksPanel from '@/features/checks/components/HowItWorksPanel.vue'
 import LandingInfoColumns from '@/features/checks/components/LandingInfoColumns.vue'
@@ -22,8 +22,8 @@ async function submit(input: CheckInputDraft) {
   }
 }
 
-function selectRecentCheck(item: CheckListItem) {
-  void router.push({ name: 'result', params: { checkId: item.id } })
+function selectRecentCheck(recentCheck: CheckListItem) {
+  void router.push({ name: 'result', params: { checkId: recentCheck.checkId } })
 }
 </script>
 
@@ -64,6 +64,6 @@ function selectRecentCheck(item: CheckListItem) {
     <RecentChecksList :items="recentChecks" @select="selectRecentCheck" />
     <LandingInfoColumns />
 
-    <PageFooter class="mt-12">TrustTrace &middot; evidence-first credibility</PageFooter>
+    <BasePageFooter class="mt-12">TrustTrace &middot; evidence-first credibility</BasePageFooter>
   </div>
 </template>

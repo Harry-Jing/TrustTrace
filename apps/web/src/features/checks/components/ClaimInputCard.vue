@@ -68,26 +68,25 @@ function submit() {
     <!-- Mode toggle + char count -->
     <div class="mb-3.5 flex items-center gap-3">
       <div
-        class="claim-mode-toggle relative inline-flex overflow-hidden rounded-full bg-surface-alt p-[3px]"
+        class="relative isolate inline-flex overflow-hidden rounded-full bg-surface-alt p-[3px]"
         role="group"
         aria-label="Claim input type"
       >
         <!-- Sliding indicator -->
         <div
-          class="claim-mode-toggle__indicator absolute top-[3px] h-[calc(100%-6px)] w-[calc(50%-3px)] rounded-full transition-[left] duration-250 ease-snappy"
+          class="pointer-events-none absolute top-[3px] z-0 h-[calc(100%-6px)] w-[calc(50%-3px)] rounded-full bg-ink transition-[left] duration-250 ease-snappy"
           :class="mode === 'text' ? 'left-[3px]' : 'left-1/2'"
         />
         <button
-          v-for="m in ['text', 'url'] as const"
-          :key="m"
+          v-for="modeOption in ['text', 'url'] as const"
+          :key="modeOption"
           type="button"
-          class="claim-mode-toggle__button text-body-sm relative z-10 min-w-16 rounded-full border-none bg-transparent px-5 py-[7px] font-mono font-medium tracking-[0.04em] uppercase transition-colors duration-200"
-          :class="mode === m ? 'claim-mode-toggle__button--active' : ''"
-          :aria-pressed="mode === m"
+          class="text-body-sm relative z-10 min-w-16 rounded-full border-none bg-transparent px-5 py-[7px] font-mono font-medium tracking-[0.04em] text-muted uppercase transition-colors duration-200 aria-[pressed=true]:text-surface"
+          :aria-pressed="mode === modeOption"
           :disabled="isDisabled"
-          @click="switchMode(m)"
+          @click="switchMode(modeOption)"
         >
-          {{ m }}
+          {{ modeOption }}
         </button>
       </div>
       <span class="flex-1" />

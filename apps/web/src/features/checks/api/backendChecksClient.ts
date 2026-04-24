@@ -10,7 +10,7 @@ import type {
   CheckPhase,
   CheckProgress,
   CheckRecord,
-  CheckResult,
+  CheckResultViewModel,
   CheckStatus,
   CreateCheckResponse,
   ProgressEvent,
@@ -55,7 +55,7 @@ function appendAfterSeq(url: string, afterSeq: number) {
   if (afterSeq <= 0) return url
 
   const separator = url.includes('?') ? '&' : '?'
-  return `${url}${separator}after_seq=${encodeURIComponent(String(afterSeq))}`
+  return `${url}${separator}afterSeq=${encodeURIComponent(String(afterSeq))}`
 }
 
 function asObject(value: unknown): Record<string, unknown> {
@@ -216,7 +216,7 @@ function toCheckRecord(value: unknown): CheckRecord {
     checkId,
     status,
     progress: toCheckProgress(source.progress, checkId),
-    result: source.result ? (source.result as CheckResult) : null,
+    result: source.result ? (source.result as CheckResultViewModel) : null,
     error: toCheckApiError(source.error),
     createdAt: readString(source, 'createdAt', new Date().toISOString()),
     updatedAt: readString(source, 'updatedAt', new Date().toISOString()),

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import TagBadge from '@/components/TagBadge.vue'
+import BaseTagBadge from '@/components/BaseTagBadge.vue'
 
 defineProps<{
   lines: readonly string[]
@@ -10,7 +10,7 @@ defineProps<{
   <div class="border-l-[3px] border-warn pl-5">
     <div class="mb-2.5 flex items-center gap-2.5">
       <span class="font-serif text-xl">Uncertainty & context</span>
-      <TagBadge tone="warn">important context</TagBadge>
+      <BaseTagBadge tone="warn">important context</BaseTagBadge>
     </div>
     <p v-for="(line, i) in lines" :key="i" class="text-body-sm mb-2.5 leading-[1.75] text-ink-2">
       {{ line }}

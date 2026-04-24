@@ -1,7 +1,7 @@
 import { computed, ref } from 'vue'
 
 import { listChecks } from '@/features/checks/api/checksApi'
-import { CUE_ORDER } from '@/features/checks/fixtures/demoChecks'
+import { CUE_ORDER } from '@/features/checks/constants/history'
 import type { CheckListSort } from '@/features/checks/types'
 import { useAsyncData } from '@/shared/composables/useAsyncData'
 
@@ -13,8 +13,10 @@ export function useCheckHistory() {
   const items = computed(() => {
     const query = search.value.toLowerCase()
     let filtered = (state.data.value ?? []).filter(
-      (h) =>
-        !query || h.claim.toLowerCase().includes(query) || h.snippet.toLowerCase().includes(query),
+      (historyItem) =>
+        !query ||
+        historyItem.claim.toLowerCase().includes(query) ||
+        historyItem.snippet.toLowerCase().includes(query),
     )
 
     if (sortBy.value === 'cue') {

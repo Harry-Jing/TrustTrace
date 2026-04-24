@@ -62,12 +62,12 @@ describe('backendChecksClient subscribeCheckEvents', () => {
 
     MockEventSource.instances[0]!.emitProgress({
       seq: 7,
-      check_id: 'check-1',
+      checkId: 'check-1',
       status: 'running',
       phase: 'analyzing',
       percent: 35,
       message: 'Analyzing sources.',
-      created_at: '2026-04-23T12:00:00.000Z',
+      createdAt: '2026-04-23T12:00:00.000Z',
     })
     MockEventSource.instances[0]!.fail()
 
@@ -75,7 +75,7 @@ describe('backendChecksClient subscribeCheckEvents', () => {
 
     await vi.advanceTimersByTimeAsync(500)
 
-    expect(String(MockEventSource.instances[1]!.url)).toBe('/v1/custom/events?after_seq=7')
+    expect(String(MockEventSource.instances[1]!.url)).toBe('/v1/custom/events?afterSeq=7')
   })
 
   it('reports a stream error only after reconnect attempts are exhausted', async () => {
@@ -111,30 +111,30 @@ describe('backendChecksClient subscribeCheckEvents', () => {
 
     MockEventSource.instances[0]!.emitProgress({
       seq: 2,
-      check_id: 'check-1',
+      checkId: 'check-1',
       status: 'running',
       phase: 'analyzing',
       percent: 40,
       message: 'Analyzing sources.',
-      created_at: '2026-04-23T12:00:00.000Z',
+      createdAt: '2026-04-23T12:00:00.000Z',
     })
     MockEventSource.instances[0]!.emitProgress({
       seq: 1,
-      check_id: 'check-1',
+      checkId: 'check-1',
       status: 'running',
       phase: 'accepted',
       percent: 5,
       message: 'Accepted.',
-      created_at: '2026-04-23T11:59:59.000Z',
+      createdAt: '2026-04-23T11:59:59.000Z',
     })
     MockEventSource.instances[0]!.emitProgress({
       seq: 2,
-      check_id: 'check-1',
+      checkId: 'check-1',
       status: 'running',
       phase: 'analyzing',
       percent: 40,
       message: 'Analyzing sources.',
-      created_at: '2026-04-23T12:00:00.000Z',
+      createdAt: '2026-04-23T12:00:00.000Z',
     })
 
     expect(onEvent).toHaveBeenCalledOnce()

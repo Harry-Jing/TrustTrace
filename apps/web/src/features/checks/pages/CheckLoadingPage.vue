@@ -2,10 +2,10 @@
 import { onBeforeUnmount, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
-import PageFooter from '@/components/PageFooter.vue'
+import BasePageFooter from '@/components/BasePageFooter.vue'
 import DevLoadingControls from '@/app/DevLoadingControls.vue'
 import { showDevTools } from '@/app/env'
-import TagBadge from '@/components/TagBadge.vue'
+import BaseTagBadge from '@/components/BaseTagBadge.vue'
 import EvidenceStream from '@/features/checks/components/EvidenceStream.vue'
 import ProgressTimeline from '@/features/checks/components/ProgressTimeline.vue'
 import { useCheckProgress } from '@/features/checks/composables/useCheckProgress'
@@ -131,7 +131,7 @@ onBeforeUnmount(clearRedirectTimer)
     <template v-else>
       <!-- Header -->
       <div class="mb-2 flex items-center gap-3" aria-live="polite">
-        <TagBadge tone="accent">{{ phase }}</TagBadge>
+        <BaseTagBadge tone="accent">{{ phase }}</BaseTagBadge>
         <span class="font-mono text-xs tracking-[0.03em] text-muted">check in progress</span>
       </div>
       <h1 class="mb-1.5 font-serif text-[32px] tracking-tight">Pulling evidence for your claim</h1>
@@ -140,27 +140,27 @@ onBeforeUnmount(clearRedirectTimer)
       </p>
 
       <!-- Segmented progress -->
-      <div class="loading-segmented mb-7 flex gap-[3px]" aria-hidden="true">
+      <div class="mb-7 flex gap-[3px]" aria-hidden="true">
         <div
-          v-for="(p, i) in phases"
-          :key="p"
+          v-for="(phaseOption, index) in phases"
+          :key="phaseOption"
           class="relative h-1.5 flex-1 overflow-hidden rounded-[3px] bg-line"
         >
           <div
             class="h-full w-full origin-left rounded-[3px] bg-accent transition-transform duration-600 ease-out"
-            :class="[segmentFillClass(i), i === phaseIndex ? 'anim-shimmer' : '']"
+            :class="[segmentFillClass(index), index === phaseIndex ? 'anim-shimmer' : '']"
           />
           <div
             class="absolute top-3 w-full text-center font-mono text-[10px] tracking-[0.04em]"
-            :class="i <= phaseIndex ? 'font-semibold text-ink' : 'text-muted'"
+            :class="index <= phaseIndex ? 'font-semibold text-ink' : 'text-muted'"
           >
-            {{ p }}
+            {{ phaseOption }}
           </div>
         </div>
       </div>
 
       <!-- Two-column layout -->
-      <div class="loading-main mt-9 grid grid-cols-1 items-start gap-10 md:grid-cols-[240px_1fr]">
+      <div class="mt-9 grid grid-cols-1 items-start gap-10 md:grid-cols-[240px_1fr]">
         <ProgressTimeline :phases="phases" :phase-index="phaseIndex" :tip="tip">
           <DevLoadingControls
             v-if="showDevTools"
@@ -178,7 +178,7 @@ onBeforeUnmount(clearRedirectTimer)
         />
       </div>
 
-      <PageFooter>TrustTrace &middot; evidence-first credibility</PageFooter>
+      <BasePageFooter>TrustTrace &middot; evidence-first credibility</BasePageFooter>
     </template>
   </div>
 </template>

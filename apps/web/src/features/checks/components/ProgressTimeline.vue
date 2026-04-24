@@ -9,16 +9,20 @@ defineProps<{
 </script>
 
 <template>
-  <div class="loading-rail md:sticky md:top-20">
-    <div v-for="(p, i) in phases" :key="p" class="relative flex items-start gap-3.5">
+  <div class="md:sticky md:top-20">
+    <div
+      v-for="(phaseOption, index) in phases"
+      :key="phaseOption"
+      class="relative flex items-start gap-3.5"
+    >
       <!-- Timeline connector -->
       <div
-        v-if="i < phases.length - 1"
+        v-if="index < phases.length - 1"
         class="absolute top-10 left-[19px] h-8 w-0.5 transition-colors duration-400"
-        :class="i < phaseIndex ? 'bg-accent' : 'bg-line'"
+        :class="index < phaseIndex ? 'bg-accent' : 'bg-line'"
       >
         <div
-          v-if="i === phaseIndex"
+          v-if="index === phaseIndex"
           class="absolute top-0 -left-px size-1 anim-timeline-pulse rounded-full bg-accent"
         />
       </div>
@@ -28,12 +32,12 @@ defineProps<{
         <div
           class="flex size-10 shrink-0 items-center justify-center rounded-full font-mono text-sm font-medium transition-all duration-300"
           :class="{
-            'border-[1.5px] border-accent bg-accent text-surface': i < phaseIndex,
-            'border-[1.5px] border-ink bg-ink text-surface': i === phaseIndex,
-            'border-[1.5px] border-line-strong bg-transparent text-muted': i > phaseIndex,
+            'border-[1.5px] border-accent bg-accent text-surface': index < phaseIndex,
+            'border-[1.5px] border-ink bg-ink text-surface': index === phaseIndex,
+            'border-[1.5px] border-line-strong bg-transparent text-muted': index > phaseIndex,
           }"
         >
-          {{ String(i + 1).padStart(2, '0') }}
+          {{ String(index + 1).padStart(2, '0') }}
         </div>
       </div>
 
@@ -42,15 +46,15 @@ defineProps<{
         <div
           class="text-body-sm transition-all duration-300"
           :class="{
-            'font-semibold text-accent': i < phaseIndex,
-            'font-semibold text-ink': i === phaseIndex,
-            'font-normal text-muted': i > phaseIndex,
+            'font-semibold text-accent': index < phaseIndex,
+            'font-semibold text-ink': index === phaseIndex,
+            'font-normal text-muted': index > phaseIndex,
           }"
         >
-          {{ p }}
+          {{ phaseOption }}
         </div>
         <span class="font-mono text-[11px] tracking-[0.03em] text-muted">
-          {{ i < phaseIndex ? 'done' : i === phaseIndex ? 'in progress…' : 'queued' }}
+          {{ index < phaseIndex ? 'done' : index === phaseIndex ? 'in progress…' : 'queued' }}
         </span>
       </div>
     </div>

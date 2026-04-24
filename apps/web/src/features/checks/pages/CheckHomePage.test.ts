@@ -23,19 +23,19 @@ describe('CheckHomePage', () => {
     expect(wrapper.text()).toContain('Run credibility check')
   })
 
-  it('marks the active input mode with the contrast class', async () => {
+  it('marks the active input mode with aria-pressed', async () => {
     const wrapper = mountPage()
-    const buttons = wrapper.findAll('.claim-mode-toggle__button')
+    const buttons = wrapper.findAll('[aria-label="Claim input type"] button')
     const textButton = buttons[0]!
     const urlButton = buttons[1]!
 
     expect(textButton.text()).toBe('text')
-    expect(textButton.classes()).toContain('claim-mode-toggle__button--active')
-    expect(urlButton.classes()).not.toContain('claim-mode-toggle__button--active')
+    expect(textButton.attributes('aria-pressed')).toBe('true')
+    expect(urlButton.attributes('aria-pressed')).toBe('false')
 
     await urlButton.trigger('click')
 
-    expect(textButton.classes()).not.toContain('claim-mode-toggle__button--active')
-    expect(urlButton.classes()).toContain('claim-mode-toggle__button--active')
+    expect(textButton.attributes('aria-pressed')).toBe('false')
+    expect(urlButton.attributes('aria-pressed')).toBe('true')
   })
 })

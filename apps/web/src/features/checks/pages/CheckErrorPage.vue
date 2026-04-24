@@ -2,8 +2,8 @@
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import PageFooter from '@/components/PageFooter.vue'
-import TagBadge from '@/components/TagBadge.vue'
+import BasePageFooter from '@/components/BasePageFooter.vue'
+import BaseTagBadge from '@/components/BaseTagBadge.vue'
 import { getCheck } from '@/features/checks/api/checksApi'
 import { useCreateCheck } from '@/features/checks/composables/useCreateCheck'
 import { useChecksStore } from '@/features/checks/stores/checks.store'
@@ -101,7 +101,7 @@ async function retryCheck() {
         <circle cx="36" cy="46" r="1.5" class="fill-warn" />
       </svg>
 
-      <TagBadge tone="warn">{{ errorCategory }}</TagBadge>
+      <BaseTagBadge tone="warn">{{ errorCategory }}</BaseTagBadge>
 
       <h2 class="mx-auto mt-5 mb-2.5 font-serif text-[28px] tracking-tight">
         {{ errorMessage }}
@@ -156,7 +156,7 @@ async function retryCheck() {
         </button>
 
         <div class="expand-panel" :data-open="showDetail">
-          <div class="expand-panel__inner">
+          <div class="expand-panel-inner">
             <div
               :id="detailId"
               class="text-body-sm mt-2.5 rounded-md border border-line bg-surface-alt p-3.5 text-left leading-[1.7] text-ink-2"
@@ -177,6 +177,6 @@ async function retryCheck() {
       </div>
     </div>
 
-    <PageFooter>TrustTrace &middot; evidence-first credibility</PageFooter>
+    <BasePageFooter>TrustTrace &middot; evidence-first credibility</BasePageFooter>
   </div>
 </template>

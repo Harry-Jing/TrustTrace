@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 
-import PageFooter from '@/components/PageFooter.vue'
+import BasePageFooter from '@/components/BasePageFooter.vue'
 import HistoryGrid from '@/features/checks/components/HistoryGrid.vue'
 import HistoryToolbar from '@/features/checks/components/HistoryToolbar.vue'
 import { useCheckHistory } from '@/features/checks/composables/useCheckHistory'
@@ -10,8 +10,8 @@ import type { CheckListItem } from '@/features/checks/types'
 const router = useRouter()
 const { search, sortBy, items, isLoading, isError, reload } = useCheckHistory()
 
-function selectHistoryItem(item: CheckListItem) {
-  void router.push(`/checks/${item.id}/result`)
+function selectHistoryItem(historyItem: CheckListItem) {
+  void router.push(`/checks/${historyItem.checkId}/result`)
 }
 </script>
 
@@ -41,6 +41,6 @@ function selectHistoryItem(item: CheckListItem) {
     </div>
     <HistoryGrid v-else :items="items" :search="search" @select="selectHistoryItem" />
 
-    <PageFooter v-if="!isLoading && !isError">{{ items.length }} checks total</PageFooter>
+    <BasePageFooter v-if="!isLoading && !isError">{{ items.length }} checks total</BasePageFooter>
   </div>
 </template>

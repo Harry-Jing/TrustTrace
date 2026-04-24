@@ -6,7 +6,7 @@ import ClaimInputCard from './ClaimInputCard.vue'
 describe('ClaimInputCard', () => {
   it('requires URL input to include an http or https scheme', async () => {
     const wrapper = mount(ClaimInputCard)
-    await wrapper.findAll('.claim-mode-toggle__button')[1]!.trigger('click')
+    await wrapper.findAll('[aria-label="Claim input type"] button')[1]!.trigger('click')
     await wrapper.find('input').setValue('foobar.com')
     await wrapper.find('form').trigger('submit')
 
@@ -16,7 +16,7 @@ describe('ClaimInputCard', () => {
 
   it('trims valid URL input before submitting', async () => {
     const wrapper = mount(ClaimInputCard)
-    await wrapper.findAll('.claim-mode-toggle__button')[1]!.trigger('click')
+    await wrapper.findAll('[aria-label="Claim input type"] button')[1]!.trigger('click')
     await wrapper.find('input').setValue('  https://example.com/story  ')
     await wrapper.find('form').trigger('submit')
 

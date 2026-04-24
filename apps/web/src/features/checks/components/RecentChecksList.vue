@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import TagBadge from '@/components/TagBadge.vue'
+import BaseTagBadge from '@/components/BaseTagBadge.vue'
 import type { CheckListItem } from '@/features/checks/types'
 
 defineProps<{
@@ -29,16 +29,18 @@ function formatRelativeTime(iso: string) {
       <div class="h-px flex-1 bg-line" />
     </div>
     <button
-      v-for="r in items"
-      :key="r.id"
+      v-for="recentCheck in items"
+      :key="recentCheck.checkId"
       type="button"
       class="flex w-full items-center gap-3 rounded-md border-none bg-transparent px-3.5 py-2.5 text-left text-ink transition-colors duration-150 hover:bg-surface-alt"
-      @click="emit('select', r)"
+      @click="emit('select', recentCheck)"
     >
-      <TagBadge :tone="r.tone" class="shrink-0 text-[9px]">{{ r.cue }}</TagBadge>
-      <span class="text-body-sm flex-1 truncate font-medium">{{ r.claim }}</span>
+      <BaseTagBadge :tone="recentCheck.tone" class="shrink-0 text-[9px]">{{
+        recentCheck.cue
+      }}</BaseTagBadge>
+      <span class="text-body-sm flex-1 truncate font-medium">{{ recentCheck.claim }}</span>
       <span class="shrink-0 font-mono text-[10px] text-muted">{{
-        formatRelativeTime(r.createdAt)
+        formatRelativeTime(recentCheck.createdAt)
       }}</span>
     </button>
   </div>

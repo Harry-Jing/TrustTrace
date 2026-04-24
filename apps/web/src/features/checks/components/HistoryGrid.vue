@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import TagBadge from '@/components/TagBadge.vue'
+import BaseTagBadge from '@/components/BaseTagBadge.vue'
 import type { CheckListItem } from '@/features/checks/types'
 
 defineProps<{
@@ -49,22 +49,26 @@ function onBeforeEnter(el: Element) {
     </div>
 
     <button
-      v-for="(h, i) in items"
-      :key="h.id"
-      :data-index="i"
+      v-for="(historyItem, index) in items"
+      :key="historyItem.checkId"
+      :data-index="index"
       type="button"
       class="group cursor-pointer overflow-hidden rounded-lg border border-t-[3px] border-line bg-card p-0 text-left text-ink transition-[transform,box-shadow,border-color,background-color,color] duration-300 hover:-translate-y-[3px] hover:border-t-[5px] hover:border-x-line-strong hover:border-b-line-strong hover:shadow-card-hover"
-      :class="toneBorderClass(h.tone)"
-      @click="emit('select', h)"
+      :class="toneBorderClass(historyItem.tone)"
+      @click="emit('select', historyItem)"
     >
       <div class="p-5">
         <div class="mb-2 flex items-center justify-between">
-          <span class="font-mono text-[10px] text-muted">{{ formatDate(h.createdAt) }}</span>
+          <span class="font-mono text-[10px] text-muted">{{
+            formatDate(historyItem.createdAt)
+          }}</span>
         </div>
-        <div class="mb-1.5 text-[15px] leading-snug font-semibold">{{ h.claim }}</div>
-        <div class="mb-3 text-xs leading-relaxed text-muted">{{ h.snippet }}</div>
+        <div class="mb-1.5 text-[15px] leading-snug font-semibold">{{ historyItem.claim }}</div>
+        <div class="mb-3 text-xs leading-relaxed text-muted">{{ historyItem.snippet }}</div>
         <div class="flex items-center justify-between">
-          <TagBadge :tone="h.tone" class="text-[10px]">{{ h.cue }}</TagBadge>
+          <BaseTagBadge :tone="historyItem.tone" class="text-[10px]">{{
+            historyItem.cue
+          }}</BaseTagBadge>
         </div>
       </div>
     </button>

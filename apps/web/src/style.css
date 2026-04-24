@@ -168,17 +168,6 @@
   }
 }
 
-@keyframes page-enter-kf {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
 @keyframes page-forward-enter-kf {
   from {
     opacity: 0;
@@ -220,15 +209,6 @@
   to {
     opacity: 0;
     transform: translateX(30px);
-  }
-}
-
-@keyframes bar-grow {
-  from {
-    transform: scaleY(0);
-  }
-  to {
-    transform: scaleY(1);
   }
 }
 
@@ -294,24 +274,6 @@
 
 /* ── Components ── */
 @layer components {
-  .claim-mode-toggle {
-    isolation: isolate;
-  }
-
-  .claim-mode-toggle__indicator {
-    z-index: 0;
-    background: var(--tt-ink);
-    pointer-events: none;
-  }
-
-  .claim-mode-toggle__button {
-    color: var(--tt-mute);
-  }
-
-  .claim-mode-toggle__button--active {
-    color: var(--tt-bg);
-  }
-
   .tt-btn {
     transition:
       transform 0.15s,
@@ -393,13 +355,13 @@
     grid-template-rows: 1fr;
   }
 
-  .expand-panel > .expand-panel__inner {
+  .expand-panel > .expand-panel-inner {
     overflow: hidden;
     opacity: 0;
     transition: opacity 0.2s ease 0.1s;
   }
 
-  .expand-panel[data-open='true'] > .expand-panel__inner {
+  .expand-panel[data-open='true'] > .expand-panel-inner {
     opacity: 1;
   }
 
@@ -437,14 +399,6 @@
   animation: fade-up 0.5s ease both;
 }
 
-@utility anim-in {
-  animation: fade-in 0.4s ease both;
-}
-
-@utility anim-in-reverse {
-  animation: fade-in 0.4s ease reverse both;
-}
-
 @utility anim-in-delayed {
   animation: fade-in 0.4s ease 0.3s both;
 }
@@ -463,10 +417,6 @@
   animation: shimmer 1.8s ease-in-out infinite;
 }
 
-@utility anim-left {
-  animation: slide-in-left 0.45s ease both;
-}
-
 @utility anim-celeb-pop {
   animation: celeb-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
@@ -481,19 +431,6 @@
 
 @utility anim-pulse-dot {
   animation: pulse-dot 1.5s infinite;
-}
-
-@utility anim-evidence-item {
-  animation: slide-in-left 0.45s ease var(--tt-motion-delay, 0s) both;
-}
-
-@utility anim-evidence-bar {
-  transform-origin: top;
-  animation: bar-grow 0.4s ease var(--tt-motion-delay, 0s) both;
-}
-
-@utility anim-card-enter {
-  animation: fade-up 0.5s ease var(--tt-motion-delay, 0.15s) both;
 }
 
 @utility stagger-1 {

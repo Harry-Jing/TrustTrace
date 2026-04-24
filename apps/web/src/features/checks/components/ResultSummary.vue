@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import TagBadge from '@/components/TagBadge.vue'
-import type { CheckResult, ResultStatTone } from '@/features/checks/types'
+import BaseTagBadge from '@/components/BaseTagBadge.vue'
+import type { CheckResultViewModel, ResultStatTone } from '@/features/checks/types'
 
 defineProps<{
-  result: CheckResult
+  result: CheckResultViewModel
 }>()
 
 function statToneClass(tone: ResultStatTone) {
@@ -38,8 +38,8 @@ function statBarStyle(value: number) {
   <!-- Summary -->
   <div class="mb-8 stagger-2">
     <div class="mb-2 flex items-center gap-2.5">
-      <TagBadge tone="accent">{{ result.statusCue }}</TagBadge>
-      <TagBadge>{{ result.summaryState }}</TagBadge>
+      <BaseTagBadge tone="accent">{{ result.statusCue }}</BaseTagBadge>
+      <BaseTagBadge>{{ result.summaryState }}</BaseTagBadge>
       <span class="font-mono text-xs tracking-[0.03em] text-muted">{{ result.completedMeta }}</span>
     </div>
     <h1 class="mb-2.5 font-serif text-[clamp(24px,3.5vw,34px)] leading-[1.2] tracking-tight">
@@ -51,19 +51,19 @@ function statBarStyle(value: number) {
 
     <!-- Stats row -->
     <div class="flex flex-wrap items-end gap-8 border-b border-line pb-5">
-      <div v-for="(s, i) in result.stats" :key="i">
-        <div class="font-serif text-2xl leading-none" :class="statToneClass(s.tone)">
-          {{ s.val }}
+      <div v-for="(stat, index) in result.stats" :key="index">
+        <div class="font-serif text-2xl leading-none" :class="statToneClass(stat.tone)">
+          {{ stat.value }}
         </div>
         <span class="font-mono text-[10px] tracking-[0.08em] text-muted uppercase">{{
-          s.label
+          stat.label
         }}</span>
         <!-- Mini bar -->
         <div class="mt-1.5 h-[3px] w-12 rounded-sm bg-line">
           <div
             class="stat-bar-fill h-full rounded-sm transition-transform duration-600 ease-out"
-            :class="statBarClass(s.tone)"
-            :style="statBarStyle(s.bar)"
+            :class="statBarClass(stat.tone)"
+            :style="statBarStyle(stat.barRatio)"
           />
         </div>
       </div>

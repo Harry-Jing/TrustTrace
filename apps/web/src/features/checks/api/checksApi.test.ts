@@ -1,6 +1,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { createCheck, getCheck, subscribeCheckEvents } from '@/features/checks/api/checksApi'
+import {
+  createCheck,
+  getCheck,
+  listChecks,
+  subscribeCheckEvents,
+} from '@/features/checks/api/checksApi'
 
 describe('checksApi backend-shaped mock', () => {
   afterEach(() => {
@@ -48,7 +53,13 @@ describe('checksApi backend-shaped mock', () => {
 
     const record = await getCheck(response.checkId)
     expect(record.status).toBe('completed')
-    expect(record.result?.id).toBe(response.checkId)
+    expect(record.result?.checkId).toBe(response.checkId)
+  })
+
+  it('uses checkId consistently for list items', async () => {
+    const [firstCheck] = await listChecks({ limit: 1 })
+
+    expect(firstCheck?.checkId).toBe('demo-seat-belts')
   })
 
   it('stops streaming when the subscription is closed', async () => {

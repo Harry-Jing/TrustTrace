@@ -3,11 +3,8 @@ import { useRoute } from 'vue-router'
 
 import { showDevTools } from '@/app/env'
 import { getCheck, subscribeCheckEvents } from '@/features/checks/api/checksApi'
-import {
-  CHECK_PHASES,
-  CHECK_TIPS,
-  getProgressEvidenceForPhase,
-} from '@/features/checks/fixtures/demoChecks'
+import { CHECK_PHASES, CHECK_TIPS } from '@/features/checks/constants/checkProgress'
+import { getDevProgressEvidenceForPhase } from '@/features/checks/dev/progressEvidence'
 import { useChecksStore } from '@/features/checks/stores/checks.store'
 import type { CheckEventSubscription, CheckPhase, CheckProgress } from '@/features/checks/types'
 import { readCheckId } from '@/features/checks/utils'
@@ -147,7 +144,7 @@ export function useCheckProgress() {
   const phaseIndex = computed(() => phaseIndexOf(phase.value))
   const tip = computed(() => CHECK_TIPS[phaseIndex.value % CHECK_TIPS.length] ?? CHECK_TIPS[0])
   const evidenceItems = computed(() =>
-    showDevTools ? getProgressEvidenceForPhase(phaseIndex.value) : [],
+    showDevTools ? getDevProgressEvidenceForPhase(phaseIndex.value) : [],
   )
   const progressError = computed(() => eventError.value ?? recordState.error.value)
 

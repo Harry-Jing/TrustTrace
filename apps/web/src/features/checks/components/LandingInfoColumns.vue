@@ -13,9 +13,7 @@ const columns = [
 </script>
 
 <template>
-  <div
-    class="landing-bottom-cols mt-10 grid stagger-7 grid-cols-1 text-left md:grid-cols-[1.2fr_1fr_0.8fr]"
-  >
+  <div class="mt-10 grid stagger-7 grid-cols-1 text-left md:grid-cols-[1.2fr_1fr_0.8fr]">
     <div
       v-for="(column, i) in columns"
       :key="i"

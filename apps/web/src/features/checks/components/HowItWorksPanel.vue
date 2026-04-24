@@ -41,7 +41,7 @@ const howSteps = [
       >
     </button>
     <div class="expand-panel" :data-open="showHow">
-      <div class="expand-panel__inner">
+      <div class="expand-panel-inner">
         <div
           :id="panelId"
           class="grid grid-cols-1 gap-4 rounded-b-lg border border-t-0 border-line bg-card p-5 min-[481px]:grid-cols-2 md:grid-cols-4"

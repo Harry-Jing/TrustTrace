@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import PageFooter from '@/components/PageFooter.vue'
+import BasePageFooter from '@/components/BasePageFooter.vue'
 import CredibilityCueList from '@/features/checks/components/CredibilityCueList.vue'
 import EvidenceItemsList from '@/features/checks/components/EvidenceItemsList.vue'
 import ResultActions from '@/features/checks/components/ResultActions.vue'
@@ -53,9 +53,7 @@ function handleCopy() {
       <ResultSummary :result="result" />
 
       <!-- Newspaper two-column -->
-      <div
-        class="result-newspaper grid stagger-3 grid-cols-1 items-start gap-8 md:grid-cols-[2fr_3fr]"
-      >
+      <div class="grid stagger-3 grid-cols-1 items-start gap-8 md:grid-cols-[2fr_3fr]">
         <!-- LEFT: Cues + Uncertainty -->
         <div>
           <CredibilityCueList :cues="result.cues" />
@@ -68,7 +66,7 @@ function handleCopy() {
 
       <ResultActions :copied="copied" @copy="handleCopy" />
 
-      <PageFooter>TrustTrace &middot; share context, not conclusions</PageFooter>
+      <BasePageFooter>TrustTrace &middot; share context, not conclusions</BasePageFooter>
     </template>
   </div>
 </template>

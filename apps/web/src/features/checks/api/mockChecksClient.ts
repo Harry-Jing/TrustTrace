@@ -10,7 +10,7 @@ import type {
   CheckPhase,
   CheckProgress,
   CheckRecord,
-  CheckResult,
+  CheckResultViewModel,
   CheckStatus,
   CreateCheckResponse,
   ProgressEvent,
@@ -117,13 +117,13 @@ function makeEvent(progress: CheckProgress): ProgressEvent {
   }
 }
 
-function makeResultForCheck(checkId: string, input?: CheckInputDraft): CheckResult {
+function makeResultForCheck(checkId: string, input?: CheckInputDraft): CheckResultViewModel {
   const inputText = input?.value || CHECK_RESULT.inputText
   const inputTypeLabel = input ? `${input.mode} input` : CHECK_RESULT.inputTypeLabel
 
   return {
     ...CHECK_RESULT,
-    id: checkId,
+    checkId,
     inputText,
     inputTypeLabel,
     summaryText: `TrustTrace check: "${inputText}"\n\nResult: ${CHECK_RESULT.headline}\nEvidence: ${CHECK_RESULT.evidence.length} sources (CDC, NHTSA, IIHS, WHO)\nUncertainty: med\n\nCDC, NHTSA, IIHS, and WHO converge on 40–55% fatal injury reduction for belted occupants. Claim is broad — specifics vary by context.`,

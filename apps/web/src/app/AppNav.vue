@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import TagBadge from '@/components/TagBadge.vue'
+import BaseTagBadge from '@/components/BaseTagBadge.vue'
 import { useScrolled } from '@/shared/composables/useScrolled'
 import { usePreferencesStore } from '@/stores/preferences.store'
 
@@ -35,13 +35,13 @@ function navigate(name: string) {
 
     <!-- Center status -->
     <div v-if="currentPage === 'loading'" class="absolute left-1/2 -translate-x-1/2">
-      <TagBadge tone="accent">checking…</TagBadge>
+      <BaseTagBadge tone="accent">checking…</BaseTagBadge>
     </div>
     <div v-else-if="currentPage === 'result'" class="absolute left-1/2 -translate-x-1/2">
-      <TagBadge tone="accent">check complete</TagBadge>
+      <BaseTagBadge tone="accent">check complete</BaseTagBadge>
     </div>
     <div v-else-if="currentPage === 'error'" class="absolute left-1/2 -translate-x-1/2">
-      <TagBadge tone="warn">check failed</TagBadge>
+      <BaseTagBadge tone="warn">check failed</BaseTagBadge>
     </div>
 
     <!-- Right side -->
