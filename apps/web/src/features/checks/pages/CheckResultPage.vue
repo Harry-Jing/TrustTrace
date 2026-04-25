@@ -34,7 +34,7 @@ function handleCopy() {
 </script>
 
 <template>
-  <div class="mx-auto max-w-[1140px] px-6 pt-12 pb-20">
+  <div class="mx-auto max-w-[1120px] px-6 pt-12 pb-20">
     <div
       v-if="isLoading || checkStatus === 'queued' || checkStatus === 'running'"
       class="py-20 text-center text-muted"
@@ -45,7 +45,8 @@ function handleCopy() {
     <div v-else-if="isError || !result" class="py-20 text-center">
       <p class="mb-4 text-muted">Could not load the result.</p>
       <button
-        class="tt-btn rounded-md border border-line px-4 py-2 text-sm text-ink"
+        type="button"
+        class="tt-btn rounded-md border border-line px-4 py-2.5 text-sm text-ink"
         @click="reload"
       >
         Retry

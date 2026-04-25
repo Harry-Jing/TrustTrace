@@ -26,6 +26,7 @@ const emit = defineEmits<{
       <button
         v-for="phaseOption in phases"
         :key="phaseOption"
+        type="button"
         class="tt-btn rounded px-2 py-[3px] font-mono text-[10px]"
         :class="
           phase === phaseOption
@@ -38,10 +39,23 @@ const emit = defineEmits<{
         {{ PHASE_DEFINITIONS[phaseOption].shortLabel }}
       </button>
       <button
-        class="tt-btn rounded border border-good bg-transparent px-2 py-[3px] font-mono text-[10px] text-good"
+        type="button"
+        class="tt-btn inline-flex items-center gap-1 rounded border border-good bg-transparent px-2 py-[3px] font-mono text-[10px] text-good"
         @click="emit('done')"
       >
-        ✓ done
+        <svg
+          class="size-2.5"
+          viewBox="0 0 16 16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M3.5 8.5l3 3 6-6.5" />
+        </svg>
+        done
       </button>
     </div>
   </div>

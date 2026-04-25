@@ -81,7 +81,7 @@ function submit() {
           v-for="modeOption in ['text', 'url'] as const"
           :key="modeOption"
           type="button"
-          class="text-body-sm relative z-10 min-w-16 rounded-full border-none bg-transparent px-5 py-[7px] font-mono font-medium tracking-[0.04em] text-muted uppercase transition-colors duration-200 aria-[pressed=true]:text-surface"
+          class="text-body-sm relative z-10 min-w-16 rounded-full border-none bg-transparent px-5 py-2.5 font-mono font-medium tracking-[0.04em] text-muted uppercase transition-colors duration-200 aria-[pressed=true]:text-surface"
           :aria-pressed="mode === modeOption"
           :disabled="isDisabled"
           @click="switchMode(modeOption)"

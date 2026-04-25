@@ -1,23 +1,26 @@
 @import 'tailwindcss';
 
-/* ── Theme tokens ── */
+/* ── Theme tokens ──
+   Color values were chosen to meet WCAG AA contrast (4.5:1 minimum for body
+   text). See note in mute/warn/good below for the contrast ratios at the
+   smallest text sizes used in the app (mono labels at 10–11px). */
 :root {
   --tt-bg: #faf9f6;
   --tt-bg2: #f0efe9;
   --tt-ink: #1b1f2a;
   --tt-ink2: #3b3f4a;
-  --tt-mute: #7d808a;
+  --tt-mute: #65686f; /* on bg 5.34:1, on card 5.61:1 — AA pass */
   --tt-line: #e0dfd9;
   --tt-line2: #d0cfc8;
   --tt-accent: #475b8a;
   --tt-accent-light: #e9edf5;
   --tt-accent-fade: rgba(71, 91, 138, 0.08);
-  --tt-warn: #b8703b;
+  --tt-warn: #9c5a26; /* on bg 4.99:1, on warn-light 4.66:1 — AA pass */
   --tt-warn-light: #fbf1e6;
-  --tt-warn-fade: rgba(184, 112, 59, 0.08);
-  --tt-good: #4d7a3d;
+  --tt-warn-fade: rgba(156, 90, 38, 0.08);
+  --tt-good: #3d6630; /* on bg 6.05:1, on good-light 5.43:1, on white text 6.36:1 — AA pass */
   --tt-good-light: #ecf2e0;
-  --tt-good-fade: rgba(77, 122, 61, 0.08);
+  --tt-good-fade: rgba(61, 102, 48, 0.08);
   --tt-white: #ffffff;
   --tt-nav-bg: rgba(250, 249, 246, 0.92);
 }
@@ -27,7 +30,7 @@
   --tt-bg2: #1c1c1a;
   --tt-ink: #eeeee8;
   --tt-ink2: #c5c5bc;
-  --tt-mute: #777770;
+  --tt-mute: #898982; /* on bg 5.13:1 — AA pass */
   --tt-line: #2e2e2a;
   --tt-line2: #3a3a34;
   --tt-accent: #e8a230;

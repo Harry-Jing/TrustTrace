@@ -17,7 +17,19 @@ const emit = defineEmits<{
     <div
       class="flex min-w-[200px] flex-1 items-center gap-2 rounded-lg border border-line bg-card px-3.5 py-2 transition-[border-color] duration-200 focus-within:border-accent"
     >
-      <span class="text-sm text-muted" aria-hidden="true">&#8981;</span>
+      <svg
+        class="size-4 shrink-0 text-muted"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <circle cx="11" cy="11" r="7" />
+        <path d="M21 21l-4.3-4.3" />
+      </svg>
       <label class="sr-only" for="history-search">Search checks…</label>
       <input
         id="history-search"
@@ -35,7 +47,8 @@ const emit = defineEmits<{
           ['cue', 'Credibility'],
         ] as const"
         :key="k"
-        class="tt-btn rounded-full px-3.5 py-1 text-xs font-medium"
+        type="button"
+        class="tt-btn rounded-full px-4 py-2 text-xs font-medium"
         :class="
           sortBy === k
             ? 'border border-ink bg-ink text-surface'

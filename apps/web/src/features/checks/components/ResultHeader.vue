@@ -31,13 +31,15 @@ const description = computed(() =>
 </script>
 
 <template>
-  <!-- Top strip: input echo -->
+  <!-- Breadcrumb row: which check this is. De-emphasized (no card chrome,
+       small mono text) so it reads as orienting metadata, not as content
+       competing with the verdict h1 below. -->
   <div
-    class="mb-7 flex flex-wrap items-center gap-3 rounded-lg border border-line bg-card px-5 py-3"
+    class="mb-5 flex flex-wrap items-baseline gap-x-3 gap-y-1"
     aria-label="Checked input"
   >
     <span class="font-mono text-[10px] tracking-[0.12em] text-muted uppercase">checked</span>
-    <span class="min-w-0 flex-1 truncate font-mono text-[13px] text-ink-2">
+    <span class="min-w-0 flex-1 truncate font-mono text-[12px] text-ink-2">
       &ldquo;{{ result.inputText }}&rdquo;
     </span>
     <span class="font-mono text-[11px] tracking-[0.04em] text-muted">

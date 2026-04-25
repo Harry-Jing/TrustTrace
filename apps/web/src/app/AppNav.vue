@@ -26,6 +26,7 @@ function navigate(name: string) {
   >
     <div class="flex flex-1 items-center">
       <button
+        type="button"
         class="cursor-pointer border-none bg-transparent p-0 font-serif text-[22px] tracking-tight text-ink transition-colors duration-400"
         @click="navigate('landing')"
       >
@@ -33,39 +34,82 @@ function navigate(name: string) {
       </button>
     </div>
 
-    <!-- Center status -->
-    <div v-if="currentPage === 'loading'" class="absolute left-1/2 -translate-x-1/2">
+    <!-- Center status (hidden below sm to avoid colliding with logo + right
+         buttons on narrow viewports; the page itself shows status via heading
+         and badge content, so this is a redundant cue on mobile). -->
+    <div
+      v-if="currentPage === 'loading'"
+      class="absolute left-1/2 hidden -translate-x-1/2 sm:block"
+    >
       <BaseTagBadge tone="accent">checking…</BaseTagBadge>
     </div>
-    <div v-else-if="currentPage === 'result'" class="absolute left-1/2 -translate-x-1/2">
+    <div
+      v-else-if="currentPage === 'result'"
+      class="absolute left-1/2 hidden -translate-x-1/2 sm:block"
+    >
       <BaseTagBadge tone="dark">check complete</BaseTagBadge>
     </div>
-    <div v-else-if="currentPage === 'error'" class="absolute left-1/2 -translate-x-1/2">
+    <div
+      v-else-if="currentPage === 'error'"
+      class="absolute left-1/2 hidden -translate-x-1/2 sm:block"
+    >
       <BaseTagBadge tone="warn">check failed</BaseTagBadge>
     </div>
 
     <!-- Right side -->
     <div class="flex items-center gap-2">
-      <!-- Theme toggle -->
+      <!-- Theme toggle: 36×36 square keeps comfortable touch target while
+           staying visually proportionate inside the 56px nav. -->
       <button
-        class="tt-btn rounded-full border border-line bg-transparent px-3 py-1 font-mono text-[11px] font-medium text-muted"
+        type="button"
+        class="tt-btn flex size-9 items-center justify-center rounded-full border border-line bg-transparent text-muted transition-colors duration-200"
         aria-label="Toggle theme"
         @click="preferences.toggleTheme"
       >
-        {{ preferences.theme === 'dark' ? '☀' : '☾' }}
+        <!-- Sun icon (light mode active → click to switch to dark) -->
+        <svg
+          v-if="preferences.theme !== 'dark'"
+          class="size-4"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 3v2m0 14v2M3 12h2m14 0h2M5.6 5.6l1.4 1.4m10 10l1.4 1.4M5.6 18.4l1.4-1.4m10-10l1.4-1.4" />
+        </svg>
+        <!-- Moon icon (dark mode active → click to switch to light) -->
+        <svg
+          v-else
+          class="size-4"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
       </button>
 
       <!-- Nav link: contextual -->
       <button
         v-if="currentPage === 'history'"
-        class="tt-btn rounded-full border border-line bg-transparent px-3.5 py-1.5 text-xs font-medium text-muted"
+        type="button"
+        class="tt-btn rounded-full border border-line bg-transparent px-4 py-2.5 text-xs font-medium text-muted"
         @click="navigate('landing')"
       >
         New check
       </button>
       <button
         v-else
-        class="tt-btn rounded-full border border-line bg-transparent px-3.5 py-1.5 text-xs font-medium text-muted"
+        type="button"
+        class="tt-btn rounded-full border border-line bg-transparent px-4 py-2.5 text-xs font-medium text-muted"
         @click="navigate('history')"
       >
         History

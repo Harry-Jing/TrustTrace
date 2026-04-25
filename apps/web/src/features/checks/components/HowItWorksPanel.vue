@@ -26,19 +26,40 @@ const howSteps = [
 <template>
   <div class="mt-7 stagger-5 text-left">
     <button
+      type="button"
       class="text-body-sm flex w-full items-center gap-2 rounded-lg border border-line bg-card px-4 py-3 font-medium text-ink transition-colors duration-150 hover:bg-surface-alt"
       :aria-controls="panelId"
       :aria-expanded="showHow"
       @click="showHow = !showHow"
     >
-      <span class="text-sm" aria-hidden="true">?</span>
-      <span class="flex-1 text-left">How does TrustTrace work?</span>
-      <span
-        class="text-[11px] text-muted transition-transform duration-200"
-        :class="showHow ? 'rotate-180' : ''"
+      <svg
+        class="size-4 shrink-0 text-muted"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.6"
+        stroke-linecap="round"
+        stroke-linejoin="round"
         aria-hidden="true"
-        >&#9660;</span
       >
+        <circle cx="12" cy="12" r="9" />
+        <path d="M9.6 9.5a2.4 2.4 0 014.8 0c0 1.6-2.4 1.8-2.4 3.5" />
+        <path d="M12 17v.01" />
+      </svg>
+      <span class="flex-1 text-left">How does TrustTrace work?</span>
+      <svg
+        class="size-3.5 shrink-0 text-muted transition-transform duration-200"
+        :class="showHow ? 'rotate-180' : ''"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M6 9l6 6 6-6" />
+      </svg>
     </button>
     <div class="expand-panel" :data-open="showHow">
       <div class="expand-panel-inner">

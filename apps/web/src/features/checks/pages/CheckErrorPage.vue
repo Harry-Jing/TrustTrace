@@ -104,9 +104,9 @@ async function retryCheck() {
 
       <BaseTagBadge tone="warn">{{ errorCategory }}</BaseTagBadge>
 
-      <h2 class="mx-auto mt-5 mb-2.5 font-serif text-[28px] tracking-tight">
+      <h1 class="mx-auto mt-5 mb-2.5 font-serif text-[28px] tracking-tight">
         {{ errorMessage }}
-      </h2>
+      </h1>
 
       <p class="mx-auto mb-7 max-w-[400px] text-sm leading-[1.75] text-muted">
         {{ retryHelp }}
@@ -115,6 +115,7 @@ async function retryCheck() {
       <div class="flex justify-center gap-2.5">
         <button
           v-if="canRetry"
+          type="button"
           class="tt-btn rounded-md border-none bg-ink px-7 py-[11px] text-sm font-semibold text-surface"
           :disabled="isSubmitting"
           @click="retryCheck"
@@ -122,6 +123,7 @@ async function retryCheck() {
           {{ isSubmitting ? 'Retrying…' : 'Retry check' }}
         </button>
         <button
+          type="button"
           class="tt-btn rounded-md border border-line-strong bg-transparent px-5 py-[11px] text-sm text-ink-2"
           @click="router.push({ name: 'landing' })"
         >
@@ -142,17 +144,21 @@ async function retryCheck() {
       <!-- Expandable explanation -->
       <div class="mx-auto mt-6 max-w-[400px] text-left">
         <button
+          type="button"
           class="flex items-center gap-1.5 border-none bg-transparent p-0 font-mono text-xs text-muted"
           :aria-controls="detailId"
           :aria-expanded="showDetail"
           @click="showDetail = !showDetail"
         >
-          <span
-            class="text-[10px] transition-transform duration-200"
+          <svg
+            class="size-2.5 transition-transform duration-200"
             :class="showDetail ? 'rotate-90' : ''"
+            viewBox="0 0 8 8"
+            fill="currentColor"
+            aria-hidden="true"
           >
-            &#9654;
-          </span>
+            <path d="M1.5 0.5l5 3.5-5 3.5z" />
+          </svg>
           What does this error mean?
         </button>
 

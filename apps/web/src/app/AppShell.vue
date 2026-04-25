@@ -55,7 +55,8 @@ watch(
       <div v-if="renderError" class="mx-auto max-w-[480px] px-6 py-20 text-center">
         <p class="mb-4 text-muted">Something went wrong.</p>
         <button
-          class="tt-btn rounded-md border border-line px-5 py-2 text-sm text-ink"
+          type="button"
+          class="tt-btn rounded-md border border-line px-5 py-2.5 text-sm text-ink"
           @click="renderError = null"
         >
           Try again

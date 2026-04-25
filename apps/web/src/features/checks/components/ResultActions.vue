@@ -19,14 +19,29 @@ const router = useRouter()
         take it with you
       </span>
       <button
-        class="tt-btn rounded-md border border-ink bg-ink px-4 py-2 text-[13px] font-semibold text-surface"
+        type="button"
+        class="tt-btn inline-flex items-center gap-1.5 rounded-md border border-ink bg-ink px-4 py-2.5 text-[13px] font-semibold text-surface"
         @click="emit('copy')"
       >
-        {{ copied ? '✓ Copied to clipboard' : 'Copy summary' }}
+        <svg
+          v-if="copied"
+          class="size-3.5"
+          viewBox="0 0 16 16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M3.5 8.5l3 3 6-6.5" />
+        </svg>
+        {{ copied ? 'Copied to clipboard' : 'Copy summary' }}
       </button>
       <span class="flex-1" />
       <button
-        class="tt-btn rounded-md border border-line bg-transparent px-4 py-2 text-[13px] font-medium text-ink-2"
+        type="button"
+        class="tt-btn rounded-md border border-line bg-transparent px-4 py-2.5 text-[13px] font-medium text-ink-2"
         @click="router.push({ name: 'landing' })"
       >
         New check

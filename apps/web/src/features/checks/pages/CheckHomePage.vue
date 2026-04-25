@@ -28,7 +28,7 @@ function selectRecentCheck(recentCheck: CheckListItem) {
 </script>
 
 <template>
-  <div class="mx-auto max-w-[1080px] px-6 pt-18 pb-15">
+  <div class="mx-auto max-w-[1120px] px-6 pt-18 pb-15">
     <!-- Hero: stacked on mobile, side-by-side on desktop -->
     <div
       class="flex flex-col items-center text-center lg:flex-row lg:items-center lg:gap-16 lg:text-left"

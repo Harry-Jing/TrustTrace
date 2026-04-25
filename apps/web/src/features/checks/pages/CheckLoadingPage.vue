@@ -103,9 +103,20 @@ onBeforeUnmount(clearRedirectTimer)
     <!-- Celebration state -->
     <div v-if="showCelebration" class="anim-up py-30 text-center">
       <div
-        class="mx-auto mb-5 flex size-16 anim-celeb-glow anim-celeb-pop items-center justify-center rounded-full bg-good text-[28px] text-card"
+        class="mx-auto mb-5 flex size-16 anim-celeb-glow anim-celeb-pop items-center justify-center rounded-full bg-good text-card"
       >
-        &#10003;
+        <svg
+          class="size-7"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M5 12.5l4.5 4.5L19 7" />
+        </svg>
       </div>
       <div class="mb-2 font-serif text-[28px]">Check complete</div>
       <span class="anim-in-delayed font-mono text-xs tracking-[0.03em] text-muted"
@@ -113,20 +124,48 @@ onBeforeUnmount(clearRedirectTimer)
       >
     </div>
 
-    <!-- Progress error state -->
+    <!-- Progress error state. Visual DNA mirrors CheckErrorPage (SVG warn ring,
+         warn-tone badge, h1, retry button) so the two error surfaces feel
+         like the same product family. Smaller scale (56 vs 72) since this is
+         an inline transient error, not a terminal error page. -->
     <div v-else-if="progressError" class="anim-up py-24 text-center" role="alert">
-      <div
-        class="mx-auto mb-5 flex size-14 items-center justify-center rounded-full bg-warn/10 text-[26px] text-warn"
+      <svg
+        width="56"
+        height="56"
+        viewBox="0 0 72 72"
+        fill="none"
+        class="mx-auto mb-5 block"
+        aria-hidden="true"
       >
-        !
-      </div>
-      <h1 class="mb-2 font-serif text-[28px] tracking-tight">Could not load progress</h1>
+        <circle
+          cx="36"
+          cy="36"
+          r="30"
+          class="stroke-line-strong"
+          stroke-width="2"
+          stroke-dasharray="8 6"
+          opacity=".6"
+        />
+        <circle
+          cx="36"
+          cy="36"
+          r="30"
+          class="stroke-warn"
+          stroke-width="2.5"
+          stroke-dasharray="40 200"
+          stroke-linecap="round"
+        />
+        <path d="M36 24v16" class="stroke-warn" stroke-width="2.5" stroke-linecap="round" />
+        <circle cx="36" cy="46" r="1.5" class="fill-warn" />
+      </svg>
+      <h1 class="mb-2.5 font-serif text-[28px] tracking-tight">Could not load progress</h1>
       <p class="mx-auto mb-6 max-w-[420px] text-sm leading-[1.75] text-muted">
         The check was created, but the live progress stream could not be loaded. You can retry the
         connection without starting over.
       </p>
       <button
-        class="tt-btn rounded-md border border-line bg-card px-5 py-2 text-sm font-semibold text-ink"
+        type="button"
+        class="tt-btn rounded-md border-none bg-ink px-7 py-[11px] text-sm font-semibold text-surface"
         @click="retryProgress"
       >
         Retry progress

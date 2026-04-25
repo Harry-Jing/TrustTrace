@@ -46,6 +46,7 @@ function navigateTo(path: string) {
         <button
           v-for="page in pages"
           :key="page.name"
+          type="button"
           class="rounded-md border-none px-3 py-1.5 text-left font-mono text-[11px] tracking-wide transition-colors duration-150"
           :class="
             currentPage === page.name
@@ -61,6 +62,7 @@ function navigateTo(path: string) {
 
     <!-- FAB toggle -->
     <button
+      type="button"
       class="flex size-9 items-center justify-center rounded-full border-none bg-ink/80 text-surface shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-110 hover:bg-ink"
       :class="open ? 'rotate-45' : ''"
       aria-label="Dev navigation"

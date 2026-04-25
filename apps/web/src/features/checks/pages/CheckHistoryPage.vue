@@ -16,7 +16,7 @@ function selectHistoryItem(historyItem: CheckListItem) {
 </script>
 
 <template>
-  <div class="mx-auto max-w-[1080px] px-6 pt-12 pb-20">
+  <div class="mx-auto max-w-[1120px] px-6 pt-12 pb-20">
     <div class="mb-6 flex stagger-1 flex-col gap-4 md:flex-row md:items-end md:justify-between">
       <div>
         <h1 class="mt-2.5 mb-1.5 font-serif text-4xl tracking-tight">Your checks</h1>
@@ -33,7 +33,8 @@ function selectHistoryItem(historyItem: CheckListItem) {
     <div v-else-if="isError" class="py-10 text-center">
       <p class="mb-4 text-muted">Could not load history.</p>
       <button
-        class="tt-btn rounded-md border border-line px-4 py-2 text-sm text-ink"
+        type="button"
+        class="tt-btn rounded-md border border-line px-4 py-2.5 text-sm text-ink"
         @click="reload"
       >
         Retry

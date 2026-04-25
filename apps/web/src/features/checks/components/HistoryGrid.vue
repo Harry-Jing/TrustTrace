@@ -53,7 +53,7 @@ function onBeforeEnter(el: Element) {
       :key="historyItem.checkId"
       :data-index="index"
       type="button"
-      class="group cursor-pointer overflow-hidden rounded-lg border border-t-[3px] border-line bg-card p-0 text-left text-ink transition-[transform,box-shadow,border-color,background-color,color] duration-300 hover:-translate-y-[3px] hover:border-t-[5px] hover:border-x-line-strong hover:border-b-line-strong hover:shadow-card-hover"
+      class="group cursor-pointer overflow-hidden rounded-lg border border-t-[3px] border-line bg-card p-0 text-left text-ink transition-[transform,box-shadow,border-color,background-color,color] duration-300 hover:-translate-y-[3px] hover:border-x-line-strong hover:border-b-line-strong hover:shadow-card-hover"
       :class="toneBorderClass(historyItem.tone)"
       @click="emit('select', historyItem)"
     >
