@@ -32,15 +32,21 @@ function formatRelativeTime(iso: string) {
       v-for="recentCheck in items"
       :key="recentCheck.checkId"
       type="button"
-      class="flex w-full items-center gap-3 rounded-md border-none bg-transparent px-3.5 py-2.5 text-left text-ink transition-colors duration-150 hover:bg-surface-alt"
+      class="flex w-full flex-col gap-1.5 rounded-md border-none bg-transparent px-3.5 py-2.5 text-left text-ink transition-colors duration-150 hover:bg-surface-alt md:flex-row md:items-center md:gap-3"
       @click="emit('select', recentCheck)"
     >
-      <BaseTagBadge :tone="recentCheck.tone" class="shrink-0 text-[9px]">{{
-        recentCheck.cue
-      }}</BaseTagBadge>
-      <span class="text-body-sm flex-1 truncate font-medium">{{ recentCheck.claim }}</span>
-      <span class="shrink-0 font-mono text-[10px] text-muted">{{
-        formatRelativeTime(recentCheck.createdAt)
+      <div class="flex items-center justify-between md:contents">
+        <div class="shrink-0 md:w-32">
+          <BaseTagBadge :tone="recentCheck.tone" class="text-[9px]">{{
+            recentCheck.cue
+          }}</BaseTagBadge>
+        </div>
+        <span class="shrink-0 font-mono text-[10px] text-muted md:order-last">{{
+          formatRelativeTime(recentCheck.createdAt)
+        }}</span>
+      </div>
+      <span class="text-body-sm font-medium md:order-2 md:flex-1 md:truncate">{{
+        recentCheck.claim
       }}</span>
     </button>
   </div>
