@@ -1,0 +1,99 @@
+<script setup lang="ts">
+import type { PhaseDefinition } from '@/features/checks/constants/checkProgress'
+
+defineProps<{
+  steps: readonly PhaseDefinition[]
+  currentIndex: number
+}>()
+
+function isDone(index: number, currentIndex: number) {
+  return index < currentIndex
+}
+
+function isCurrent(index: number, currentIndex: number) {
+  return index === currentIndex
+}
+</script>
+
+<template>
+  <ol
+    class="flex w-full items-start gap-0"
+    :aria-label="`Progress: step ${currentIndex + 1} of ${steps.length}`"
+  >
+    <li
+      v-for="(step, index) in steps"
+      :key="step.key"
+      class="relative flex flex-1 flex-col items-center"
+    >
+      <!-- Connector: grey base + green fill that grows from the left when done.
+           When this segment sits between the current and next step it carries a
+           shimmer (a warn-colored bar travelling left → right) so the page
+           never feels frozen between phase events. -->
+      <div
+        v-if="index < steps.length - 1"
+        class="absolute top-[18px] left-1/2 -z-0 h-px w-full overflow-hidden bg-line"
+        aria-hidden="true"
+      >
+        <div
+          class="h-full w-full origin-left bg-good transition-transform duration-500 ease-[var(--ease-snappy)]"
+          :style="{ transform: isDone(index, currentIndex) ? 'scaleX(1)' : 'scaleX(0)' }"
+        />
+        <div
+          v-if="isCurrent(index, currentIndex)"
+          class="anim-connector-shimmer pointer-events-none absolute inset-0"
+        />
+      </div>
+
+      <!-- Numbered circle. The `step-pop` animation key changes when a step
+           transitions from current → done so the just-completed circle gets a
+           one-shot scale pulse via CSS. The current step gets a continuous,
+           breathing halo so the user can see "this is where work is happening". -->
+      <div
+        class="relative z-10 flex size-9 items-center justify-center rounded-full border-[1.5px] font-mono text-[13px] leading-none transition-all duration-400"
+        :class="[
+          {
+            'border-good bg-good text-card': isDone(index, currentIndex),
+            'border-warn bg-warn text-white anim-pulse-ring': isCurrent(
+              index,
+              currentIndex,
+            ),
+            'border-line bg-surface text-muted':
+              !isDone(index, currentIndex) && !isCurrent(index, currentIndex),
+          },
+          isDone(index, currentIndex) && 'step-circle-pop',
+        ]"
+      >
+        <Transition name="step-mark" mode="out-in">
+          <svg
+            v-if="isDone(index, currentIndex)"
+            key="check"
+            class="size-4"
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M3.5 8.5l3 3 6-6.5" />
+          </svg>
+          <span v-else key="num">{{ step.step }}</span>
+        </Transition>
+      </div>
+
+      <!-- Label (hidden on small screens; the "now · {phase}" header below carries the
+           current-step copy, so per-step labels would just crowd narrow viewports) -->
+      <div
+        class="mt-3 hidden text-center text-[13px] transition-colors duration-400 sm:block"
+        :class="{
+          'font-semibold text-ink': isCurrent(index, currentIndex),
+          'font-medium text-ink-2': isDone(index, currentIndex),
+          'text-muted': !isDone(index, currentIndex) && !isCurrent(index, currentIndex),
+        }"
+      >
+        {{ step.shortLabel }}
+      </div>
+    </li>
+  </ol>
+</template>

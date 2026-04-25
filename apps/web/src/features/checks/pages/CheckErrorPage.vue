@@ -29,7 +29,8 @@ const errorMessage = computed(
 )
 const traceId = computed(() => error.value?.traceId ?? null)
 const isRetryable = computed(() => error.value?.retryable ?? true)
-const canRetry = computed(() => isRetryable.value && checks.currentInput !== null)
+const retryInput = computed(() => record.value?.input ?? checks.currentInput)
+const canRetry = computed(() => isRetryable.value && retryInput.value !== null)
 const retryHelp = computed(() => {
   if (canRetry.value) return 'You can retry with the same claim.'
   if (isRetryable.value) return 'Return to the claim editor to start a new check.'
@@ -57,10 +58,10 @@ const errorExplanation = computed(
 )
 
 async function retryCheck() {
-  if (!checks.currentInput) return
+  if (!retryInput.value) return
 
   try {
-    await createCheck(checks.currentInput)
+    await createCheck(retryInput.value)
   } catch {
     // useCreateCheck exposes submitError for this page.
   }
@@ -159,7 +160,7 @@ async function retryCheck() {
           <div class="expand-panel-inner">
             <div
               :id="detailId"
-              class="text-body-sm mt-2.5 rounded-md border border-line bg-surface-alt p-3.5 text-left leading-[1.7] text-ink-2"
+              class="text-body-sm mt-2.5 rounded-lg border border-line bg-surface-alt p-3.5 text-left leading-[1.7] text-ink-2"
             >
               <p class="mb-2">
                 <strong>{{ errorCode }}</strong> — {{ errorExplanation }}

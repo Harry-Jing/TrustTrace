@@ -60,6 +60,7 @@ The frontend in `apps/web` follows the `create-vue` tooling baseline. Project-sp
 - Keep framework/configuration conventions where required (for example Vite environment variables and TypeScript config paths).
 - Name shared app-level UI primitives with the `Base*` prefix (for example `BaseTagBadge` and `BasePageFooter`).
 - Keep check feature type boundaries explicit: API DTOs, events, progress, evidence, list items, and result ViewModels live in focused files under `features/checks/types/`.
+- Validate backend JSON at the frontend API boundary with Zod before mapping it into check feature types. Keep these schemas in `apps/web` until the backend DTOs are stable enough to extract into a shared `packages/contracts` package.
 - CSS naming follows the utility-first rules below.
 
 ### CSS architecture

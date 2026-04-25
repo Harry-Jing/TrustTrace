@@ -22,6 +22,8 @@ onErrorCaptured((err) => {
 })
 
 router.afterEach((to, from) => {
+  renderError.value = null
+
   const toDepth = to.meta.depth ?? 0
   const fromDepth = from.meta.depth ?? 0
 

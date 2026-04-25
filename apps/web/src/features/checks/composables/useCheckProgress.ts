@@ -1,25 +1,43 @@
 import { computed, onScopeDispose, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
-import { showDevTools } from '@/app/env'
 import { getCheck, subscribeCheckEvents } from '@/features/checks/api/checksApi'
-import { CHECK_PHASES, CHECK_TIPS } from '@/features/checks/constants/checkProgress'
-import { getDevProgressEvidenceForPhase } from '@/features/checks/dev/progressEvidence'
+import {
+  ACTIVE_PHASES,
+  CHECK_PHASES,
+  PHASE_DEFINITIONS,
+} from '@/features/checks/constants/checkProgress'
 import { useChecksStore } from '@/features/checks/stores/checks.store'
-import type { CheckEventSubscription, CheckPhase, CheckProgress } from '@/features/checks/types'
+import type {
+  ActiveCheckPhase,
+  CheckEventSubscription,
+  CheckPhase,
+  CheckProgress,
+} from '@/features/checks/types'
 import { readCheckId } from '@/features/checks/utils'
 import { useAsyncData } from '@/shared/composables/useAsyncData'
 
-function phaseIndexOf(phase: CheckPhase) {
-  if (phase === 'failed') return CHECK_PHASES.length - 1
-  return Math.max(0, CHECK_PHASES.indexOf(phase))
+function activePhaseIndexOf(phase: CheckPhase): number {
+  if (phase === 'failed' || phase === 'completed') return ACTIVE_PHASES.length - 1
+  return Math.max(0, ACTIVE_PHASES.indexOf(phase))
+}
+
+function activePhase(phase: CheckPhase): ActiveCheckPhase {
+  if (phase === 'completed' || phase === 'failed') {
+    return ACTIVE_PHASES[ACTIVE_PHASES.length - 1]!
+  }
+  return phase
 }
 
 /** MOCK DEV ONLY — Build a synthetic progress object for manual phase switching. */
 function makeDevProgress(checkId: string, phase: CheckPhase): CheckProgress {
-  const phaseIndex = phaseIndexOf(phase)
+  const phaseIndex = activePhaseIndexOf(phase)
   const percent =
-    phase === 'failed' ? 100 : phase === 'completed' ? 100 : Math.max(5, phaseIndex * 25)
+    phase === 'failed'
+      ? 100
+      : phase === 'completed'
+        ? 100
+        : Math.max(8, Math.round(((phaseIndex + 1) / ACTIVE_PHASES.length) * 100))
   const updatedAt = new Date().toISOString()
 
   return {
@@ -27,7 +45,7 @@ function makeDevProgress(checkId: string, phase: CheckPhase): CheckProgress {
     status: phase === 'failed' ? 'failed' : phase === 'completed' ? 'completed' : 'running',
     phase,
     percent,
-    message: phase === 'completed' ? 'Check complete.' : `Mock phase: ${phase}`,
+    message: phase === 'completed' ? 'Check complete.' : '',
     eventSeq: phaseIndex + 1,
     updatedAt,
   }
@@ -135,17 +153,15 @@ export function useCheckProgress() {
 
   onScopeDispose(closeSubscription)
 
-  const phase = computed(
-    () => progress.value?.phase ?? recordState.data.value?.progress.phase ?? 'accepted',
+  const phase = computed<CheckPhase>(
+    () => progress.value?.phase ?? recordState.data.value?.progress.phase ?? 'understanding',
   )
   const status = computed(
     () => progress.value?.status ?? recordState.data.value?.status ?? 'queued',
   )
-  const phaseIndex = computed(() => phaseIndexOf(phase.value))
-  const tip = computed(() => CHECK_TIPS[phaseIndex.value % CHECK_TIPS.length] ?? CHECK_TIPS[0])
-  const evidenceItems = computed(() =>
-    showDevTools ? getDevProgressEvidenceForPhase(phaseIndex.value) : [],
-  )
+  const phaseIndex = computed(() => activePhaseIndexOf(phase.value))
+  const activePhaseKey = computed(() => activePhase(phase.value))
+  const phaseDefinition = computed(() => PHASE_DEFINITIONS[activePhaseKey.value])
   const progressError = computed(() => eventError.value ?? recordState.error.value)
 
   /** MOCK DEV ONLY — Manually override the current phase for dev inspection. */
@@ -161,12 +177,13 @@ export function useCheckProgress() {
   return {
     checkId,
     phases: CHECK_PHASES,
+    activePhases: ACTIVE_PHASES,
     status,
     phase,
     phaseIndex,
+    activePhaseKey,
+    phaseDefinition,
     progress,
-    tip,
-    evidenceItems,
     record: recordState.data,
     isLoading: recordState.isLoading,
     isError: recordState.isError,

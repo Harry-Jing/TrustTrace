@@ -30,40 +30,56 @@ interface MockProgressStep {
 
 const MOCK_PROGRESS_SCRIPT = [
   {
-    phase: 'accepted',
-    percent: 5,
-    message: 'Check accepted.',
+    phase: 'understanding',
+    percent: 8,
+    message: 'Reading the input and parsing it into checkable claims.',
     delayMs: 0,
   },
   {
-    phase: 'analyzing',
-    percent: 28,
-    message: 'Searching for live source context.',
+    phase: 'strategy',
+    percent: 22,
+    message: 'Picking source priorities and drafting queries.',
     delayMs: 180,
   },
   {
-    phase: 'synthesizing',
-    percent: 62,
-    message: 'Comparing evidence cues across sources.',
+    phase: 'discovery',
+    percent: 42,
+    message: 'Searching trusted sources for this claim.',
     delayMs: 360,
   },
   {
-    phase: 'persisting',
-    percent: 86,
-    message: 'Preparing the check record.',
+    phase: 'verify_read',
+    percent: 62,
+    message: 'Verifying URLs and pulling article bodies.',
     delayMs: 540,
+  },
+  {
+    phase: 'weigh',
+    percent: 80,
+    message: 'Sorting and reading each verified source.',
+    delayMs: 720,
+  },
+  {
+    phase: 'verdict',
+    percent: 94,
+    message: 'Composing the explanation from verified evidence.',
+    delayMs: 900,
   },
   {
     phase: 'completed',
     percent: 100,
     message: 'Check complete.',
-    delayMs: 720,
+    delayMs: 1080,
   },
 ] as const satisfies readonly MockProgressStep[]
+
+const INITIAL_PHASE: CheckPhase = 'understanding'
+const INITIAL_MESSAGE = 'Reading the input and parsing it into checkable claims.'
 
 const mockRecords = new Map<string, CheckRecord>()
 const mockInputs = new Map<string, CheckInputDraft>()
 const knownDemoCheckIds = DEMO_CHECK_IDS
+const MAX_NON_DEMO_RECORDS = 50
 let mockIdSequence = 0
 
 async function resolveMock<T>(value: T): Promise<T> {
@@ -117,6 +133,18 @@ function makeEvent(progress: CheckProgress): ProgressEvent {
   }
 }
 
+function rememberMockRecord(checkId: string, record: CheckRecord) {
+  mockRecords.set(checkId, record)
+
+  const nonDemoIds = [...mockRecords.keys()].filter((id) => !knownDemoCheckIds.has(id))
+  while (nonDemoIds.length > MAX_NON_DEMO_RECORDS) {
+    const oldestId = nonDemoIds.shift()
+    if (!oldestId) return
+    mockRecords.delete(oldestId)
+    mockInputs.delete(oldestId)
+  }
+}
+
 function makeResultForCheck(checkId: string, input?: CheckInputDraft): CheckResultViewModel {
   const inputText = input?.value || CHECK_RESULT.inputText
   const inputTypeLabel = input ? `${input.mode} input` : CHECK_RESULT.inputTypeLabel
@@ -126,7 +154,7 @@ function makeResultForCheck(checkId: string, input?: CheckInputDraft): CheckResu
     checkId,
     inputText,
     inputTypeLabel,
-    summaryText: `TrustTrace check: "${inputText}"\n\nResult: ${CHECK_RESULT.headline}\nEvidence: ${CHECK_RESULT.evidence.length} sources (CDC, NHTSA, IIHS, WHO)\nUncertainty: med\n\nCDC, NHTSA, IIHS, and WHO converge on 40–55% fatal injury reduction for belted occupants. Claim is broad — specifics vary by context.`,
+    summaryText: `TrustTrace check: "${inputText}"\n\nVerdict: ${CHECK_RESULT.headline}\nEvidence: ${CHECK_RESULT.evidence.length} sources · ${CHECK_RESULT.atAGlance.independent} independent · ${CHECK_RESULT.atAGlance.primary} primary · ${CHECK_RESULT.atAGlance.snippet} snippet-only\nUncertainty: ${CHECK_RESULT.atAGlance.uncertainty}`,
   }
 }
 
@@ -146,6 +174,7 @@ function makeCompletedRecord(checkId: string, input?: CheckInputDraft): CheckRec
   return {
     checkId,
     status: 'completed',
+    input: input ?? null,
     progress,
     result: makeResultForCheck(checkId, input),
     error: null,
@@ -175,6 +204,7 @@ function makeFailedRecord(checkId: string): CheckRecord {
   return {
     checkId,
     status: 'failed',
+    input: mockInputs.get(checkId) ?? null,
     progress,
     result: null,
     error,
@@ -204,6 +234,7 @@ function makeNotFoundRecord(checkId: string): CheckRecord {
   return {
     checkId,
     status: 'failed',
+    input: null,
     progress,
     result: null,
     error,
@@ -216,14 +247,15 @@ function makeNotFoundRecord(checkId: string): CheckRecord {
 function cloneRecord(record: CheckRecord): CheckRecord {
   return {
     ...record,
+    input: record.input ? { ...record.input } : null,
     progress: { ...record.progress },
     result: record.result
       ? {
           ...record.result,
+          atAGlance: { ...record.result.atAGlance },
           cues: [...record.result.cues],
           evidence: [...record.result.evidence],
           uncertaintyLines: [...record.result.uncertaintyLines],
-          stats: [...record.result.stats],
         }
       : null,
     error: record.error ? { ...record.error } : null,
@@ -244,7 +276,7 @@ function applyProgress(checkId: string, progress: CheckProgress) {
         : existing.result,
   }
 
-  mockRecords.set(checkId, nextRecord)
+  rememberMockRecord(checkId, nextRecord)
 }
 
 export async function createCheck(input: CheckInputDraft): Promise<CreateCheckResponse> {
@@ -253,18 +285,19 @@ export async function createCheck(input: CheckInputDraft): Promise<CreateCheckRe
   const initialProgress = makeProgress(
     checkId,
     {
-      phase: 'accepted',
-      percent: 5,
-      message: 'Check accepted.',
+      phase: INITIAL_PHASE,
+      percent: 8,
+      message: INITIAL_MESSAGE,
     },
     1,
     createdAt,
   )
 
   mockInputs.set(checkId, input)
-  mockRecords.set(checkId, {
+  rememberMockRecord(checkId, {
     checkId,
     status: 'running',
+    input,
     progress: initialProgress,
     result: null,
     error: null,
@@ -292,26 +325,27 @@ export function getCheck(checkId: string): Promise<CheckRecord> {
   const fallback = knownDemoCheckIds.has(checkId)
     ? makeCompletedRecord(checkId)
     : makeNotFoundRecord(checkId)
-  mockRecords.set(checkId, fallback)
+  rememberMockRecord(checkId, fallback)
   return resolveMock(cloneRecord(fallback))
 }
 
 /**
- * MOCK ONLY — Reset a mock check record to its initial "accepted" phase
+ * MOCK ONLY — Reset a mock check record to its initial phase
  * so the loading page can be inspected from the beginning.
  */
 export function devResetCheckProgress(checkId: string): void {
   const createdAt = nowIso()
   const initialProgress = makeProgress(
     checkId,
-    { phase: 'accepted', percent: 5, message: 'Check accepted.' },
+    { phase: INITIAL_PHASE, percent: 8, message: INITIAL_MESSAGE },
     1,
     createdAt,
   )
 
-  mockRecords.set(checkId, {
+  rememberMockRecord(checkId, {
     checkId,
     status: 'running',
+    input: mockInputs.get(checkId) ?? null,
     progress: initialProgress,
     result: null,
     error: null,
@@ -322,7 +356,7 @@ export function devResetCheckProgress(checkId: string): void {
 }
 
 export function devSetCheckFailed(checkId: string): void {
-  mockRecords.set(checkId, makeFailedRecord(checkId))
+  rememberMockRecord(checkId, makeFailedRecord(checkId))
 }
 
 export function listChecks(params?: CheckListParams): Promise<readonly CheckListItem[]> {

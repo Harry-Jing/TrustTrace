@@ -38,7 +38,7 @@ function navigate(name: string) {
       <BaseTagBadge tone="accent">checking…</BaseTagBadge>
     </div>
     <div v-else-if="currentPage === 'result'" class="absolute left-1/2 -translate-x-1/2">
-      <BaseTagBadge tone="accent">check complete</BaseTagBadge>
+      <BaseTagBadge tone="dark">check complete</BaseTagBadge>
     </div>
     <div v-else-if="currentPage === 'error'" class="absolute left-1/2 -translate-x-1/2">
       <BaseTagBadge tone="warn">check failed</BaseTagBadge>

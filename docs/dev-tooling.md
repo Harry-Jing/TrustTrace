@@ -17,7 +17,7 @@ All dev-only components live in `apps/web/src/app/` and are prefixed with `Dev`:
 | Component | Purpose |
 |---|---|
 | `DevNav.vue` | Floating action button (FAB) in the bottom-right corner. Opens a menu to jump between the 5 demo pages. Resets demo check progress when navigating to the loading page. |
-| `DevLoadingControls.vue` | Phase switcher rendered inside `ProgressTimeline` via slot. Allows manually stepping through loading phases and triggering the completion flow. |
+| `DevLoadingControls.vue` | Phase switcher rendered at the bottom of the loading page. Lets you jump between the six pipeline phases (`understanding`, `strategy`, `discovery`, `verify_read`, `weigh`, `verdict`) and trigger the completion flow. |
 
 `DevNav` is mounted in `AppShell.vue` behind the `showDevTools` guard. `DevLoadingControls` is rendered in `CheckLoadingPage.vue` behind the same guard.
 
@@ -27,7 +27,7 @@ All dev-only components live in `apps/web/src/app/` and are prefixed with `Dev`:
 |---|---|---|
 | Loading page auto-redirect | Disabled while controls are visible, so each phase can be inspected. | Automatically redirects to result or error when the check completes or fails, including during `bun run dev`. |
 | Loading page completion | Must click "done" in the dev controls to trigger the celebration animation and redirect. | Triggered automatically by check status updates. |
-| Loading evidence stream | Shows fixture-backed demo evidence for visual inspection. | Does not show demo evidence; progress comes from backend status/SSE data. |
+| Loading phase header | Shows the current phase's `nowLabel`, `title`, and a one-sentence `description` from `PHASE_DEFINITIONS`, followed by the calm trust line. No live status pill, dot, or percent — backend progress messages are not echoed back to the user. | Same — phase comes from backend SSE events; the page never renders a status pill regardless of message or percent. |
 | Demo check reset | `DevNav` calls `devResetCheckProgress()` before navigating to the loading page. | Not available; backend API data drives progress. |
 | Shorthand routes | `/loading`, `/result`, `/error` redirect to demo check routes. | Not registered. Only `/checks/:checkId/*` routes are available. |
 | Unknown check IDs | Known fixture IDs return demo records; unknown IDs return a mock not-found failure. | Backend API response is surfaced through the backend client. |
@@ -38,8 +38,13 @@ All dev-only components live in `apps/web/src/app/` and are prefixed with `Dev`:
 
 - `mockChecksClient.ts` — mock-only in-memory data and timers for demo/debug flows.
 - `backendChecksClient.ts` — fetch/EventSource client for the TypeScript backend. It uses a check's `eventsUrl` when available, retries transient stream disconnects, and resumes with `afterSeq` from the last accepted progress event.
+- `backendCheckSchemas.ts` — frontend-local Zod contract schemas for backend responses. Invalid payloads fail closed instead of being coerced into view models.
 
 Dev helpers exported from `checksApi.ts` are mock-only and should only be called from UI guarded by `showDevTools`.
+
+`CheckRecord` includes `input: { mode, value } | null` so refreshes on loading/error pages can still display and retry the original claim. Backend DTOs send this as `input: { type, content } | null`.
+
+The mock client keeps in-memory demo records plus a capped set of recent non-demo records, so long dev sessions do not grow unbounded.
 
 ## Guard pattern
 

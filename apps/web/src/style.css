@@ -15,6 +15,9 @@
   --tt-warn: #b8703b;
   --tt-warn-light: #fbf1e6;
   --tt-warn-fade: rgba(184, 112, 59, 0.08);
+  --tt-good: #4d7a3d;
+  --tt-good-light: #ecf2e0;
+  --tt-good-fade: rgba(77, 122, 61, 0.08);
   --tt-white: #ffffff;
   --tt-nav-bg: rgba(250, 249, 246, 0.92);
 }
@@ -33,6 +36,9 @@
   --tt-warn: #e85d4a;
   --tt-warn-light: #2a1a16;
   --tt-warn-fade: rgba(232, 93, 74, 0.1);
+  --tt-good: #7eb55f;
+  --tt-good-light: #1d2618;
+  --tt-good-fade: rgba(126, 181, 95, 0.12);
   --tt-white: #1c1c1a;
   --tt-nav-bg: rgba(17, 17, 16, 0.92);
 }
@@ -53,6 +59,8 @@
   --color-accent-light: var(--tt-accent-light);
   --color-warn: var(--tt-warn);
   --color-warn-light: var(--tt-warn-light);
+  --color-good: var(--tt-good);
+  --color-good-light: var(--tt-good-light);
   --color-card: var(--tt-white);
   --color-nav: var(--tt-nav-bg);
 
@@ -157,17 +165,6 @@
   }
 }
 
-@keyframes slide-in-left {
-  from {
-    opacity: 0;
-    transform: translateX(-16px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
 @keyframes page-forward-enter-kf {
   from {
     opacity: 0;
@@ -238,18 +235,6 @@
   }
 }
 
-@keyframes timeline-pulse {
-  0%,
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  50% {
-    opacity: 0.4;
-    transform: translateY(24px);
-  }
-}
-
 @keyframes pulse-dot {
   0%,
   100% {
@@ -260,15 +245,22 @@
   }
 }
 
-@keyframes shimmer {
-  0% {
-    opacity: 1;
+@keyframes pulse-ring {
+  0%,
+  100% {
+    box-shadow: 0 0 0 4px var(--tt-warn-fade);
   }
   50% {
-    opacity: 0.55;
+    box-shadow: 0 0 0 8px var(--tt-warn-fade);
+  }
+}
+
+@keyframes connector-shimmer {
+  0% {
+    transform: translateX(-100%);
   }
   100% {
-    opacity: 1;
+    transform: translateX(100%);
   }
 }
 
@@ -339,12 +331,6 @@
     transform: translateY(0);
   }
 
-  .stat-bar-fill {
-    width: 100%;
-    transform: scaleX(var(--tt-stat-bar-value, 0));
-    transform-origin: left;
-  }
-
   .expand-panel {
     display: grid;
     grid-template-rows: 0fr;
@@ -365,20 +351,6 @@
     opacity: 1;
   }
 
-  /* TransitionGroup: evidence stream */
-  .evidence-enter-active {
-    animation: slide-in-left 0.4s ease both;
-  }
-
-  .evidence-leave-active {
-    animation: fade-in 0.2s ease reverse both;
-    position: absolute;
-  }
-
-  .evidence-move {
-    transition: transform 0.3s ease;
-  }
-
   /* TransitionGroup: history cards */
   .card-enter-active {
     animation: fade-up 0.4s ease both;
@@ -391,6 +363,49 @@
 
   .card-move {
     transition: transform 0.3s ease;
+  }
+
+  /* Vue Transition: phase header crossfade (out-in mode).
+     Out: fade up & out. In: fade down into place. ~250ms each — feels like a
+     page turn, not a flicker. */
+  .phase-header-enter-active {
+    transition:
+      opacity 0.25s ease,
+      transform 0.25s var(--ease-snappy);
+  }
+  .phase-header-leave-active {
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s var(--ease-snappy);
+  }
+  .phase-header-enter-from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  .phase-header-leave-to {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  /* Vue Transition: stepper number ↔ checkmark crossfade. ~180ms keeps it
+     subtle so the eye lands on the connector fill / circle pop instead. */
+  .step-mark-enter-active,
+  .step-mark-leave-active {
+    transition:
+      opacity 0.18s ease,
+      transform 0.18s ease;
+  }
+  .step-mark-enter-from,
+  .step-mark-leave-to {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+
+  /* One-shot pop applied when a circle becomes "done". Uses the existing
+     celeb-pop keyframe but scoped + faster so it reads as a check, not a
+     celebration. animation-fill-mode: both so it settles back to scale(1). */
+  .step-circle-pop {
+    animation: celeb-pop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) both;
   }
 }
 
@@ -413,10 +428,6 @@
   animation: tooltip-enter 0.2s ease reverse both;
 }
 
-@utility anim-shimmer {
-  animation: shimmer 1.8s ease-in-out infinite;
-}
-
 @utility anim-celeb-pop {
   animation: celeb-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
@@ -425,12 +436,22 @@
   animation: celeb-glow 1.2s ease-out 0.3s both;
 }
 
-@utility anim-timeline-pulse {
-  animation: timeline-pulse 1.5s ease infinite;
-}
-
 @utility anim-pulse-dot {
   animation: pulse-dot 1.5s infinite;
+}
+
+@utility anim-pulse-ring {
+  animation: pulse-ring 1.8s ease-in-out infinite;
+}
+
+@utility anim-connector-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--tt-warn) 50%,
+    transparent 100%
+  );
+  animation: connector-shimmer 1.8s linear infinite;
 }
 
 @utility stagger-1 {

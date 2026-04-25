@@ -29,9 +29,9 @@ function makeCreateResponse(checkId = 'mock-check-created'): CreateCheckResponse
     progress: {
       checkId,
       status: 'running',
-      phase: 'accepted',
-      percent: 5,
-      message: 'Check accepted.',
+      phase: 'understanding',
+      percent: 8,
+      message: 'Reading the input and parsing it into checkable claims.',
       eventSeq: 1,
       updatedAt: createdAt,
     },
@@ -57,7 +57,7 @@ describe('useCreateCheck', () => {
 
     expect(created.checkId).toBe(response.checkId)
     expect(checks.currentCheckId).toBe(response.checkId)
-    expect(checks.progressByCheckId[response.checkId]?.phase).toBe('accepted')
+    expect(checks.progressByCheckId[response.checkId]?.phase).toBe('understanding')
     expect(pushMock).toHaveBeenCalledWith({
       name: 'loading',
       params: { checkId: response.checkId },

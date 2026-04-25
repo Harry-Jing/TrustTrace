@@ -39,17 +39,22 @@ vi.mock('@/features/checks/api/checksApi', () => ({
 
 function makeRecord(status: CheckRecord['status']): CheckRecord {
   const updatedAt = '2026-04-23T12:00:00.000Z'
-  const phase = status === 'completed' ? 'completed' : status === 'failed' ? 'failed' : 'accepted'
+  const phase =
+    status === 'completed' ? 'completed' : status === 'failed' ? 'failed' : 'understanding'
 
   return {
     checkId: 'check-1',
     status,
+    input: null,
     progress: {
       checkId: 'check-1',
       status,
       phase,
-      percent: status === 'completed' || status === 'failed' ? 100 : 5,
-      message: status === 'completed' ? 'Check complete.' : 'Check accepted.',
+      percent: status === 'completed' || status === 'failed' ? 100 : 8,
+      message:
+        status === 'completed'
+          ? 'Check complete.'
+          : 'Reading the input and parsing it into checkable claims.',
       eventSeq: status === 'completed' ? 10 : 1,
       updatedAt,
     },
@@ -82,19 +87,12 @@ describe('useCheckProgress', () => {
     subscribeCheckEventsMock.mockReturnValue({ close: vi.fn<() => void>() })
   })
 
-  it('hides demo evidence when dev tools are not shown', async () => {
+  it('exposes the active phase definition for the current phase', async () => {
     const { scope, state } = await mountComposable()
 
-    expect(state.evidenceItems.value).toEqual([])
-
-    scope.stop()
-  })
-
-  it('keeps demo evidence available for mock dev tools', async () => {
-    envState.showDevTools = true
-    const { scope, state } = await mountComposable()
-
-    expect(state.evidenceItems.value.length).toBeGreaterThan(0)
+    expect(state.phase.value).toBe('understanding')
+    expect(state.phaseDefinition.value.shortLabel).toBe('Understanding')
+    expect(state.phaseIndex.value).toBe(0)
 
     scope.stop()
   })

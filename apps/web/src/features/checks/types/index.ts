@@ -11,16 +11,22 @@ export type {
   CheckEventSubscriptionOptions,
   ProgressEvent,
 } from '@/features/checks/types/events'
-export type { CheckPhase, CheckProgress, CheckStatus } from '@/features/checks/types/progress'
+export type {
+  ActiveCheckPhase,
+  CheckPhase,
+  CheckProgress,
+  CheckStatus,
+} from '@/features/checks/types/progress'
 export type { CheckListItem, CheckListSort } from '@/features/checks/types/list'
 export type { CredibilityCue } from '@/features/checks/types/cues'
 export type {
   EvidenceItem,
   EvidenceRelation,
-  ProgressEvidenceItem,
+  EvidenceTier,
 } from '@/features/checks/types/evidence'
 export type {
   CheckResultViewModel,
-  ResultStatTone,
-  ResultStatViewModel,
+  ResultAtAGlance,
+  UncertaintyLevel,
+  VerdictBand,
 } from '@/features/checks/types/resultViewModel'

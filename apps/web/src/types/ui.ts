@@ -1,1 +1,1 @@
-export type BadgeTone = 'default' | 'accent' | 'warn' | 'dark'
+export type BadgeTone = 'default' | 'accent' | 'warn' | 'good' | 'dark'

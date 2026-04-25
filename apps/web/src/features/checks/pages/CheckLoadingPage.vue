@@ -1,31 +1,43 @@
 <script setup lang="ts">
-import { onBeforeUnmount, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 import BasePageFooter from '@/components/BasePageFooter.vue'
 import DevLoadingControls from '@/app/DevLoadingControls.vue'
 import { showDevTools } from '@/app/env'
-import BaseTagBadge from '@/components/BaseTagBadge.vue'
-import EvidenceStream from '@/features/checks/components/EvidenceStream.vue'
-import ProgressTimeline from '@/features/checks/components/ProgressTimeline.vue'
+import ProgressStepper from '@/features/checks/components/ProgressStepper.vue'
+import { ACTIVE_PHASES, PHASE_DEFINITIONS } from '@/features/checks/constants/checkProgress'
 import { useCheckProgress } from '@/features/checks/composables/useCheckProgress'
+import { DEMO_CHECKS } from '@/features/checks/fixtures/demoChecks'
+import { useChecksStore } from '@/features/checks/stores/checks.store'
 import type { CheckPhase } from '@/features/checks/types'
 
 const showCelebration = ref(false)
 const router = useRouter()
+const checks = useChecksStore()
 const {
   checkId,
-  phases,
   status,
   phase,
   phaseIndex,
-  tip,
-  evidenceItems,
+  phaseDefinition,
+  record,
   progressError,
   retry,
   setPhase,
 } = useCheckProgress()
 let redirectTimer: ReturnType<typeof setTimeout> | null = null
+
+const stepperSteps = computed(() => ACTIVE_PHASES.map((key) => PHASE_DEFINITIONS[key]))
+
+const claimText = computed(() => {
+  const persisted = record.value?.input?.value
+  if (persisted) return persisted
+  const submitted = checks.currentInput?.value
+  if (submitted) return submitted
+  const demoMatch = DEMO_CHECKS.find((entry) => entry.checkId === checkId.value)
+  return demoMatch?.claim ?? ''
+})
 
 function clearRedirectTimer() {
   if (!redirectTimer) return
@@ -62,12 +74,6 @@ function retryProgress() {
   void retry()
 }
 
-function segmentFillClass(index: number) {
-  if (index < phaseIndex.value) return 'scale-x-100'
-  if (index === phaseIndex.value) return 'scale-x-[0.6]'
-  return 'scale-x-0'
-}
-
 watch(
   status,
   (nextStatus) => {
@@ -93,11 +99,11 @@ onBeforeUnmount(clearRedirectTimer)
 </script>
 
 <template>
-  <div class="mx-auto max-w-[1080px] px-6 pt-12 pb-20">
+  <div class="mx-auto max-w-[920px] px-6 pt-12 pb-20">
     <!-- Celebration state -->
     <div v-if="showCelebration" class="anim-up py-30 text-center">
       <div
-        class="mx-auto mb-5 flex size-16 anim-celeb-glow anim-celeb-pop items-center justify-center rounded-full bg-accent text-[28px] text-white"
+        class="mx-auto mb-5 flex size-16 anim-celeb-glow anim-celeb-pop items-center justify-center rounded-full bg-good text-[28px] text-card"
       >
         &#10003;
       </div>
@@ -129,54 +135,59 @@ onBeforeUnmount(clearRedirectTimer)
 
     <!-- Loading state -->
     <template v-else>
-      <!-- Header -->
-      <div class="mb-2 flex items-center gap-3" aria-live="polite">
-        <BaseTagBadge tone="accent">{{ phase }}</BaseTagBadge>
-        <span class="font-mono text-xs tracking-[0.03em] text-muted">check in progress</span>
+      <!-- Header: claim being checked -->
+      <div class="mb-2 font-mono text-[11px] tracking-[0.12em] text-muted uppercase">
+        checking claim
       </div>
-      <h1 class="mb-1.5 font-serif text-[32px] tracking-tight">Pulling evidence for your claim</h1>
-      <p class="mb-7 max-w-[560px] text-sm leading-[1.7] text-muted">
-        Evidence appears as it arrives. Nothing is final until the reasoning completes.
+      <h1
+        class="mb-10 font-serif text-[clamp(26px,4vw,38px)] leading-[1.2] tracking-tight"
+        aria-live="polite"
+      >
+        <span v-if="claimText">&ldquo;{{ claimText }}&rdquo;</span>
+        <span v-else class="text-muted italic">Preparing the claim…</span>
+      </h1>
+
+      <!-- 6-step stepper -->
+      <ProgressStepper
+        :steps="stepperSteps"
+        :current-index="phaseIndex"
+        class="mb-8 sm:mb-12"
+      />
+
+      <!-- Phase header: now label + title + plain-English description.
+           Crossfades on phase change so text swaps feel intentional. -->
+      <section class="mb-6 min-h-[160px]" aria-live="polite">
+        <Transition name="phase-header" mode="out-in">
+          <div :key="phaseDefinition.key">
+            <div
+              class="mb-2 flex items-center gap-2 font-mono text-[11px] tracking-[0.1em] text-warn uppercase"
+            >
+              <span class="size-1.5 anim-pulse-dot rounded-full bg-warn" aria-hidden="true" />
+              <span>now &middot; {{ phaseDefinition.nowLabel }}</span>
+            </div>
+            <h2 class="mb-2 font-serif text-[clamp(24px,3.4vw,32px)] tracking-tight">
+              {{ phaseDefinition.title }}
+            </h2>
+            <p class="max-w-[640px] text-[14px] leading-[1.7] text-ink-2">
+              {{ phaseDefinition.description }}
+            </p>
+          </div>
+        </Transition>
+      </section>
+
+      <!-- Calm trust line (no live status box, no backend message echoed back) -->
+      <p class="mt-6 max-w-[640px] text-[12px] leading-[1.6] text-muted">
+        Sources are verified for safety and substance before they become evidence.
       </p>
 
-      <!-- Segmented progress -->
-      <div class="mb-7 flex gap-[3px]" aria-hidden="true">
-        <div
-          v-for="(phaseOption, index) in phases"
-          :key="phaseOption"
-          class="relative h-1.5 flex-1 overflow-hidden rounded-[3px] bg-line"
-        >
-          <div
-            class="h-full w-full origin-left rounded-[3px] bg-accent transition-transform duration-600 ease-out"
-            :class="[segmentFillClass(index), index === phaseIndex ? 'anim-shimmer' : '']"
-          />
-          <div
-            class="absolute top-3 w-full text-center font-mono text-[10px] tracking-[0.04em]"
-            :class="index <= phaseIndex ? 'font-semibold text-ink' : 'text-muted'"
-          >
-            {{ phaseOption }}
-          </div>
-        </div>
-      </div>
-
-      <!-- Two-column layout -->
-      <div class="mt-9 grid grid-cols-1 items-start gap-10 md:grid-cols-[240px_1fr]">
-        <ProgressTimeline :phases="phases" :phase-index="phaseIndex" :tip="tip">
-          <DevLoadingControls
-            v-if="showDevTools"
-            :phases="phases"
-            :phase="phase"
-            @set-phase="handleSetPhase"
-            @done="handleDone"
-          />
-        </ProgressTimeline>
-
-        <!-- Right pane: evidence stream -->
-        <EvidenceStream
-          :items="evidenceItems"
-          :waiting="status !== 'completed' && status !== 'failed'"
-        />
-      </div>
+      <!-- DEV: phase controls -->
+      <DevLoadingControls
+        v-if="showDevTools"
+        :phases="ACTIVE_PHASES"
+        :phase="phase"
+        @set-phase="handleSetPhase"
+        @done="handleDone"
+      />
 
       <BasePageFooter>TrustTrace &middot; evidence-first credibility</BasePageFooter>
     </template>

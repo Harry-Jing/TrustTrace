@@ -1,11 +1,6 @@
-export interface ProgressEvidenceItem {
-  sourceName: string
-  title: string
-  time: string
-  snippet: string
-}
-
 export type EvidenceRelation = 'supports' | 'contradicts' | 'neutral'
+
+export type EvidenceTier = 1 | 2 | 3 | 4
 
 export interface EvidenceItem {
   sourceName: string
@@ -16,4 +11,7 @@ export interface EvidenceItem {
   text: string
   url: string
   relation: EvidenceRelation
+  tier: EvidenceTier
+  scopeMatch: number
+  clusterId?: string
 }

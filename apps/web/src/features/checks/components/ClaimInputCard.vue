@@ -57,7 +57,7 @@ function submit() {
 
 <template>
   <form
-    class="stagger-4 rounded-2xl border-[1.5px] bg-card p-5 text-left transition-[border-color,box-shadow,background-color] duration-200 sm:p-6"
+    class="stagger-4 rounded-lg border-[1.5px] bg-card p-5 text-left transition-[border-color,box-shadow,background-color] duration-200 sm:p-6"
     :class="
       inputFocused ? 'border-accent shadow-input-focus' : 'border-line-strong shadow-input-rest'
     "
@@ -131,7 +131,7 @@ function submit() {
       </span>
       <button
         type="submit"
-        class="tt-btn rounded-lg border-none px-7 py-2.5 text-sm font-semibold transition-all duration-250"
+        class="tt-btn rounded-md border-none px-7 py-2.5 text-sm font-semibold transition-all duration-250"
         :class="
           isValid && !isDisabled
             ? 'cursor-pointer bg-accent text-white'

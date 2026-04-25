@@ -66,11 +66,35 @@ export const DEMO_CHECK_IDS: ReadonlySet<string> = new Set(
 export const RESULT_CUES = [
   {
     name: 'Cross-source consistency',
-    text: 'CDC, NHTSA, and IIHS independently align that seat belts reduce serious injury or death.',
+    text: 'NHTSA, IIHS, CDC, and WHO independently align that seat belts reduce serious injury or death.',
     note: 'Independent agreement reduces single-source bias.',
     strength: 5,
     tooltip:
       'When multiple unrelated sources reach the same conclusion independently, it’s less likely to be coincidence or bias from a single origin.',
+  },
+  {
+    name: 'Source authority',
+    text: 'Strongest evidence comes from U.S. and international public-safety agencies rather than advocacy-only sources.',
+    note: 'Authority shape matters for reliability.',
+    strength: 4,
+    tooltip:
+      'Government agencies and research institutions typically have peer review and accountability structures. Advocacy groups may select evidence that supports their position.',
+  },
+  {
+    name: 'Publication type',
+    text: 'Evidence is a mix of agency guidance, safety topics, and a meta review — not a single primary study.',
+    note: 'Publication form reflects verification rigor.',
+    strength: 4,
+    tooltip:
+      'Systematic reviews and guidance documents aggregate many studies, making them more robust than any single experiment.',
+  },
+  {
+    name: 'Recency',
+    text: 'NHTSA, IIHS, and WHO pages from 2024–2025 indicate guidance remains current.',
+    note: 'Outdated baselines may not reflect current facts.',
+    strength: 5,
+    tooltip:
+      'Science evolves. A finding from 2005 may have been updated, contradicted, or refined. Recency matters especially for fast-moving fields.',
   },
   {
     name: 'Claim specificity',
@@ -80,122 +104,120 @@ export const RESULT_CUES = [
     tooltip:
       'Vague claims are harder to fact-check because different interpretations may all be “technically true.” More specific claims allow cleaner verification.',
   },
-  {
-    name: 'Source context',
-    text: 'Strongest evidence comes from U.S. public-safety agencies rather than advocacy-only sources.',
-    note: 'Source origin matters for reliability.',
-    strength: 4,
-    tooltip:
-      'Government agencies and research institutions typically have peer review and accountability structures. Advocacy groups may select evidence that supports their position.',
-  },
-  {
-    name: 'Publication type',
-    text: 'Evidence includes agency guidance and safety-topic summaries that synthesize research rather than single primary studies.',
-    note: 'Publication form reflects verification rigor.',
-    strength: 4,
-    tooltip:
-      'Systematic reviews and guidance documents aggregate many studies, making them more robust than any single experiment.',
-  },
-  {
-    name: 'Recency',
-    text: 'CDC and NHTSA pages from 2025–2026 indicate guidance remains current.',
-    note: 'Outdated baselines may not reflect current facts.',
-    strength: 5,
-    tooltip:
-      'Science evolves. A finding from 2005 may have been updated, contradicted, or refined. Recency matters especially for fast-moving fields.',
-  },
 ] as const satisfies readonly CredibilityCue[]
 
 export const RESULT_EVIDENCE = [
   {
-    sourceName: 'CDC',
-    domain: '.gov',
+    sourceName: 'nhtsa.gov',
+    domain: 'nhtsa.gov',
     credibilityLabel: 'GOV',
-    date: '2025-12-17',
+    date: '2025',
     title: 'Facts About Seat Belt Use',
-    text: 'Wearing a seat belt is the most effective way to prevent injury or death in crashes. For adults and older children, lap-and-shoulder belts reduce serious crash injury and death by about half.',
-    url: '#',
+    text: 'Wearing a seat belt is the most effective way to prevent injury or death in crashes. Lap and shoulder belts reduce serious crash injury and death by about half.',
+    url: 'https://www.nhtsa.gov/vehicle-safety/seat-belts',
     relation: 'supports',
+    tier: 1,
+    scopeMatch: 0.95,
   },
   {
-    sourceName: 'NHTSA',
-    domain: '.gov',
-    credibilityLabel: 'GOV',
-    date: '2024',
-    title: 'Seat Belt Safety: Buckle Up America',
-    text: 'Buckling up in the front seat of a passenger car reduces the risk of a fatal injury by 45%, and moderate-to-critical injury by 50%.',
-    url: '#',
-    relation: 'supports',
-  },
-  {
-    sourceName: 'IIHS',
-    domain: '.org',
+    sourceName: 'iihs.org',
+    domain: 'iihs.org',
     credibilityLabel: 'ORG',
     date: '2025',
     title: 'Seat Belts',
     text: 'In both the front and the rear, seat belts reduce the risk of serious injury or death in a crash.',
-    url: '#',
+    url: 'https://www.iihs.org/topics/seat-belts',
     relation: 'supports',
+    tier: 1,
+    scopeMatch: 0.7,
   },
   {
-    sourceName: 'NHTSA',
-    domain: '.gov',
+    sourceName: 'cdc.gov',
+    domain: 'cdc.gov',
     credibilityLabel: 'GOV',
     date: '2024',
-    title: 'Seat Belts and Child Restraints',
-    text: 'Lap and shoulder seat belts reduce the risk of moderate to critical injury to front-seat passenger-car occupants by 50% when used.',
-    url: '#',
+    title: 'Seat Belt Safety: Buckle Up America',
+    text: 'Buckling up in the front seat of a passenger car reduces the risk of a fatal injury by 45%, and moderate-to-critical injury by 50%.',
+    url: 'https://www.cdc.gov/seat-belts/about/index.html',
     relation: 'supports',
+    tier: 2,
+    scopeMatch: 0.9,
   },
   {
-    sourceName: 'WHO',
-    domain: '.int',
+    sourceName: 'who.int',
+    domain: 'who.int',
     credibilityLabel: "INT'L",
     date: '2025',
     title: 'Global Status on Road Safety',
     text: 'Seat-belt laws and enforcement correlate with 40–50% lower front-seat fatality rates across high-income countries.',
-    url: '#',
+    url: 'https://www.who.int/publications/i/item/9789240086517',
     relation: 'supports',
+    tier: 2,
+    scopeMatch: 0.65,
   },
   {
-    sourceName: 'NAP',
-    domain: '.edu',
+    sourceName: 'nhtsa.gov',
+    domain: 'nhtsa.gov',
+    credibilityLabel: 'GOV',
+    date: '2024',
+    title: 'Seat Belts and Child Restraints',
+    text: 'Lap and shoulder seat belts reduce the risk of moderate to critical injury by 50% when used.',
+    url: 'https://www.nhtsa.gov/vehicle-safety/child-safety',
+    relation: 'supports',
+    tier: 3,
+    scopeMatch: 0.85,
+    clusterId: 'cluster:nhtsa',
+  },
+  {
+    sourceName: 'nap.edu',
+    domain: 'nap.edu',
     credibilityLabel: 'EDU',
     date: '2023',
     title: 'Seat Belt Effectiveness — Meta Review',
-    text: 'Aggregated crash-data studies find ≈45–50% fatal-injury reduction when seat belts are properly worn in passenger vehicles.',
-    url: '#',
+    text: 'Aggregated crash-data studies find ≈45–50% fatal-injury reduction when seat belts are properly worn.',
+    url: 'https://nap.nationalacademies.org/',
     relation: 'neutral',
+    tier: 4,
+    scopeMatch: 0.8,
   },
 ] as const satisfies readonly EvidenceItem[]
+
+const RESULT_UNCERTAINTY_LINES = [
+  'Claim does not specify passenger type, seating position, or vehicle class.',
+  'Sources quantify differently (45% vs 50%) due to different crash samples.',
+  'Most data relates to U.S. passenger-vehicle crashes.',
+] as const
+
+const RESULT_NOTE =
+  'Familiar framing biases reasoning. Check whether independent sources agree on the same concrete facts, not just the general direction.'
 
 export const CHECK_RESULT = {
   checkId: DEMO_CHECK_ID,
   inputText: 'Seat belts reduce serious injury in crashes',
   inputTypeLabel: 'text input',
-  statusCue: 'evidence strong',
-  summaryState: 'completed',
-  completedMeta: 'completed · 7.8s',
-  headline: 'Multiple evidence cues are available — verify before sharing.',
+  durationLabel: '7.8s',
+  verdictBand: 'evidence_strong',
+  verdictLabel: 'evidence strong',
+  headline: 'Strong evidence stacks at the top of the ladder.',
   description:
-    'CDC, NHTSA, IIHS, and WHO all converge on a 40–55% reduction in fatal or serious injury for belted occupants. However, the claim is broad — specifics vary by context.',
+    'Sources are grouped by verification depth — primary, full-text, and independence — so you can see exactly where the strong claim is supported.',
+  atAGlance: {
+    evidence: 6,
+    independent: 4,
+    fullText: 5,
+    primary: 2,
+    snippet: 1,
+    uncertainty: 'med',
+  },
   cues: RESULT_CUES,
   evidence: RESULT_EVIDENCE,
-  uncertaintyLines: [
-    'The claim does not specify passenger type, seating position, or vehicle class.',
-    'Sources quantify differently (45% vs 50%) due to different crash samples.',
-    'Most data relates to U.S. passenger-vehicle crashes.',
-  ],
-  summaryText: `TrustTrace check: "Seat belts reduce serious injury in crashes"\n\nResult: Multiple evidence cues are available — verify before sharing.\nEvidence: ${RESULT_EVIDENCE.length} sources (CDC, NHTSA, IIHS, WHO)\nUncertainty: med\n\nCDC, NHTSA, IIHS, and WHO converge on 40–55% fatal injury reduction for belted occupants. Claim is broad — specifics vary by context.`,
-  stats: [
-    {
-      value: String(RESULT_EVIDENCE.length),
-      label: 'Evidence',
-      barRatio: RESULT_EVIDENCE.length / 6,
-      tone: 'accent',
-    },
-    { value: '5', label: 'Cues', barRatio: 1, tone: 'accent' },
-    { value: 'med', label: 'Uncertainty', barRatio: 0.6, tone: 'warn' },
-    { value: '7.8s', label: 'Duration', barRatio: 0.78, tone: 'muted' },
-  ],
+  uncertaintyLines: RESULT_UNCERTAINTY_LINES,
+  noteText: RESULT_NOTE,
+  summaryText: `TrustTrace check: "Seat belts reduce serious injury in crashes"
+
+Verdict: Strong evidence stacks at the top of the ladder.
+Evidence: ${RESULT_EVIDENCE.length} sources · 4 independent · 2 primary · 1 snippet-only
+Uncertainty: med
+
+NHTSA, IIHS, CDC, and WHO converge on 40–55% fatal-injury reduction for belted occupants. Claim is broad — specifics vary by passenger type, seating, and vehicle class.`,
 } as const satisfies CheckResultViewModel

@@ -1,5 +1,6 @@
 import type { CheckProgress, CheckStatus } from '@/features/checks/types/progress'
 import type { CheckResultViewModel } from '@/features/checks/types/resultViewModel'
+import type { CheckInputDraft } from '@/features/checks/types/input'
 
 export interface CheckListParams {
   limit?: number
@@ -26,6 +27,7 @@ export interface CreateCheckResponse {
 export interface CheckRecord {
   checkId: string
   status: CheckStatus
+  input: CheckInputDraft | null
   progress: CheckProgress
   result: CheckResultViewModel | null
   error: CheckApiError | null

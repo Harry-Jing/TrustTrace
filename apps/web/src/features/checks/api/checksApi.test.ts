@@ -17,7 +17,7 @@ describe('checksApi backend-shaped mock', () => {
 
     expect(response.checkId).toMatch(/^mock-check-/)
     expect(response.status).toBe('running')
-    expect(response.progress.phase).toBe('accepted')
+    expect(response.progress.phase).toBe('understanding')
     expect(response.eventsUrl).toBe(`/v1/checks/${response.checkId}/events`)
 
     const record = await getCheck(response.checkId)
@@ -48,7 +48,15 @@ describe('checksApi backend-shaped mock', () => {
 
     await vi.runAllTimersAsync()
 
-    expect(events).toEqual(['accepted', 'analyzing', 'synthesizing', 'persisting', 'completed'])
+    expect(events).toEqual([
+      'understanding',
+      'strategy',
+      'discovery',
+      'verify_read',
+      'weigh',
+      'verdict',
+      'completed',
+    ])
     expect(onClose).toHaveBeenCalledTimes(1)
 
     const record = await getCheck(response.checkId)
