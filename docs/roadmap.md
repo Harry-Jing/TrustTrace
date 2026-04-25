@@ -1,69 +1,64 @@
 # Roadmap
 
-Frontend readiness priorities for backend integration, plus longer-horizon backlog items.
+Frontend readiness priorities for backend integration, plus longer-horizon backlog.
 
 ## Frontend Readiness
 
-> **Scope:** `apps/web` Vue frontend before backend integration.
-> **Constraint:** Keep visible product behavior stable unless a task explicitly asks to change product copy or UX.
+> **Scope:** `apps/web` before backend integration.
+> **Constraint:** Keep visible product behavior stable unless a task explicitly changes copy or UX.
 
-Move the current fixture-backed frontend toward a backend-ready architecture without rewriting the UI. The main risk is not visual polish; it is data-contract drift, check lifecycle assumptions, privacy copy, and thin test coverage around the future API path.
+The frontend runs on backend-shaped mocks: API contract, async `useCreateCheck`, checkId-driven routes, progress/SSE lifecycle, split types, and a `mock|backend` mode switch.
 
-Priorities are ordered by: (1) how strongly the item blocks backend integration, (2) how much rework it prevents later, (3) how directly it affects user trust or correctness.
+### Done
 
-P0 items (API contract, checksApi reshape, async useCreateCheck, checkId-driven routes, progress/SSE lifecycle) have been implemented as backend-shaped mocks. The priorities below remain open.
+| # | Improvement | Primary files |
+|---|---|---|
+| 6 | URL validation and submit trimming | `ClaimInputCard.vue` |
+| 7 | Create-check submitting / error state | `useCreateCheck.ts`, `ClaimInputCard.vue` |
+| 8 | Backend error model (code, category, traceId, retryable) | `CheckErrorPage.vue`, `types/api.ts` |
+| 9 | Privacy copy revisited (no browser-only claims) | `features/checks/**` |
+| 10 | Types split into focused per-concern files (api, events, progress, evidence, list, cues, input, viewmodel) | `features/checks/types/` |
+| 11 | Evidence semantics: supports / contradicts / neutral, real URLs | `EvidenceItemsList.vue` |
+| 14 | Clipboard failure handling | `CheckResultPage.vue` |
+| 15 | External evidence link safety (`rel`, `target`) | `EvidenceItemsList.vue` |
+| 16 | Demo/prod mode isolation via `VITE_TRUSTTRACE_API_MODE` | `app/env.ts` |
+| 17 | API base URL via `VITE_TRUSTTRACE_API_BASE_URL` (deployment values pending) | `app/env.ts`, `vite.config.ts` |
 
-### P1 — Strongly recommended before backend integration
+### Open
 
-| # | Improvement | Why it matters | Primary files |
+| # | Improvement | Notes | Primary files |
 |---|---|---|---|
-| 6 | Add basic URL validation and submit trimming | Implemented for `http(s)://` URL input and trimmed submissions. | `ClaimInputCard.vue` |
-| 7 | Add create-check submitting/error state | Implemented for the landing input path; retry/error-page polish remains backend-dependent. | `useCreateCheck.ts`, `CheckHomePage.vue`, `ClaimInputCard.vue` |
-| 8 | Replace hardcoded error page with backend error model | Backend errors need codes, trace IDs, retryability. | `CheckErrorPage.vue`, `checksApi.ts` |
-| 9 | Revisit privacy and local-only copy | Implemented for current UI copy; claims about browser-only or no server-side storage were removed. | `features/checks/**/*` |
-| 10 | Separate API result semantics from UI display fields | Frontend types are now split into focused API/event/progress/evidence/list/ViewModel files; backend DTO/schema alignment remains deferred. | `features/checks/types/`, `ResultSummary.vue`, `useCheckResult.ts` |
+| 12 | Decide history strategy | Local-only, server-backed, or hybrid — affects the `listChecks` contract. | `useCheckHistory.ts`, `CheckHistoryPage.vue` |
+| 13 | Fill test gaps | Error-retry path, history page, result page (input / create / progress / loading / api already covered). | composables, pages |
+| 18 | Accessibility polish | Tooltip IDs, loading semantics, icon labels, reduced-motion. | shared UI |
 
-### P2 — Important after the main API path is stable
+### Acceptance before wiring the backend
 
-| # | Improvement | Why it matters | Primary files |
-|---|---|---|---|
-| 11 | Improve evidence semantics | Evidence shouldn't always display as "supports"; links shouldn't be `#` placeholders. | `EvidenceItemsList.vue`, `types.ts` |
-| 12 | Decide history strategy | Local-only vs server-backed vs hybrid. | `useCheckHistory.ts`, `CheckHistoryPage.vue` (now uses unified `listChecks()` via `GET /v1/checks`) |
-| 13 | Add tests for the core check flow | Cover create → loading → result, API errors, URL validation, history. | composables, check pages |
-| 14 | Handle clipboard failures | Don't show copy success when Clipboard API fails. | `CheckResultPage.vue`, `ResultActions.vue`, `ResultSummary.vue` |
-| 15 | Harden external evidence links | Safe external-link attributes; non-link fallback when absent. | `EvidenceItemsList.vue` |
-
-### P3 — Can wait until backend integration is underway
-
-| # | Improvement | Why it matters | Primary files |
-|---|---|---|---|
-| 16 | Further isolate demo/prod mode | Implemented with `VITE_TRUSTTRACE_API_MODE=mock|backend`; dev tools are mock-mode only. | `app/env.ts`, `checksApi.ts`, `AppShell.vue` |
-| 17 | Finalize API base URL and environment config | Basic `VITE_TRUSTTRACE_API_BASE_URL` support exists; deployment-specific values remain to be finalized. | `app/env.ts`, `vite.config.ts` |
-| 18 | Address accessibility polish | Tooltip IDs, loading semantics, icon labels, reduced-motion. | shared UI and check components |
-
-### Acceptance criteria before wiring the backend
-
-- Loading, result, error, and history routes work from direct URL navigation and browser refresh.
-- URL submissions reject obvious non-URLs and require `http(s)://`.
-- User-facing copy does not claim browser-only processing if the backend receives input.
-- Tests cover the create/check/result happy path and at least one API failure path.
+- All routes work from direct URL navigation and refresh.
+- URL submissions require `http(s)://`.
+- User-facing copy does not claim browser-only processing.
+- Tests cover the happy path and at least one API failure path.
 
 ### Deferred decisions
 
-- Whether history is local-only, server-backed, or hybrid.
-- Whether to reintroduce frontend i18n.
-- Final backend result DTO shape, shared schema, and frontend ViewModel adapter boundary.
+- History storage: local-only, server-backed, or hybrid.
+- Frontend i18n.
+- Final backend result DTO and ViewModel adapter boundary.
+
+## Next: Backend Implementation
+
+Frontend is largely backend-ready. The next track is `apps/server`, following [claim-checking-pipeline.md](claim-checking-pipeline.md): claim parsing → authority-aware search → URL verification → extraction → per-source evaluation → deterministic synthesis → LLM explanation.
 
 ## Backlog
 
-Items to revisit only after the backend powers the core check flow, API/data contracts are settled, and basic tests exist.
+Revisit only after the backend powers the core check flow, contracts are settled, and basic tests exist.
 
-- **i18n/localization** — revisit for a real multilingual launch or customer need.
+- **i18n/localization** — for a real multilingual launch.
 - **Design system cleanup** — extract shared components after UI patterns settle.
-- **Accessibility audit** — deeper pass once the main UI stops changing.
-- **Reports, sharing, and export** — wait until report data and privacy rules are clear.
-- **Accounts and teams** — wait until the single-user flow is proven.
-- **Browser extension/API/integrations** — wait until the create-check API is stable.
+- **Accessibility audit** — deeper pass once UI stabilizes.
+- **Reports, sharing, export** — once report data and privacy rules are clear.
+- **Accounts and teams** — once single-user flow is proven.
+- **Browser extension / API / integrations** — once the create-check API is stable.
 - **Mobile/PWA polish** — wait for real mobile usage signal.
 - **Analytics/experiments** — define after product metrics are clear.
-- **Visual, animation, and performance polish** — not the backend-integration bottleneck.
+- **Visual, animation, performance polish** — not the integration bottleneck.

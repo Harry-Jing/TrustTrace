@@ -50,6 +50,6 @@ archive/             # Legacy implementation references
 
 - [conventions.md](conventions.md) — Bun runtime, frontend quality tooling, CSS architecture
 - [dev-tooling.md](dev-tooling.md) — dev-only FAB navigation, loading phase controls, guard pattern
-- [backend-typescript-rewrite.md](backend-typescript-rewrite.md) — backend plan and implementation phases
 - [roadmap.md](roadmap.md) — frontend readiness priorities and backlog
+- [claim-checking-pipeline.md](claim-checking-pipeline.md) — backend claim-checking pipeline design
 - [archive/python-backend.md](archive/python-backend.md) — archived Python backend reference
