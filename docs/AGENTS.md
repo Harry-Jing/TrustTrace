@@ -6,7 +6,6 @@ Evidence-oriented credibility checking service. Submit a URL or text, query LLM 
 
 - **Current:** `apps/web` is the active Vue 3 frontend, running with static/demo data.
 - **Planned:** `apps/server` for the TypeScript backend.
-- **Archived docs:** `docs/archive/` contains legacy implementation references only.
 
 ## Tech Stack
 
@@ -45,7 +44,6 @@ docs/                # Project documentation
 - If the user explicitly asks for analysis or an opinion before changes, do not modify files until asked to proceed.
 - For every task, consider whether the approach aligns with current best practices.
 - Read and follow the `karpathy-guidelines` skill when writing, reviewing, or refactoring code.
-- Do not treat files under `docs/archive/` as the current implementation.
 
 ## Documentation
 
@@ -53,4 +51,3 @@ docs/                # Project documentation
 - [dev-tooling.md](dev-tooling.md) — dev-only FAB navigation, loading phase controls, guard pattern
 - [roadmap.md](roadmap.md) — frontend readiness priorities and backlog
 - [claim-checking-pipeline.md](claim-checking-pipeline.md) — backend claim-checking pipeline design
-- [archive/python-backend.md](archive/python-backend.md) — archived Python backend reference

@@ -6,7 +6,6 @@ Evidence-oriented credibility checking service. Submit a URL or text, the system
 
 - **Current:** `apps/web` — Vue 3 frontend running with demo/static data.
 - **Planned:** `apps/server` and `packages/shared` — TypeScript backend and shared Zod schemas.
-- **Archived docs:** `docs/archive/` — legacy Python backend reference.
 
 ## Commands
 
