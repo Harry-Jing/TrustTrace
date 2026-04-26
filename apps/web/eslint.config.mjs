@@ -22,7 +22,7 @@ export default defineConfigWithVueTs(
   globalIgnores(['**/dist/**', '**/dist-ssr/**', '**/coverage/**']),
 
   ...pluginVue.configs['flat/recommended-error'],
-  vueTsConfigs.recommendedTypeChecked,
+  vueTsConfigs.strictTypeChecked,
 
   {
     ...pluginVitest.configs.recommended,
@@ -74,7 +74,20 @@ export default defineConfigWithVueTs(
           format: ['camelCase', 'PascalCase'],
         },
       ],
+      '@typescript-eslint/prefer-nullish-coalescing': 'error',
+      '@typescript-eslint/prefer-optional-chain': 'error',
       '@typescript-eslint/no-non-null-assertion': 'error',
+      'vue/block-lang': ['error', { script: { lang: 'ts' } }],
+      'vue/component-api-style': ['error', ['script-setup']],
+      'vue/define-emits-declaration': ['error', 'type-based'],
+      'vue/define-props-declaration': ['error', 'type-based'],
+      'vue/html-button-has-type': 'error',
+      'vue/no-static-inline-styles': 'error',
+      'vue/no-undef-components': [
+        'error',
+        { ignorePatterns: ['RouterView', 'RouterLink'] },
+      ],
+      'vue/require-typed-ref': 'error',
     },
   },
 

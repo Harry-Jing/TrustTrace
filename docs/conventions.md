@@ -54,12 +54,14 @@ The frontend in `apps/web` follows the `create-vue` tooling baseline. Project-sp
 These are hard rules for production code under `apps/web/src`:
 
 - TypeScript stays strict. `exactOptionalPropertyTypes` and `noUncheckedIndexedAccess` are enabled so optional properties and indexed reads must be handled explicitly.
+- ESLint extends the Vue-aware `strictTypeChecked` TypeScript ruleset. Keep nullable and fallback logic explicit; prefer `??` for nullish fallback and optional chaining for safe property access.
 - Use `unknown` plus Zod or a type guard for untrusted data. Do not use `any`.
 - Use `import type` for type-only imports. ESLint enforces this with `@typescript-eslint/consistent-type-imports`.
 - Do not use non-null assertions (`!`) in production code. Prove the value exists, provide a fallback, or narrow the type.
 - Use `null` for business-level “known absent” values such as `result`, `error`, or selected IDs. Use omitted properties/`undefined` for JavaScript absence, optional object fields, and Vue attribute removal.
 - Backend JSON must be parsed and normalized at the API boundary before it reaches components, stores, or composables.
-- Vue templates use the `eslint-plugin-vue` recommended rules: semantic component naming, explicit emits, keyed `v-for`, no `v-if` with `v-for` on the same element, prop casing consistency, and community-recommended consistency checks.
+- Vue SFCs use `<script setup lang="ts">`, type-based `defineProps` / `defineEmits`, explicit button `type` attributes, typed `ref` calls, and no static inline `style` attributes.
+- Vue templates use the `eslint-plugin-vue` recommended rules: semantic component naming, explicit emits, keyed `v-for`, no `v-if` with `v-for` on the same element, prop casing consistency, known component names, and community-recommended consistency checks.
 - Test files may use small test ergonomics exceptions, including local test components and non-null assertions around known test fixtures.
 
 #### MUST

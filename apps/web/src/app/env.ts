@@ -16,4 +16,8 @@ export const isMockApiMode = apiMode === 'mock'
 export const isBackendApiMode = apiMode === 'backend'
 export const showDevTools = isDevMode && isMockApiMode
 
-export const apiBaseUrl = import.meta.env.VITE_TRUSTTRACE_API_BASE_URL || '/v1'
+const configuredApiBaseUrl = import.meta.env.VITE_TRUSTTRACE_API_BASE_URL
+export const apiBaseUrl =
+  configuredApiBaseUrl === undefined || configuredApiBaseUrl.length === 0
+    ? '/v1'
+    : configuredApiBaseUrl
