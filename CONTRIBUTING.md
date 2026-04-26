@@ -9,6 +9,8 @@ bun install
 bun run dev
 ```
 
+`bun install` also installs the Lefthook-managed Git hooks for local commit, commit-message, and push checks.
+
 ## Before Opening a PR
 
 Run the quality gate:
@@ -27,7 +29,9 @@ bun run test
 bun run build
 ```
 
-Use `bun run test`, not bare `bun test`, so archived code is not included.
+Use `bun run test`, not bare `bun test`, because frontend tests run through Vitest/Vite for Vue SFC transforms, path aliases, jsdom, and Vitest mocking APIs.
+
+Lefthook runs faster checks locally before commit and the full quality gate before push. Git hooks are not a substitute for CI; pushes and pull requests must pass the GitHub Actions quality workflow.
 
 ## Commit Messages
 

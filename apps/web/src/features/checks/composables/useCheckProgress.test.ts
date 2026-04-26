@@ -5,8 +5,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { useCheckProgress } from '@/features/checks/composables/useCheckProgress'
 import type { CheckEventHandlers, CheckRecord } from '@/features/checks/types'
 
-const routeState = vi.hoisted(() => ({
-  params: { checkId: 'check-1' } as Record<string, string>,
+const routeState = vi.hoisted<{ params: Record<string, string> }>(() => ({
+  params: { checkId: 'check-1' },
 }))
 const envState = vi.hoisted(() => ({
   showDevTools: false,

@@ -4,6 +4,8 @@ import type { ComputedRef, Ref } from 'vue'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { PHASE_DEFINITIONS } from '@/features/checks/constants/checkProgress'
+import type * as CheckProgressConstants from '@/features/checks/constants/checkProgress'
+import type * as Vue from 'vue'
 import CheckLoadingPage from './CheckLoadingPage.vue'
 
 const pushMock = vi.hoisted(() => vi.fn<(location: unknown) => void>())
@@ -31,10 +33,10 @@ vi.mock('@/app/env', () => ({
 }))
 
 vi.mock('@/features/checks/composables/useCheckProgress', async () => {
-  const vue = await vi.importActual<typeof import('vue')>('vue')
-  const constants = await vi.importActual<
-    typeof import('@/features/checks/constants/checkProgress')
-  >('@/features/checks/constants/checkProgress')
+  const vue = await vi.importActual<typeof Vue>('vue')
+  const constants = await vi.importActual<typeof CheckProgressConstants>(
+    '@/features/checks/constants/checkProgress',
+  )
 
   loadingState.statusRef = vue.ref('running')
   loadingState.eventErrorRef = vue.ref(null)

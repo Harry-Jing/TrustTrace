@@ -6,9 +6,11 @@ Evidence-oriented credibility checking service. Submit a URL or text, the system
 
 - **Current:** `apps/web` — Vue 3 frontend running with demo/static data.
 - **Planned:** `apps/server` and `packages/shared` — TypeScript backend and shared Zod schemas.
-- **Archived:** `archive/` — legacy Python backend and frontend references.
+- **Archived docs:** `docs/archive/` — legacy Python backend reference.
 
 ## Commands
+
+Bun is used for dependency installation and script orchestration; the frontend remains Vue/Vite/Vitest.
 
 ```sh
 bun install          # install workspace dependencies
@@ -28,7 +30,6 @@ apps/web/            # @trusttrace/web — Vue 3 frontend
 apps/server/         # Planned: @trusttrace/server — Hono backend
 packages/shared/     # Planned: @trusttrace/shared — Zod schemas + types
 docs/                # Project documentation
-archive/             # Legacy implementation references
 ```
 
 ## Documentation

@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { readVerdictCopy } from '@/features/checks/constants/resultFallbacks'
 import type {
   CheckApiError,
+  EvidenceItem,
   CheckInputDraft,
   CheckListItem,
   CheckProgress,
@@ -65,19 +66,24 @@ const checkProgressSchema: z.ZodType<CheckProgress> = z.object({
   updatedAt: isoStringSchema,
 })
 
-const evidenceItemSchema = z.object({
-  sourceName: z.string().min(1),
-  domain: z.string().min(1),
-  credibilityLabel: z.string(),
-  date: z.string(),
-  title: z.string().min(1),
-  text: z.string().min(1),
-  url: z.string().refine(isSafeHttpUrl, 'Evidence URL must be absolute http(s).'),
-  relation: z.enum(['supports', 'contradicts', 'neutral']),
-  tier: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]),
-  scopeMatch: finiteNumberSchema.min(0).max(1),
-  clusterId: z.string().optional(),
-})
+const evidenceItemSchema: z.ZodType<EvidenceItem> = z
+  .object({
+    sourceName: z.string().min(1),
+    domain: z.string().min(1),
+    credibilityLabel: z.string(),
+    date: z.string(),
+    title: z.string().min(1),
+    text: z.string().min(1),
+    url: z.string().refine(isSafeHttpUrl, 'Evidence URL must be absolute http(s).'),
+    relation: z.enum(['supports', 'contradicts', 'neutral']),
+    tier: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]),
+    scopeMatch: finiteNumberSchema.min(0).max(1),
+    clusterId: z.string().optional(),
+  })
+  .transform((item): EvidenceItem => {
+    const { clusterId, ...evidence } = item
+    return clusterId === undefined ? evidence : { ...evidence, clusterId }
+  })
 
 const resultAtAGlanceSchema = z.object({
   evidence: finiteNumberSchema.min(0),

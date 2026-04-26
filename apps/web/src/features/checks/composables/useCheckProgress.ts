@@ -11,11 +11,14 @@ import { useChecksStore } from '@/features/checks/stores/checks.store'
 import type {
   ActiveCheckPhase,
   CheckEventSubscription,
+  CheckEventSubscriptionOptions,
   CheckPhase,
   CheckProgress,
 } from '@/features/checks/types'
 import { readCheckId } from '@/features/checks/utils'
 import { useAsyncData } from '@/shared/composables/useAsyncData'
+
+const FINAL_ACTIVE_PHASE: ActiveCheckPhase = 'verdict'
 
 function activePhaseIndexOf(phase: CheckPhase): number {
   if (phase === 'failed' || phase === 'completed') return ACTIVE_PHASES.length - 1
@@ -24,7 +27,7 @@ function activePhaseIndexOf(phase: CheckPhase): number {
 
 function activePhase(phase: CheckPhase): ActiveCheckPhase {
   if (phase === 'completed' || phase === 'failed') {
-    return ACTIVE_PHASES[ACTIVE_PHASES.length - 1]!
+    return FINAL_ACTIVE_PHASE
   }
   return phase
 }
@@ -82,6 +85,12 @@ export function useCheckProgress() {
 
   function subscribe(checkIdToSubscribe: string) {
     closeSubscription()
+    const eventsUrl = checks.eventsUrlByCheckId[checkIdToSubscribe]
+    const subscriptionOptions: CheckEventSubscriptionOptions = {
+      afterSeq: progress.value?.eventSeq ?? 0,
+      ...(eventsUrl ? { eventsUrl } : {}),
+    }
+
     subscription = subscribeCheckEvents(
       checkIdToSubscribe,
       {
@@ -100,10 +109,7 @@ export function useCheckProgress() {
           void handleStreamError(checkIdToSubscribe, error)
         },
       },
-      {
-        afterSeq: progress.value?.eventSeq ?? 0,
-        eventsUrl: checks.eventsUrlByCheckId[checkIdToSubscribe],
-      },
+      subscriptionOptions,
     )
   }
 

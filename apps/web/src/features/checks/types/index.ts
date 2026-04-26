@@ -19,11 +19,7 @@ export type {
 } from '@/features/checks/types/progress'
 export type { CheckListItem, CheckListSort } from '@/features/checks/types/list'
 export type { CredibilityCue } from '@/features/checks/types/cues'
-export type {
-  EvidenceItem,
-  EvidenceRelation,
-  EvidenceTier,
-} from '@/features/checks/types/evidence'
+export type { EvidenceItem, EvidenceRelation, EvidenceTier } from '@/features/checks/types/evidence'
 export type {
   CheckResultViewModel,
   ResultAtAGlance,

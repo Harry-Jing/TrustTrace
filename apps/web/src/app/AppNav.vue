@@ -79,7 +79,9 @@ function navigate(name: string) {
           aria-hidden="true"
         >
           <circle cx="12" cy="12" r="4" />
-          <path d="M12 3v2m0 14v2M3 12h2m14 0h2M5.6 5.6l1.4 1.4m10 10l1.4 1.4M5.6 18.4l1.4-1.4m10-10l1.4-1.4" />
+          <path
+            d="M12 3v2m0 14v2M3 12h2m14 0h2M5.6 5.6l1.4 1.4m10 10l1.4 1.4M5.6 18.4l1.4-1.4m10-10l1.4-1.4"
+          />
         </svg>
         <!-- Moon icon (dark mode active → click to switch to light) -->
         <svg

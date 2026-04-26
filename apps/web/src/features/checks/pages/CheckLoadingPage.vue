@@ -187,11 +187,7 @@ onBeforeUnmount(clearRedirectTimer)
       </h1>
 
       <!-- 6-step stepper -->
-      <ProgressStepper
-        :steps="stepperSteps"
-        :current-index="phaseIndex"
-        class="mb-8 sm:mb-12"
-      />
+      <ProgressStepper :steps="stepperSteps" :current-index="phaseIndex" class="mb-8 sm:mb-12" />
 
       <!-- Phase header: now label + title + plain-English description.
            Crossfades on phase change so text swaps feel intentional. -->

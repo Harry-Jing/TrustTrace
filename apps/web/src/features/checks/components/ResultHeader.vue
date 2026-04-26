@@ -34,10 +34,7 @@ const description = computed(() =>
   <!-- Breadcrumb row: which check this is. De-emphasized (no card chrome,
        small mono text) so it reads as orienting metadata, not as content
        competing with the verdict h1 below. -->
-  <div
-    class="mb-5 flex flex-wrap items-baseline gap-x-3 gap-y-1"
-    aria-label="Checked input"
-  >
+  <div class="mb-5 flex flex-wrap items-baseline gap-x-3 gap-y-1" aria-label="Checked input">
     <span class="font-mono text-[10px] tracking-[0.12em] text-muted uppercase">checked</span>
     <span class="min-w-0 flex-1 truncate font-mono text-[12px] text-ink-2">
       &ldquo;{{ result.inputText }}&rdquo;

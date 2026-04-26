@@ -82,8 +82,8 @@ const knownDemoCheckIds = DEMO_CHECK_IDS
 const MAX_NON_DEMO_RECORDS = 50
 let mockIdSequence = 0
 
-async function resolveMock<T>(value: T): Promise<T> {
-  return value
+function resolveMock<T>(value: T): Promise<T> {
+  return Promise.resolve(value)
 }
 
 function nowIso() {
@@ -279,7 +279,7 @@ function applyProgress(checkId: string, progress: CheckProgress) {
   rememberMockRecord(checkId, nextRecord)
 }
 
-export async function createCheck(input: CheckInputDraft): Promise<CreateCheckResponse> {
+export function createCheck(input: CheckInputDraft): Promise<CreateCheckResponse> {
   const checkId = makeCheckId()
   const createdAt = nowIso()
   const initialProgress = makeProgress(

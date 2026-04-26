@@ -3,6 +3,7 @@ import type { Ref } from 'vue'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { CheckResultViewModel, CheckStatus } from '@/features/checks/types'
+import type * as Vue from 'vue'
 import CheckResultPage from './CheckResultPage.vue'
 
 const reloadMock = vi.hoisted(() => vi.fn<() => Promise<unknown>>())
@@ -14,7 +15,7 @@ const resultState = vi.hoisted(() => ({
 }))
 
 vi.mock('@/features/checks/composables/useCheckResult', async () => {
-  const vue = await vi.importActual<typeof import('vue')>('vue')
+  const vue = await vi.importActual<typeof Vue>('vue')
 
   resultState.checkStatus = vue.ref('completed')
   resultState.result = vue.ref(null)

@@ -6,11 +6,13 @@ Evidence-oriented credibility checking service. Submit a URL or text, query LLM 
 
 - **Current:** `apps/web` is the active Vue 3 frontend, running with static/demo data.
 - **Planned:** `apps/server` for the TypeScript backend.
-- **Archived:** `archive/` and `docs/archive/` contain legacy implementation references only.
+- **Archived docs:** `docs/archive/` contains legacy implementation references only.
 
 ## Tech Stack
 
 Current frontend: Vue 3, TypeScript, Vite, Tailwind CSS v4, Vue Router, Pinia, vue-tsc, Oxlint, ESLint, Prettier, Vitest.
+
+For the current frontend, Bun is used for dependency installation and script orchestration only; dev/build/test remain Vite/Vitest/vue-tsc workflows.
 
 Planned backend: Bun, Hono, Zod, Drizzle, SQLite, pino, OpenAI and Gemini provider SDKs.
 
@@ -27,7 +29,7 @@ bun run build        # type-check and build
 bun run check        # full quality gate: format:check → lint → test → build
 ```
 
-Use `bun run test`, not bare `bun test` — archived code under `archive/` would cause Bun's test runner to scan too broadly.
+Use `bun run test`, not bare `bun test` — frontend tests run through Vitest/Vite for Vue SFC transforms, path aliases, jsdom, and Vitest mocking APIs.
 
 ## Project Structure
 
@@ -35,7 +37,6 @@ Use `bun run test`, not bare `bun test` — archived code under `archive/` would
 apps/web/            # Current: @trusttrace/web — Vue 3 frontend
 apps/server/         # Planned: @trusttrace/server — Hono backend
 docs/                # Project documentation
-archive/             # Legacy implementation references
 ```
 
 ## Workflow
@@ -44,11 +45,11 @@ archive/             # Legacy implementation references
 - If the user explicitly asks for analysis or an opinion before changes, do not modify files until asked to proceed.
 - For every task, consider whether the approach aligns with current best practices.
 - Read and follow the `karpathy-guidelines` skill when writing, reviewing, or refactoring code.
-- Do not treat files under `archive/` as the current implementation.
+- Do not treat files under `docs/archive/` as the current implementation.
 
 ## Documentation
 
-- [conventions.md](conventions.md) — Bun runtime, frontend quality tooling, CSS architecture
+- [conventions.md](conventions.md) — Bun package/scripts policy, frontend quality tooling, CSS architecture
 - [dev-tooling.md](dev-tooling.md) — dev-only FAB navigation, loading phase controls, guard pattern
 - [roadmap.md](roadmap.md) — frontend readiness priorities and backlog
 - [claim-checking-pipeline.md](claim-checking-pipeline.md) — backend claim-checking pipeline design

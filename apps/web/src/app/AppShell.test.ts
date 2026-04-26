@@ -17,7 +17,7 @@ const shellState = vi.hoisted(() => ({
   },
 }))
 
-vi.mock('vue-router', async () => {
+vi.mock('vue-router', () => {
   return {
     useRouter: () => ({
       afterEach: (hook: AfterEachHook) => {

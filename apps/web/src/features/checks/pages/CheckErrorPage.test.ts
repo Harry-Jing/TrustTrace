@@ -4,6 +4,7 @@ import { nextTick } from 'vue'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { CheckRecord } from '@/features/checks/types'
+import type * as Vue from 'vue'
 import CheckErrorPage from './CheckErrorPage.vue'
 
 const pushMock = vi.hoisted(() => vi.fn<(location: unknown) => void>())
@@ -22,7 +23,7 @@ vi.mock('@/features/checks/api/checksApi', () => ({
 }))
 
 vi.mock('@/features/checks/composables/useCreateCheck', async () => {
-  const vue = await vi.importActual<typeof import('vue')>('vue')
+  const vue = await vi.importActual<typeof Vue>('vue')
 
   return {
     useCreateCheck: () => ({

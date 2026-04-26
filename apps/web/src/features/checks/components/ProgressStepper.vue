@@ -40,7 +40,7 @@ function isCurrent(index: number, currentIndex: number) {
         />
         <div
           v-if="isCurrent(index, currentIndex)"
-          class="anim-connector-shimmer pointer-events-none absolute inset-0"
+          class="pointer-events-none absolute inset-0 anim-connector-shimmer"
         />
       </div>
 
@@ -53,10 +53,7 @@ function isCurrent(index: number, currentIndex: number) {
         :class="[
           {
             'border-good bg-good text-card': isDone(index, currentIndex),
-            'border-warn bg-warn text-white anim-pulse-ring': isCurrent(
-              index,
-              currentIndex,
-            ),
+            'anim-pulse-ring border-warn bg-warn text-white': isCurrent(index, currentIndex),
             'border-line bg-surface text-muted':
               !isDone(index, currentIndex) && !isCurrent(index, currentIndex),
           },

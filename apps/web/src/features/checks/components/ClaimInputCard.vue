@@ -6,7 +6,7 @@ import type { CheckInputDraft, CheckInputMode } from '@/features/checks/types'
 const props = defineProps<{
   disabled?: boolean
   submitting?: boolean
-  error?: unknown | null
+  error?: unknown
 }>()
 
 const emit = defineEmits<{

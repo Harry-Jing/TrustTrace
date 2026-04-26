@@ -2,12 +2,19 @@ import { defineStore } from 'pinia'
 
 import type { CheckInputDraft, CheckProgress, CreateCheckResponse } from '@/features/checks/types'
 
+interface ChecksState {
+  currentCheckId: string | null
+  currentInput: CheckInputDraft | null
+  progressByCheckId: Record<string, CheckProgress>
+  eventsUrlByCheckId: Record<string, string>
+}
+
 export const useChecksStore = defineStore('checks', {
-  state: () => ({
-    currentCheckId: null as string | null,
-    currentInput: null as CheckInputDraft | null,
-    progressByCheckId: {} as Record<string, CheckProgress>,
-    eventsUrlByCheckId: {} as Record<string, string>,
+  state: (): ChecksState => ({
+    currentCheckId: null,
+    currentInput: null,
+    progressByCheckId: {},
+    eventsUrlByCheckId: {},
   }),
   actions: {
     rememberCreatedCheck(input: CheckInputDraft, response: CreateCheckResponse) {
