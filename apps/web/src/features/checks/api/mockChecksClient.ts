@@ -146,15 +146,16 @@ function rememberMockRecord(checkId: string, record: CheckRecord) {
 }
 
 function makeResultForCheck(checkId: string, input?: CheckInputDraft): CheckResultViewModel {
-  const inputText = input?.value || CHECK_RESULT.inputText
-  const inputTypeLabel = input ? `${input.mode} input` : CHECK_RESULT.inputTypeLabel
+  const inputText =
+    input === undefined || input.value.length === 0 ? CHECK_RESULT.inputText : input.value
+  const inputTypeLabel = input === undefined ? CHECK_RESULT.inputTypeLabel : `${input.mode} input`
 
   return {
     ...CHECK_RESULT,
     checkId,
     inputText,
     inputTypeLabel,
-    summaryText: `TrustTrace check: "${inputText}"\n\nVerdict: ${CHECK_RESULT.headline}\nEvidence: ${CHECK_RESULT.evidence.length} sources · ${CHECK_RESULT.atAGlance.independent} independent · ${CHECK_RESULT.atAGlance.primary} primary · ${CHECK_RESULT.atAGlance.snippet} snippet-only\nUncertainty: ${CHECK_RESULT.atAGlance.uncertainty}`,
+    summaryText: `TrustTrace check: "${inputText}"\n\nVerdict: ${CHECK_RESULT.headline}\nEvidence: ${String(CHECK_RESULT.evidence.length)} sources · ${String(CHECK_RESULT.atAGlance.independent)} independent · ${String(CHECK_RESULT.atAGlance.primary)} primary · ${String(CHECK_RESULT.atAGlance.snippet)} snippet-only\nUncertainty: ${CHECK_RESULT.atAGlance.uncertainty}`,
   }
 }
 

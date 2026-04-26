@@ -20,7 +20,7 @@ const inputId = 'claim-input'
 
 const normalizedValue = computed(() => value.value.trim())
 const charCount = computed(() => value.value.length)
-const isDisabled = computed(() => props.disabled === true || props.submitting === true)
+const isDisabled = computed(() => props.disabled || props.submitting)
 const errorMessage = computed(() => {
   if (!props.error) return null
   if (props.error instanceof Error) return props.error.message

@@ -216,7 +216,7 @@ export const CHECK_RESULT = {
   summaryText: `TrustTrace check: "Seat belts reduce serious injury in crashes"
 
 Verdict: Strong evidence stacks at the top of the ladder.
-Evidence: ${RESULT_EVIDENCE.length} sources · 4 independent · 2 primary · 1 snippet-only
+Evidence: ${String(RESULT_EVIDENCE.length)} sources · 4 independent · 2 primary · 1 snippet-only
 Uncertainty: med
 
 NHTSA, IIHS, CDC, and WHO converge on 40–55% fatal-injury reduction for belted occupants. Claim is broad — specifics vary by passenger type, seating, and vehicle class.`,

@@ -24,7 +24,9 @@ class MockEventSource {
     const eventListener =
       typeof listener === 'function'
         ? (listener as (event: MessageEvent<string>) => void)
-        : (event: MessageEvent<string>) => listener.handleEvent(event)
+        : (event: MessageEvent<string>) => {
+            listener.handleEvent(event)
+          }
     this.listeners.set(type, [...(this.listeners.get(type) ?? []), eventListener])
   }
 
@@ -34,7 +36,9 @@ class MockEventSource {
 
   emitRaw(data: string) {
     const event = new MessageEvent<string>('progress', { data })
-    this.listeners.get('progress')?.forEach((listener) => listener(event))
+    this.listeners.get('progress')?.forEach((listener) => {
+      listener(event)
+    })
   }
 
   fail() {

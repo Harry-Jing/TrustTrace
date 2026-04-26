@@ -18,7 +18,7 @@ function handleCopy() {
   if (!result.value) return
 
   void navigator.clipboard
-    ?.writeText(result.value.summaryText)
+    .writeText(result.value.summaryText)
     .then(() => {
       copied.value = true
       setTimeout(() => {

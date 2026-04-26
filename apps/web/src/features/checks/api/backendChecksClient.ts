@@ -73,20 +73,22 @@ async function readJson(response: Response): Promise<unknown> {
 }
 
 async function requestJson(path: string, init?: RequestInit): Promise<unknown> {
+  const headers = new Headers(init?.headers)
+  if (!headers.has('Accept')) headers.set('Accept', 'application/json')
+  if (init?.body !== undefined && init.body !== null && !headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json')
+  }
+
   const response = await fetch(apiUrl(path), {
     ...init,
-    headers: {
-      Accept: 'application/json',
-      ...(init?.body ? { 'Content-Type': 'application/json' } : {}),
-      ...init?.headers,
-    },
+    headers,
   })
   const body = await readJson(response)
 
   if (!response.ok) {
     const errorBody = asObject(body)
     throw new HttpApiError(
-      readString(errorBody, 'message', `Request failed with status ${response.status}.`),
+      readString(errorBody, 'message', `Request failed with status ${String(response.status)}.`),
       response.status,
     )
   }

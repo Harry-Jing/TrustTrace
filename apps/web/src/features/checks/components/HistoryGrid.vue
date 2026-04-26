@@ -29,7 +29,7 @@ function toneBorderClass(tone: CheckListItem['tone']) {
 function onBeforeEnter(el: Element) {
   const htmlEl = el as HTMLElement
   const index = Number(htmlEl.dataset.index ?? 0)
-  htmlEl.style.animationDelay = `${index * 0.06}s`
+  htmlEl.style.animationDelay = `${String(index * 0.06)}s`
 }
 </script>
 
