@@ -1,21 +1,21 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
-import BaseTagBadge from '@/components/BaseTagBadge.vue'
-import { useScrolled } from '@/shared/composables/useScrolled'
-import { usePreferencesStore } from '@/stores/preferences.store'
+import BaseTagBadge from "@/components/BaseTagBadge.vue";
+import { useScrolled } from "@/shared/composables/useScrolled";
+import { usePreferencesStore } from "@/stores/preferences.store";
 
-const router = useRouter()
-const route = useRoute()
-const preferences = usePreferencesStore()
-const { isScrolled } = useScrolled()
+const router = useRouter();
+const route = useRoute();
+const preferences = usePreferencesStore();
+const { isScrolled } = useScrolled();
 
-const currentPage = computed(() => String(route.name ?? 'landing'))
+const currentPage = computed(() => String(route.name ?? "landing"));
 
 function navigate(name: string) {
-  void router.push({ name })
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+  void router.push({ name });
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 </script>
 

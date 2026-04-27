@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { onBeforeUnmount, ref, useId } from 'vue'
+import { onBeforeUnmount, ref, useId } from "vue";
 
 defineProps<{
-  text: string
-}>()
+  text: string;
+}>();
 
-const show = ref(false)
-const tooltipId = `cue-tooltip-${useId()}`
+const show = ref(false);
+const tooltipId = `cue-tooltip-${useId()}`;
 
 /**
  * The trigger button and the tooltip surface are not contiguous (there is an
@@ -16,34 +16,34 @@ const tooltipId = `cue-tooltip-${useId()}`
  * read it. We schedule a short close, and any `mouseenter` on the tooltip
  * itself cancels that pending close.
  */
-const HOVER_GRACE_MS = 120
-let closeTimer: ReturnType<typeof setTimeout> | null = null
+const HOVER_GRACE_MS = 120;
+let closeTimer: ReturnType<typeof setTimeout> | null = null;
 
 function clearCloseTimer() {
-  if (closeTimer === null) return
-  clearTimeout(closeTimer)
-  closeTimer = null
+  if (closeTimer === null) return;
+  clearTimeout(closeTimer);
+  closeTimer = null;
 }
 
 function open() {
-  clearCloseTimer()
-  show.value = true
+  clearCloseTimer();
+  show.value = true;
 }
 
 function scheduleClose() {
-  clearCloseTimer()
+  clearCloseTimer();
   closeTimer = setTimeout(() => {
-    show.value = false
-    closeTimer = null
-  }, HOVER_GRACE_MS)
+    show.value = false;
+    closeTimer = null;
+  }, HOVER_GRACE_MS);
 }
 
 function closeNow() {
-  clearCloseTimer()
-  show.value = false
+  clearCloseTimer();
+  show.value = false;
 }
 
-onBeforeUnmount(clearCloseTimer)
+onBeforeUnmount(clearCloseTimer);
 </script>
 
 <template>

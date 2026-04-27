@@ -1,26 +1,26 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from "vue";
 
-const showHow = ref(false)
-const panelId = 'how-trusttrace-works'
+const showHow = ref(false);
+const panelId = "how-trusttrace-works";
 const howSteps = [
   {
-    title: 'You submit',
-    description: 'Paste a URL or text claim. Works with articles, tweets, and short excerpts.',
+    title: "You submit",
+    description: "Paste a URL or text claim. Works with articles, tweets, and short excerpts.",
   },
   {
-    title: 'AI searches live sources',
-    description: 'We query multiple providers with web search enabled — not a static database.',
+    title: "AI searches live sources",
+    description: "We query multiple providers with web search enabled — not a static database.",
   },
   {
-    title: 'Evidence streams in',
-    description: 'You see sources, cues, and uncertainty as they’re found — in real time.',
+    title: "Evidence streams in",
+    description: "You see sources, cues, and uncertainty as they’re found — in real time.",
   },
   {
-    title: 'You decide',
-    description: 'No binary verdict. Just context to help you pause before sharing.',
+    title: "You decide",
+    description: "No binary verdict. Just context to help you pause before sharing.",
   },
-]
+];
 </script>
 
 <template>

@@ -1,35 +1,35 @@
 <script setup lang="ts">
-import BaseTagBadge from '@/components/BaseTagBadge.vue'
-import type { CheckListItem } from '@/features/checks/types'
+import BaseTagBadge from "@/components/BaseTagBadge.vue";
+import type { CheckListItem } from "@/features/checks/types";
 
 defineProps<{
-  items: readonly CheckListItem[]
-  search: string
-}>()
+  items: readonly CheckListItem[];
+  search: string;
+}>();
 
 const emit = defineEmits<{
-  select: [item: CheckListItem]
-}>()
+  select: [item: CheckListItem];
+}>();
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  })
+  return new Date(iso).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 }
 
-function toneBorderClass(tone: CheckListItem['tone']) {
-  if (tone === 'accent') return 'border-t-accent'
-  if (tone === 'warn') return 'border-t-warn'
-  if (tone === 'dark') return 'border-t-ink'
-  return 'border-t-line-strong'
+function toneBorderClass(tone: CheckListItem["tone"]) {
+  if (tone === "accent") return "border-t-accent";
+  if (tone === "warn") return "border-t-warn";
+  if (tone === "dark") return "border-t-ink";
+  return "border-t-line-strong";
 }
 
 function onBeforeEnter(el: Element) {
-  const htmlEl = el as HTMLElement
-  const index = Number(htmlEl.dataset.index ?? 0)
-  htmlEl.style.animationDelay = `${String(index * 0.06)}s`
+  const htmlEl = el as HTMLElement;
+  const index = Number(htmlEl.dataset.index ?? 0);
+  htmlEl.style.animationDelay = `${String(index * 0.06)}s`;
 }
 </script>
 
@@ -44,7 +44,7 @@ function onBeforeEnter(el: Element) {
       {{
         search
           ? `No checks match "${search}"`
-          : 'No checks yet. Run your first credibility check to get started.'
+          : "No checks yet. Run your first credibility check to get started."
       }}
     </div>
 

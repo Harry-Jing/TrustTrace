@@ -1,37 +1,37 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { computed, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
-import { devResetCheckProgress, devSetCheckFailed } from '@/features/checks/api/checksApi'
-import { DEMO_CHECK_ID } from '@/features/checks/fixtures/demoChecks'
+import { devResetCheckProgress, devSetCheckFailed } from "@/features/checks/api/checksApi";
+import { DEMO_CHECK_ID } from "@/features/checks/fixtures/demoChecks";
 
-const router = useRouter()
-const route = useRoute()
-const open = ref(false)
+const router = useRouter();
+const route = useRoute();
+const open = ref(false);
 
-const currentPage = computed(() => String(route.name ?? 'landing'))
+const currentPage = computed(() => String(route.name ?? "landing"));
 
 const pages = [
-  { name: 'landing', path: '/', label: 'New' },
-  { name: 'loading', path: `/checks/${DEMO_CHECK_ID}/loading`, label: 'Loading' },
-  { name: 'result', path: `/checks/${DEMO_CHECK_ID}/result`, label: 'Result' },
-  { name: 'error', path: `/checks/${DEMO_CHECK_ID}/error`, label: 'Error' },
-  { name: 'history', path: '/history', label: 'History' },
-] as const
+  { name: "landing", path: "/", label: "New" },
+  { name: "loading", path: `/checks/${DEMO_CHECK_ID}/loading`, label: "Loading" },
+  { name: "result", path: `/checks/${DEMO_CHECK_ID}/result`, label: "Result" },
+  { name: "error", path: `/checks/${DEMO_CHECK_ID}/error`, label: "Error" },
+  { name: "history", path: "/history", label: "History" },
+] as const;
 
-const LOADING_PATH = `/checks/${DEMO_CHECK_ID}/loading`
-const ERROR_PATH = `/checks/${DEMO_CHECK_ID}/error`
+const LOADING_PATH = `/checks/${DEMO_CHECK_ID}/loading`;
+const ERROR_PATH = `/checks/${DEMO_CHECK_ID}/error`;
 
 function navigateTo(path: string) {
   if (path === LOADING_PATH) {
-    devResetCheckProgress(DEMO_CHECK_ID)
+    devResetCheckProgress(DEMO_CHECK_ID);
   } else if (path === ERROR_PATH) {
-    devSetCheckFailed(DEMO_CHECK_ID)
+    devSetCheckFailed(DEMO_CHECK_ID);
   }
 
-  void router.push(path)
-  window.scrollTo({ top: 0, behavior: 'smooth' })
-  open.value = false
+  void router.push(path);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  open.value = false;
 }
 </script>
 

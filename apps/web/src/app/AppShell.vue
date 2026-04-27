@@ -1,48 +1,48 @@
 <script setup lang="ts">
-import { nextTick, onErrorCaptured, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { nextTick, onErrorCaptured, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
-import AppNav from '@/app/AppNav.vue'
-import DevNav from '@/app/DevNav.vue'
-import { showDevTools } from '@/app/env'
-import { usePreferencesStore } from '@/stores/preferences.store'
+import AppNav from "@/app/AppNav.vue";
+import DevNav from "@/app/DevNav.vue";
+import { showDevTools } from "@/app/env";
+import { usePreferencesStore } from "@/stores/preferences.store";
 
-const router = useRouter()
-const route = useRoute()
-const preferences = usePreferencesStore()
-const mainEl = ref<HTMLElement | null>(null)
-const transitionName = ref('page-same')
-const renderError = ref<Error | null>(null)
+const router = useRouter();
+const route = useRoute();
+const preferences = usePreferencesStore();
+const mainEl = ref<HTMLElement | null>(null);
+const transitionName = ref("page-same");
+const renderError = ref<Error | null>(null);
 
-preferences.applyTheme()
+preferences.applyTheme();
 
 onErrorCaptured((err) => {
-  renderError.value = err instanceof Error ? err : new Error(String(err))
-  return false
-})
+  renderError.value = err instanceof Error ? err : new Error(String(err));
+  return false;
+});
 
 router.afterEach((to, from) => {
-  renderError.value = null
+  renderError.value = null;
 
-  const toDepth = to.meta.depth ?? 0
-  const fromDepth = from.meta.depth ?? 0
+  const toDepth = to.meta.depth ?? 0;
+  const fromDepth = from.meta.depth ?? 0;
 
   if (toDepth > fromDepth) {
-    transitionName.value = 'page-forward'
+    transitionName.value = "page-forward";
   } else if (toDepth < fromDepth) {
-    transitionName.value = 'page-back'
+    transitionName.value = "page-back";
   } else {
-    transitionName.value = 'page-same'
+    transitionName.value = "page-same";
   }
-})
+});
 
 watch(
   () => route.fullPath,
   async () => {
-    await nextTick()
-    mainEl.value?.focus({ preventScroll: true })
+    await nextTick();
+    mainEl.value?.focus({ preventScroll: true });
   },
-)
+);
 </script>
 
 <template>

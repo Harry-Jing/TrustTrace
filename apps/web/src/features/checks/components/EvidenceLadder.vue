@@ -1,78 +1,78 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed } from "vue";
 
-import BaseTagBadge from '@/components/BaseTagBadge.vue'
-import type { BadgeTone } from '@/types/ui'
-import type { EvidenceItem, EvidenceRelation, EvidenceTier } from '@/features/checks/types'
-import { isSafeHttpUrl } from '@/features/checks/utils'
+import BaseTagBadge from "@/components/BaseTagBadge.vue";
+import type { BadgeTone } from "@/types/ui";
+import type { EvidenceItem, EvidenceRelation, EvidenceTier } from "@/features/checks/types";
+import { isSafeHttpUrl } from "@/features/checks/utils";
 
 const props = defineProps<{
-  evidence: readonly EvidenceItem[]
-}>()
+  evidence: readonly EvidenceItem[];
+}>();
 
 interface TierConfig {
-  tier: EvidenceTier
-  label: string
-  description: string
-  numberClass: string
-  borderClass: string
-  barClass: string
+  tier: EvidenceTier;
+  label: string;
+  description: string;
+  numberClass: string;
+  borderClass: string;
+  barClass: string;
 }
 
 const TIERS: readonly TierConfig[] = [
   {
     tier: 1,
-    label: 'Primary, full-text, independent',
-    description: 'Original sources, complete article body, no shared origin. Strongest weight.',
-    numberClass: 'border-good bg-good text-card',
-    borderClass: 'border-l-[3px] border-l-good',
-    barClass: 'bg-good',
+    label: "Primary, full-text, independent",
+    description: "Original sources, complete article body, no shared origin. Strongest weight.",
+    numberClass: "border-good bg-good text-card",
+    borderClass: "border-l-[3px] border-l-good",
+    barClass: "bg-good",
   },
   {
     tier: 2,
-    label: 'Secondary, full-text, independent',
-    description: 'Trusted agency or aggregator coverage with full body extracted.',
-    numberClass: 'border-accent bg-accent text-white',
-    borderClass: 'border-l-[3px] border-l-accent',
-    barClass: 'bg-accent',
+    label: "Secondary, full-text, independent",
+    description: "Trusted agency or aggregator coverage with full body extracted.",
+    numberClass: "border-accent bg-accent text-white",
+    borderClass: "border-l-[3px] border-l-accent",
+    barClass: "bg-accent",
   },
   {
     tier: 3,
-    label: 'Same-origin or limited',
-    description: 'Useful context but weighted lower — shares origin with a stronger source.',
-    numberClass: 'border-line-strong bg-surface-alt text-ink-2',
-    borderClass: 'border-l-[3px] border-l-line-strong',
-    barClass: 'bg-muted',
+    label: "Same-origin or limited",
+    description: "Useful context but weighted lower — shares origin with a stronger source.",
+    numberClass: "border-line-strong bg-surface-alt text-ink-2",
+    borderClass: "border-l-[3px] border-l-line-strong",
+    barClass: "bg-muted",
   },
   {
     tier: 4,
-    label: 'Snippet-only',
-    description: 'Suggestive, not load-bearing. Cannot independently support a strong claim.',
-    numberClass: 'border-warn bg-warn text-white',
-    borderClass: 'border-l-[3px] border-l-warn',
-    barClass: 'bg-warn',
+    label: "Snippet-only",
+    description: "Suggestive, not load-bearing. Cannot independently support a strong claim.",
+    numberClass: "border-warn bg-warn text-white",
+    borderClass: "border-l-[3px] border-l-warn",
+    barClass: "bg-warn",
   },
-]
+];
 
 const relationConfig: Record<EvidenceRelation, { label: string; tone: BadgeTone }> = {
-  supports: { label: 'supports', tone: 'good' },
-  contradicts: { label: 'contradicts', tone: 'warn' },
-  neutral: { label: 'neutral', tone: 'default' },
-}
+  supports: { label: "supports", tone: "good" },
+  contradicts: { label: "contradicts", tone: "warn" },
+  neutral: { label: "neutral", tone: "default" },
+};
 
 const groupedEvidence = computed(() =>
   TIERS.map((tierConfig) => ({
     config: tierConfig,
     items: props.evidence.filter((entry) => entry.tier === tierConfig.tier),
   })),
-)
+);
 
 function scopeMatchStyle(scope: number) {
-  return { '--tt-scope': String(Math.max(0, Math.min(1, scope))) }
+  return { "--tt-scope": String(Math.max(0, Math.min(1, scope))) };
 }
 
 function evidenceHref(item: EvidenceItem) {
-  return isSafeHttpUrl(item.url) ? item.url : null
+  return isSafeHttpUrl(item.url) ? item.url : null;
 }
 </script>
 
@@ -92,7 +92,7 @@ function evidenceHref(item: EvidenceItem) {
               {{ group.config.label }}
             </h2>
             <span class="font-mono text-[11px] tracking-[0.04em] text-muted">
-              {{ group.items.length }} {{ group.items.length === 1 ? 'source' : 'sources' }}
+              {{ group.items.length }} {{ group.items.length === 1 ? "source" : "sources" }}
             </span>
           </div>
           <p class="mt-1 text-[13px] leading-[1.65] text-ink-2">

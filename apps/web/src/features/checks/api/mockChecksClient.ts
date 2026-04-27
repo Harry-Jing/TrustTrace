@@ -1,4 +1,4 @@
-import { CHECK_RESULT, DEMO_CHECK_IDS, DEMO_CHECKS } from '@/features/checks/fixtures/demoChecks'
+import { CHECK_RESULT, DEMO_CHECK_IDS, DEMO_CHECKS } from "@/features/checks/fixtures/demoChecks";
 import type {
   CheckApiError,
   CheckEventHandlers,
@@ -14,7 +14,7 @@ import type {
   CheckStatus,
   CreateCheckResponse,
   ProgressEvent,
-} from '@/features/checks/types'
+} from "@/features/checks/types";
 
 /**
  * MOCK ONLY — In-memory API client used for local demo/debug flows.
@@ -22,88 +22,88 @@ import type {
  */
 
 interface MockProgressStep {
-  phase: CheckPhase
-  percent: number
-  message: string
-  delayMs: number
+  phase: CheckPhase;
+  percent: number;
+  message: string;
+  delayMs: number;
 }
 
 const MOCK_PROGRESS_SCRIPT = [
   {
-    phase: 'understanding',
+    phase: "understanding",
     percent: 8,
-    message: 'Reading the input and parsing it into checkable claims.',
+    message: "Reading the input and parsing it into checkable claims.",
     delayMs: 0,
   },
   {
-    phase: 'strategy',
+    phase: "strategy",
     percent: 22,
-    message: 'Picking source priorities and drafting queries.',
+    message: "Picking source priorities and drafting queries.",
     delayMs: 180,
   },
   {
-    phase: 'discovery',
+    phase: "discovery",
     percent: 42,
-    message: 'Searching trusted sources for this claim.',
+    message: "Searching trusted sources for this claim.",
     delayMs: 360,
   },
   {
-    phase: 'verify_read',
+    phase: "verify_read",
     percent: 62,
-    message: 'Verifying URLs and pulling article bodies.',
+    message: "Verifying URLs and pulling article bodies.",
     delayMs: 540,
   },
   {
-    phase: 'weigh',
+    phase: "weigh",
     percent: 80,
-    message: 'Sorting and reading each verified source.',
+    message: "Sorting and reading each verified source.",
     delayMs: 720,
   },
   {
-    phase: 'verdict',
+    phase: "verdict",
     percent: 94,
-    message: 'Composing the explanation from verified evidence.',
+    message: "Composing the explanation from verified evidence.",
     delayMs: 900,
   },
   {
-    phase: 'completed',
+    phase: "completed",
     percent: 100,
-    message: 'Check complete.',
+    message: "Check complete.",
     delayMs: 1080,
   },
-] as const satisfies readonly MockProgressStep[]
+] as const satisfies readonly MockProgressStep[];
 
-const INITIAL_PHASE: CheckPhase = 'understanding'
-const INITIAL_MESSAGE = 'Reading the input and parsing it into checkable claims.'
+const INITIAL_PHASE: CheckPhase = "understanding";
+const INITIAL_MESSAGE = "Reading the input and parsing it into checkable claims.";
 
-const mockRecords = new Map<string, CheckRecord>()
-const mockInputs = new Map<string, CheckInputDraft>()
-const knownDemoCheckIds = DEMO_CHECK_IDS
-const MAX_NON_DEMO_RECORDS = 50
-let mockIdSequence = 0
+const mockRecords = new Map<string, CheckRecord>();
+const mockInputs = new Map<string, CheckInputDraft>();
+const knownDemoCheckIds = DEMO_CHECK_IDS;
+const MAX_NON_DEMO_RECORDS = 50;
+let mockIdSequence = 0;
 
 function resolveMock<T>(value: T): Promise<T> {
-  return Promise.resolve(value)
+  return Promise.resolve(value);
 }
 
 function nowIso() {
-  return new Date().toISOString()
+  return new Date().toISOString();
 }
 
 function statusForPhase(phase: CheckPhase): CheckStatus {
-  if (phase === 'completed') return 'completed'
-  if (phase === 'failed') return 'failed'
-  return 'running'
+  if (phase === "completed") return "completed";
+  if (phase === "failed") return "failed";
+  return "running";
 }
 
 function makeCheckId() {
-  mockIdSequence += 1
-  return `mock-check-${Date.now().toString(36)}-${mockIdSequence.toString(36)}`
+  mockIdSequence += 1;
+  return `mock-check-${Date.now().toString(36)}-${mockIdSequence.toString(36)}`;
 }
 
 function makeProgress(
   checkId: string,
-  step: Pick<MockProgressStep, 'phase' | 'percent' | 'message'>,
+  step: Pick<MockProgressStep, "phase" | "percent" | "message">,
   seq: number,
   updatedAt = nowIso(),
 ): CheckProgress {
@@ -115,7 +115,7 @@ function makeProgress(
     message: step.message,
     eventSeq: seq,
     updatedAt,
-  }
+  };
 }
 
 function makeEvent(progress: CheckProgress): ProgressEvent {
@@ -130,25 +130,25 @@ function makeEvent(progress: CheckProgress): ProgressEvent {
     stepCode: `mock.${progress.phase}`,
     error: null,
     createdAt: progress.updatedAt,
-  }
+  };
 }
 
 function rememberMockRecord(checkId: string, record: CheckRecord) {
-  mockRecords.set(checkId, record)
+  mockRecords.set(checkId, record);
 
-  const nonDemoIds = [...mockRecords.keys()].filter((id) => !knownDemoCheckIds.has(id))
+  const nonDemoIds = [...mockRecords.keys()].filter((id) => !knownDemoCheckIds.has(id));
   while (nonDemoIds.length > MAX_NON_DEMO_RECORDS) {
-    const oldestId = nonDemoIds.shift()
-    if (!oldestId) return
-    mockRecords.delete(oldestId)
-    mockInputs.delete(oldestId)
+    const oldestId = nonDemoIds.shift();
+    if (!oldestId) return;
+    mockRecords.delete(oldestId);
+    mockInputs.delete(oldestId);
   }
 }
 
 function makeResultForCheck(checkId: string, input?: CheckInputDraft): CheckResultViewModel {
   const inputText =
-    input === undefined || input.value.length === 0 ? CHECK_RESULT.inputText : input.value
-  const inputTypeLabel = input === undefined ? CHECK_RESULT.inputTypeLabel : `${input.mode} input`
+    input === undefined || input.value.length === 0 ? CHECK_RESULT.inputText : input.value;
+  const inputTypeLabel = input === undefined ? CHECK_RESULT.inputTypeLabel : `${input.mode} input`;
 
   return {
     ...CHECK_RESULT,
@@ -156,25 +156,25 @@ function makeResultForCheck(checkId: string, input?: CheckInputDraft): CheckResu
     inputText,
     inputTypeLabel,
     summaryText: `TrustTrace check: "${inputText}"\n\nVerdict: ${CHECK_RESULT.headline}\nEvidence: ${String(CHECK_RESULT.evidence.length)} sources · ${String(CHECK_RESULT.atAGlance.independent)} independent · ${String(CHECK_RESULT.atAGlance.primary)} primary · ${String(CHECK_RESULT.atAGlance.snippet)} snippet-only\nUncertainty: ${CHECK_RESULT.atAGlance.uncertainty}`,
-  }
+  };
 }
 
 function makeCompletedRecord(checkId: string, input?: CheckInputDraft): CheckRecord {
-  const completedAt = nowIso()
+  const completedAt = nowIso();
   const progress = makeProgress(
     checkId,
     {
-      phase: 'completed',
+      phase: "completed",
       percent: 100,
-      message: 'Check complete.',
+      message: "Check complete.",
     },
     MOCK_PROGRESS_SCRIPT.length,
     completedAt,
-  )
+  );
 
   return {
     checkId,
-    status: 'completed',
+    status: "completed",
     input: input ?? null,
     progress,
     result: makeResultForCheck(checkId, input),
@@ -182,29 +182,29 @@ function makeCompletedRecord(checkId: string, input?: CheckInputDraft): CheckRec
     createdAt: completedAt,
     updatedAt: completedAt,
     completedAt,
-  }
+  };
 }
 
 function makeFailedRecord(checkId: string): CheckRecord {
-  const failedAt = nowIso()
+  const failedAt = nowIso();
   const progress = makeProgress(
     checkId,
-    { phase: 'failed', percent: 100, message: 'Check failed.' },
+    { phase: "failed", percent: 100, message: "Check failed." },
     1,
     failedAt,
-  )
+  );
   const error: CheckApiError = {
-    code: 'PROVIDER_TIMEOUT',
-    category: 'provider timeout',
-    message: 'The provider took too long.',
+    code: "PROVIDER_TIMEOUT",
+    category: "provider timeout",
+    message: "The provider took too long.",
     retryable: true,
     traceId: `${checkId.slice(0, 4)}…${checkId.slice(-4)}`,
     occurredAt: failedAt,
-  }
+  };
 
   return {
     checkId,
-    status: 'failed',
+    status: "failed",
     input: mockInputs.get(checkId) ?? null,
     progress,
     result: null,
@@ -212,29 +212,29 @@ function makeFailedRecord(checkId: string): CheckRecord {
     createdAt: failedAt,
     updatedAt: failedAt,
     completedAt: null,
-  }
+  };
 }
 
 function makeNotFoundRecord(checkId: string): CheckRecord {
-  const failedAt = nowIso()
+  const failedAt = nowIso();
   const progress = makeProgress(
     checkId,
-    { phase: 'failed', percent: 100, message: 'Check not found.' },
+    { phase: "failed", percent: 100, message: "Check not found." },
     1,
     failedAt,
-  )
+  );
   const error: CheckApiError = {
-    code: 'CHECK_NOT_FOUND',
-    category: 'not found',
-    message: 'No mock check record exists for this ID.',
+    code: "CHECK_NOT_FOUND",
+    category: "not found",
+    message: "No mock check record exists for this ID.",
     retryable: false,
     traceId: null,
     occurredAt: failedAt,
-  }
+  };
 
   return {
     checkId,
-    status: 'failed',
+    status: "failed",
     input: null,
     progress,
     result: null,
@@ -242,7 +242,7 @@ function makeNotFoundRecord(checkId: string): CheckRecord {
     createdAt: failedAt,
     updatedAt: failedAt,
     completedAt: null,
-  }
+  };
 }
 
 function cloneRecord(record: CheckRecord): CheckRecord {
@@ -260,29 +260,29 @@ function cloneRecord(record: CheckRecord): CheckRecord {
         }
       : null,
     error: record.error ? { ...record.error } : null,
-  }
+  };
 }
 
 function applyProgress(checkId: string, progress: CheckProgress) {
-  const existing = mockRecords.get(checkId) ?? makeNotFoundRecord(checkId)
+  const existing = mockRecords.get(checkId) ?? makeNotFoundRecord(checkId);
   const nextRecord: CheckRecord = {
     ...existing,
     status: progress.status,
     progress,
     updatedAt: progress.updatedAt,
-    completedAt: progress.status === 'completed' ? progress.updatedAt : existing.completedAt,
+    completedAt: progress.status === "completed" ? progress.updatedAt : existing.completedAt,
     result:
-      progress.status === 'completed'
+      progress.status === "completed"
         ? makeResultForCheck(checkId, mockInputs.get(checkId))
         : existing.result,
-  }
+  };
 
-  rememberMockRecord(checkId, nextRecord)
+  rememberMockRecord(checkId, nextRecord);
 }
 
 export function createCheck(input: CheckInputDraft): Promise<CreateCheckResponse> {
-  const checkId = makeCheckId()
-  const createdAt = nowIso()
+  const checkId = makeCheckId();
+  const createdAt = nowIso();
   const initialProgress = makeProgress(
     checkId,
     {
@@ -292,12 +292,12 @@ export function createCheck(input: CheckInputDraft): Promise<CreateCheckResponse
     },
     1,
     createdAt,
-  )
+  );
 
-  mockInputs.set(checkId, input)
+  mockInputs.set(checkId, input);
   rememberMockRecord(checkId, {
     checkId,
-    status: 'running',
+    status: "running",
     input,
     progress: initialProgress,
     result: null,
@@ -305,29 +305,29 @@ export function createCheck(input: CheckInputDraft): Promise<CreateCheckResponse
     createdAt,
     updatedAt: createdAt,
     completedAt: null,
-  })
+  });
 
   return resolveMock({
     checkId,
-    status: 'running',
+    status: "running",
     progress: initialProgress,
     eventsUrl: `/v1/checks/${checkId}/events`,
     createdAt,
-  })
+  });
 }
 
 export function getCheck(checkId: string): Promise<CheckRecord> {
-  const existing = mockRecords.get(checkId)
+  const existing = mockRecords.get(checkId);
 
   if (existing) {
-    return resolveMock(cloneRecord(existing))
+    return resolveMock(cloneRecord(existing));
   }
 
   const fallback = knownDemoCheckIds.has(checkId)
     ? makeCompletedRecord(checkId)
-    : makeNotFoundRecord(checkId)
-  rememberMockRecord(checkId, fallback)
-  return resolveMock(cloneRecord(fallback))
+    : makeNotFoundRecord(checkId);
+  rememberMockRecord(checkId, fallback);
+  return resolveMock(cloneRecord(fallback));
 }
 
 /**
@@ -335,17 +335,17 @@ export function getCheck(checkId: string): Promise<CheckRecord> {
  * so the loading page can be inspected from the beginning.
  */
 export function devResetCheckProgress(checkId: string): void {
-  const createdAt = nowIso()
+  const createdAt = nowIso();
   const initialProgress = makeProgress(
     checkId,
     { phase: INITIAL_PHASE, percent: 8, message: INITIAL_MESSAGE },
     1,
     createdAt,
-  )
+  );
 
   rememberMockRecord(checkId, {
     checkId,
-    status: 'running',
+    status: "running",
     input: mockInputs.get(checkId) ?? null,
     progress: initialProgress,
     result: null,
@@ -353,17 +353,17 @@ export function devResetCheckProgress(checkId: string): void {
     createdAt,
     updatedAt: createdAt,
     completedAt: null,
-  })
+  });
 }
 
 export function devSetCheckFailed(checkId: string): void {
-  rememberMockRecord(checkId, makeFailedRecord(checkId))
+  rememberMockRecord(checkId, makeFailedRecord(checkId));
 }
 
 export function listChecks(params?: CheckListParams): Promise<readonly CheckListItem[]> {
-  const limit = params?.limit ?? DEMO_CHECKS.length
-  const offset = params?.offset ?? 0
-  return resolveMock(DEMO_CHECKS.slice(offset, offset + limit))
+  const limit = params?.limit ?? DEMO_CHECKS.length;
+  const offset = params?.offset ?? 0;
+  return resolveMock(DEMO_CHECKS.slice(offset, offset + limit));
 }
 
 export function subscribeCheckEvents(
@@ -371,51 +371,51 @@ export function subscribeCheckEvents(
   handlers: CheckEventHandlers,
   _options?: CheckEventSubscriptionOptions,
 ): CheckEventSubscription {
-  const timers: ReturnType<typeof setTimeout>[] = []
-  let closed = false
+  const timers: ReturnType<typeof setTimeout>[] = [];
+  let closed = false;
 
-  const existing = mockRecords.get(checkId)
+  const existing = mockRecords.get(checkId);
 
-  if (existing?.status === 'completed' || existing?.status === 'failed') {
+  if (existing?.status === "completed" || existing?.status === "failed") {
     const timer = setTimeout(() => {
-      if (closed) return
-      handlers.onEvent?.(makeEvent(existing.progress))
-      handlers.onClose?.()
-    }, 0)
-    timers.push(timer)
+      if (closed) return;
+      handlers.onEvent?.(makeEvent(existing.progress));
+      handlers.onClose?.();
+    }, 0);
+    timers.push(timer);
 
     return {
       close() {
-        closed = true
-        timers.forEach(clearTimeout)
+        closed = true;
+        timers.forEach(clearTimeout);
       },
-    }
+    };
   }
 
   MOCK_PROGRESS_SCRIPT.forEach((step, index) => {
     const timer = setTimeout(() => {
-      if (closed) return
+      if (closed) return;
 
       try {
-        const progress = makeProgress(checkId, step, index + 1)
-        applyProgress(checkId, progress)
-        handlers.onEvent?.(makeEvent(progress))
+        const progress = makeProgress(checkId, step, index + 1);
+        applyProgress(checkId, progress);
+        handlers.onEvent?.(makeEvent(progress));
 
-        if (progress.status === 'completed' || progress.status === 'failed') {
-          handlers.onClose?.()
+        if (progress.status === "completed" || progress.status === "failed") {
+          handlers.onClose?.();
         }
       } catch (error) {
-        handlers.onError?.(error)
+        handlers.onError?.(error);
       }
-    }, step.delayMs)
+    }, step.delayMs);
 
-    timers.push(timer)
-  })
+    timers.push(timer);
+  });
 
   return {
     close() {
-      closed = true
-      timers.forEach(clearTimeout)
+      closed = true;
+      timers.forEach(clearTimeout);
     },
-  }
+  };
 }

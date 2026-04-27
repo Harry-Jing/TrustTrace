@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, onBeforeUnmount, ref, watch } from "vue";
+import { useRouter } from "vue-router";
 
-import BasePageFooter from '@/components/BasePageFooter.vue'
-import DevLoadingControls from '@/app/DevLoadingControls.vue'
-import { showDevTools } from '@/app/env'
-import ProgressStepper from '@/features/checks/components/ProgressStepper.vue'
-import { ACTIVE_PHASES, PHASE_DEFINITIONS } from '@/features/checks/constants/checkProgress'
-import { useCheckProgress } from '@/features/checks/composables/useCheckProgress'
-import { DEMO_CHECKS } from '@/features/checks/fixtures/demoChecks'
-import { useChecksStore } from '@/features/checks/stores/checks.store'
-import type { CheckPhase } from '@/features/checks/types'
+import BasePageFooter from "@/components/BasePageFooter.vue";
+import DevLoadingControls from "@/app/DevLoadingControls.vue";
+import { showDevTools } from "@/app/env";
+import ProgressStepper from "@/features/checks/components/ProgressStepper.vue";
+import { ACTIVE_PHASES, PHASE_DEFINITIONS } from "@/features/checks/constants/checkProgress";
+import { useCheckProgress } from "@/features/checks/composables/useCheckProgress";
+import { DEMO_CHECKS } from "@/features/checks/fixtures/demoChecks";
+import { useChecksStore } from "@/features/checks/stores/checks.store";
+import type { CheckPhase } from "@/features/checks/types";
 
-const showCelebration = ref(false)
-const router = useRouter()
-const checks = useChecksStore()
+const showCelebration = ref(false);
+const router = useRouter();
+const checks = useChecksStore();
 const {
   checkId,
   status,
@@ -25,53 +25,53 @@ const {
   progressError,
   retry,
   setPhase,
-} = useCheckProgress()
-let redirectTimer: ReturnType<typeof setTimeout> | null = null
+} = useCheckProgress();
+let redirectTimer: ReturnType<typeof setTimeout> | null = null;
 
-const stepperSteps = computed(() => ACTIVE_PHASES.map((key) => PHASE_DEFINITIONS[key]))
+const stepperSteps = computed(() => ACTIVE_PHASES.map((key) => PHASE_DEFINITIONS[key]));
 
 const claimText = computed(() => {
-  const persisted = record.value?.input?.value
-  if (persisted) return persisted
-  const submitted = checks.currentInput?.value
-  if (submitted) return submitted
-  const demoMatch = DEMO_CHECKS.find((entry) => entry.checkId === checkId.value)
-  return demoMatch?.claim ?? ''
-})
+  const persisted = record.value?.input?.value;
+  if (persisted) return persisted;
+  const submitted = checks.currentInput?.value;
+  if (submitted) return submitted;
+  const demoMatch = DEMO_CHECKS.find((entry) => entry.checkId === checkId.value);
+  return demoMatch?.claim ?? "";
+});
 
 function clearRedirectTimer() {
-  if (!redirectTimer) return
-  clearTimeout(redirectTimer)
-  redirectTimer = null
+  if (!redirectTimer) return;
+  clearTimeout(redirectTimer);
+  redirectTimer = null;
 }
 
 function scheduleResultRedirect(nextCheckId: string) {
-  clearRedirectTimer()
+  clearRedirectTimer();
   redirectTimer = setTimeout(() => {
-    void router.push({ name: 'result', params: { checkId: nextCheckId } })
-  }, 650)
+    void router.push({ name: "result", params: { checkId: nextCheckId } });
+  }, 650);
 }
 
 // --- DEV: manual phase control ---
 function handleSetPhase(nextPhase: CheckPhase) {
-  setPhase(nextPhase)
-  showCelebration.value = false
+  setPhase(nextPhase);
+  showCelebration.value = false;
 }
 
 function handleDone() {
-  setPhase('completed')
+  setPhase("completed");
   // DEV: explicitly trigger the completion redirect that is otherwise
   // suppressed in dev mode (see the watch below).
-  const currentCheckId = checkId.value
+  const currentCheckId = checkId.value;
   if (showDevTools && currentCheckId) {
-    showCelebration.value = true
-    scheduleResultRedirect(currentCheckId)
+    showCelebration.value = true;
+    scheduleResultRedirect(currentCheckId);
   }
 }
 // --- end DEV ---
 
 function retryProgress() {
-  void retry()
+  void retry();
 }
 
 watch(
@@ -79,23 +79,23 @@ watch(
   (nextStatus) => {
     // MOCK DEV: auto-redirect is disabled only when demo controls are shown
     // so each loading phase can be inspected manually.
-    if (showDevTools) return
+    if (showDevTools) return;
 
-    const currentCheckId = checkId.value
-    if (!currentCheckId) return
+    const currentCheckId = checkId.value;
+    if (!currentCheckId) return;
 
-    if (nextStatus === 'completed') {
-      showCelebration.value = true
-      scheduleResultRedirect(currentCheckId)
-    } else if (nextStatus === 'failed') {
-      clearRedirectTimer()
-      void router.push({ name: 'error', params: { checkId: currentCheckId } })
+    if (nextStatus === "completed") {
+      showCelebration.value = true;
+      scheduleResultRedirect(currentCheckId);
+    } else if (nextStatus === "failed") {
+      clearRedirectTimer();
+      void router.push({ name: "error", params: { checkId: currentCheckId } });
     }
   },
   { immediate: true },
-)
+);
 
-onBeforeUnmount(clearRedirectTimer)
+onBeforeUnmount(clearRedirectTimer);
 </script>
 
 <template>

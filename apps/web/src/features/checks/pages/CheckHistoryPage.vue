@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
+import { useRouter } from "vue-router";
 
-import BasePageFooter from '@/components/BasePageFooter.vue'
-import HistoryGrid from '@/features/checks/components/HistoryGrid.vue'
-import HistoryToolbar from '@/features/checks/components/HistoryToolbar.vue'
-import { useCheckHistory } from '@/features/checks/composables/useCheckHistory'
-import type { CheckListItem } from '@/features/checks/types'
+import BasePageFooter from "@/components/BasePageFooter.vue";
+import HistoryGrid from "@/features/checks/components/HistoryGrid.vue";
+import HistoryToolbar from "@/features/checks/components/HistoryToolbar.vue";
+import { useCheckHistory } from "@/features/checks/composables/useCheckHistory";
+import type { CheckListItem } from "@/features/checks/types";
 
-const router = useRouter()
-const { search, sortBy, items, isLoading, isError, reload } = useCheckHistory()
+const router = useRouter();
+const { search, sortBy, items, isLoading, isError, reload } = useCheckHistory();
 
 function selectHistoryItem(historyItem: CheckListItem) {
-  void router.push(`/checks/${historyItem.checkId}/result`)
+  void router.push(`/checks/${historyItem.checkId}/result`);
 }
 </script>
 

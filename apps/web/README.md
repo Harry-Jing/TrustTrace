@@ -22,15 +22,15 @@ src/router/                      # Vue Router configuration
 
 ## Routes
 
-| Route | Name | Purpose |
-|---|---|---|
-| `/checks/new` | `landing` | New-check screen with demo form. |
-| `/` | — | Redirects to `/checks/new`. |
-| `/checks/:checkId/loading` | `loading` | Check-specific progress route. |
-| `/checks/:checkId/result` | `result` | Check-specific result route. |
-| `/checks/:checkId/error` | `error` | Check-specific failure route. |
-| `/history` | `history` | Searchable/sortable history cards. |
-| `/loading`, `/result`, `/error` | — | Dev-mode redirects to demo check routes. |
+| Route                           | Name      | Purpose                                  |
+| ------------------------------- | --------- | ---------------------------------------- |
+| `/checks/new`                   | `landing` | New-check screen with demo form.         |
+| `/`                             | —         | Redirects to `/checks/new`.              |
+| `/checks/:checkId/loading`      | `loading` | Check-specific progress route.           |
+| `/checks/:checkId/result`       | `result`  | Check-specific result route.             |
+| `/checks/:checkId/error`        | `error`   | Check-specific failure route.            |
+| `/history`                      | `history` | Searchable/sortable history cards.       |
+| `/loading`, `/result`, `/error` | —         | Dev-mode redirects to demo check routes. |
 
 ## Current Behavior
 

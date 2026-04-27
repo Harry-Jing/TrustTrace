@@ -1,33 +1,33 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed } from "vue";
 
-import BaseTagBadge from '@/components/BaseTagBadge.vue'
-import { readVerdictCopy } from '@/features/checks/constants/resultFallbacks'
-import type { BadgeTone } from '@/types/ui'
-import type { CheckResultViewModel, VerdictBand } from '@/features/checks/types'
+import BaseTagBadge from "@/components/BaseTagBadge.vue";
+import { readVerdictCopy } from "@/features/checks/constants/resultFallbacks";
+import type { BadgeTone } from "@/types/ui";
+import type { CheckResultViewModel, VerdictBand } from "@/features/checks/types";
 
 const props = defineProps<{
-  result: CheckResultViewModel
-}>()
+  result: CheckResultViewModel;
+}>();
 
 const verdictTone: Record<VerdictBand, BadgeTone> = {
-  evidence_strong: 'good',
-  evidence_mixed: 'accent',
-  evidence_weak: 'warn',
-  evidence_thin: 'warn',
-  needs_context: 'default',
-  system_failed: 'warn',
-}
+  evidence_strong: "good",
+  evidence_mixed: "accent",
+  evidence_weak: "warn",
+  evidence_thin: "warn",
+  needs_context: "default",
+  system_failed: "warn",
+};
 
 const verdictLabel = computed(() =>
-  readVerdictCopy(props.result.verdictBand, 'label', props.result.verdictLabel),
-)
+  readVerdictCopy(props.result.verdictBand, "label", props.result.verdictLabel),
+);
 const headline = computed(() =>
-  readVerdictCopy(props.result.verdictBand, 'headline', props.result.headline),
-)
+  readVerdictCopy(props.result.verdictBand, "headline", props.result.headline),
+);
 const description = computed(() =>
-  readVerdictCopy(props.result.verdictBand, 'description', props.result.description),
-)
+  readVerdictCopy(props.result.verdictBand, "description", props.result.description),
+);
 </script>
 
 <template>

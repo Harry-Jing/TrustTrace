@@ -1,57 +1,57 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref } from "vue";
 
-import type { CheckInputDraft, CheckInputMode } from '@/features/checks/types'
+import type { CheckInputDraft, CheckInputMode } from "@/features/checks/types";
 
 const props = defineProps<{
-  disabled?: boolean
-  submitting?: boolean
-  error?: unknown
-}>()
+  disabled?: boolean;
+  submitting?: boolean;
+  error?: unknown;
+}>();
 
 const emit = defineEmits<{
-  submit: [input: CheckInputDraft]
-}>()
+  submit: [input: CheckInputDraft];
+}>();
 
-const mode = ref<CheckInputMode>('text')
-const value = ref('')
-const inputFocused = ref(false)
-const inputId = 'claim-input'
+const mode = ref<CheckInputMode>("text");
+const value = ref("");
+const inputFocused = ref(false);
+const inputId = "claim-input";
 
-const normalizedValue = computed(() => value.value.trim())
-const charCount = computed(() => value.value.length)
-const isDisabled = computed(() => props.disabled || props.submitting)
+const normalizedValue = computed(() => value.value.trim());
+const charCount = computed(() => value.value.length);
+const isDisabled = computed(() => props.disabled || props.submitting);
 const errorMessage = computed(() => {
-  if (!props.error) return null
-  if (props.error instanceof Error) return props.error.message
-  return 'Could not start this check. Please try again.'
-})
+  if (!props.error) return null;
+  if (props.error instanceof Error) return props.error.message;
+  return "Could not start this check. Please try again.";
+});
 
 function isHttpUrl(input: string) {
   try {
-    const url = new URL(input)
-    return url.protocol === 'http:' || url.protocol === 'https:'
+    const url = new URL(input);
+    return url.protocol === "http:" || url.protocol === "https:";
   } catch {
-    return false
+    return false;
   }
 }
 
 const isValid = computed(() =>
-  mode.value === 'url'
+  mode.value === "url"
     ? isHttpUrl(normalizedValue.value)
     : normalizedValue.value.length >= 3 && normalizedValue.value.length <= 10000,
-)
+);
 
 function switchMode(nextMode: CheckInputMode) {
-  if (isDisabled.value) return
+  if (isDisabled.value) return;
 
-  mode.value = nextMode
-  value.value = ''
+  mode.value = nextMode;
+  value.value = "";
 }
 
 function submit() {
-  if (!isValid.value || isDisabled.value) return
-  emit('submit', { mode: mode.value, value: normalizedValue.value })
+  if (!isValid.value || isDisabled.value) return;
+  emit("submit", { mode: mode.value, value: normalizedValue.value });
 }
 </script>
 
@@ -127,7 +127,7 @@ function submit() {
     <!-- Submit row -->
     <div class="mt-3.5 flex items-center justify-between border-t border-line pt-3.5">
       <span class="font-mono text-[11px] tracking-[0.03em] text-muted">
-        {{ mode === 'url' ? 'paste a full http(s) URL' : 'min 3 characters' }}
+        {{ mode === "url" ? "paste a full http(s) URL" : "min 3 characters" }}
       </span>
       <button
         type="submit"
@@ -139,7 +139,7 @@ function submit() {
         "
         :disabled="!isValid || isDisabled"
       >
-        {{ submitting ? 'Starting…' : 'Run credibility check' }}
+        {{ submitting ? "Starting…" : "Run credibility check" }}
       </button>
     </div>
   </form>

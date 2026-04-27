@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
+import { useRouter } from "vue-router";
 
 defineProps<{
-  copied: boolean
-}>()
+  copied: boolean;
+}>();
 
 const emit = defineEmits<{
-  copy: []
-}>()
+  copy: [];
+}>();
 
-const router = useRouter()
+const router = useRouter();
 </script>
 
 <template>
@@ -36,7 +36,7 @@ const router = useRouter()
         >
           <path d="M3.5 8.5l3 3 6-6.5" />
         </svg>
-        {{ copied ? 'Copied to clipboard' : 'Copy summary' }}
+        {{ copied ? "Copied to clipboard" : "Copy summary" }}
       </button>
       <span class="flex-1" />
       <button

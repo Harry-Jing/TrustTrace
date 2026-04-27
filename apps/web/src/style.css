@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 /* ── Theme tokens ──
    Color values were chosen to meet WCAG AA contrast (4.5:1 minimum for body
@@ -25,7 +25,7 @@
   --tt-nav-bg: rgba(250, 249, 246, 0.92);
 }
 
-[data-theme='dark'] {
+[data-theme="dark"] {
   --tt-bg: #111110;
   --tt-bg2: #1c1c1a;
   --tt-ink: #eeeee8;
@@ -47,9 +47,9 @@
 }
 
 @theme {
-  --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
-  --font-serif: 'Newsreader', ui-serif, Georgia, serif;
-  --font-mono: ui-monospace, 'SFMono-Regular', monospace;
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Newsreader", ui-serif, Georgia, serif;
+  --font-mono: ui-monospace, "SFMono-Regular", monospace;
 
   --color-surface: var(--tt-bg);
   --color-surface-alt: var(--tt-bg2);
@@ -340,7 +340,7 @@
     transition: grid-template-rows 0.3s ease;
   }
 
-  .expand-panel[data-open='true'] {
+  .expand-panel[data-open="true"] {
     grid-template-rows: 1fr;
   }
 
@@ -350,7 +350,7 @@
     transition: opacity 0.2s ease 0.1s;
   }
 
-  .expand-panel[data-open='true'] > .expand-panel-inner {
+  .expand-panel[data-open="true"] > .expand-panel-inner {
     opacity: 1;
   }
 

@@ -3,18 +3,18 @@
  * DEV ONLY — Phase switcher for the loading page.
  * Allows manually stepping through check phases without auto-progression.
  */
-import type { ActiveCheckPhase, CheckPhase } from '@/features/checks/types'
-import { PHASE_DEFINITIONS } from '@/features/checks/constants/checkProgress'
+import type { ActiveCheckPhase, CheckPhase } from "@/features/checks/types";
+import { PHASE_DEFINITIONS } from "@/features/checks/constants/checkProgress";
 
 defineProps<{
-  phases: readonly ActiveCheckPhase[]
-  phase: CheckPhase
-}>()
+  phases: readonly ActiveCheckPhase[];
+  phase: CheckPhase;
+}>();
 
 const emit = defineEmits<{
-  setPhase: [phase: CheckPhase]
-  done: []
-}>()
+  setPhase: [phase: CheckPhase];
+  done: [];
+}>();
 </script>
 
 <template>

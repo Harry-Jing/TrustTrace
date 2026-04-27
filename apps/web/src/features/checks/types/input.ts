@@ -1,6 +1,6 @@
-export type CheckInputMode = 'text' | 'url'
+export type CheckInputMode = "text" | "url";
 
 export interface CheckInputDraft {
-  mode: CheckInputMode
-  value: string
+  mode: CheckInputMode;
+  value: string;
 }

@@ -1,11 +1,11 @@
-import { apiBaseUrl } from '@/app/env'
+import { apiBaseUrl } from "@/app/env";
 import {
   checkListResponseSchema,
   checkRecordSchema,
   createCheckResponseSchema,
   parseBackendPayload,
   progressEventSchema,
-} from '@/features/checks/api/backendCheckSchemas'
+} from "@/features/checks/api/backendCheckSchemas";
 import type {
   CheckEventHandlers,
   CheckEventSubscription,
@@ -15,123 +15,123 @@ import type {
   CheckListParams,
   CheckRecord,
   CreateCheckResponse,
-} from '@/features/checks/types'
+} from "@/features/checks/types";
 
-const STREAM_RECONNECT_DELAYS_MS = [500, 1000, 2000] as const
+const STREAM_RECONNECT_DELAYS_MS = [500, 1000, 2000] as const;
 
 class HttpApiError extends Error {
-  readonly status: number
+  readonly status: number;
 
   constructor(message: string, status: number) {
-    super(message)
-    this.name = 'HttpApiError'
-    this.status = status
+    super(message);
+    this.name = "HttpApiError";
+    this.status = status;
   }
 }
 
 function apiUrl(path: string) {
-  return `${apiBaseUrl.replace(/\/$/, '')}${path}`
+  return `${apiBaseUrl.replace(/\/$/, "")}${path}`;
 }
 
 function resolveEventsUrl(checkId: string, eventsUrl?: string) {
-  if (!eventsUrl) return apiUrl(`/checks/${encodeURIComponent(checkId)}/events`)
+  if (!eventsUrl) return apiUrl(`/checks/${encodeURIComponent(checkId)}/events`);
 
-  if (/^https?:\/\//.test(eventsUrl) || eventsUrl.startsWith('/')) {
-    return eventsUrl
+  if (/^https?:\/\//.test(eventsUrl) || eventsUrl.startsWith("/")) {
+    return eventsUrl;
   }
 
-  return apiUrl(`/${eventsUrl.replace(/^\/+/, '')}`)
+  return apiUrl(`/${eventsUrl.replace(/^\/+/, "")}`);
 }
 
 function appendAfterSeq(url: string, afterSeq: number) {
-  if (afterSeq <= 0) return url
+  if (afterSeq <= 0) return url;
 
-  const separator = url.includes('?') ? '&' : '?'
-  return `${url}${separator}afterSeq=${encodeURIComponent(String(afterSeq))}`
+  const separator = url.includes("?") ? "&" : "?";
+  return `${url}${separator}afterSeq=${encodeURIComponent(String(afterSeq))}`;
 }
 
 function asObject(value: unknown): Record<string, unknown> {
-  return value && typeof value === 'object' && !Array.isArray(value)
+  return value && typeof value === "object" && !Array.isArray(value)
     ? (value as Record<string, unknown>)
-    : {}
+    : {};
 }
 
-function readString(source: Record<string, unknown>, key: string, fallback = '') {
-  const value = source[key]
-  return typeof value === 'string' ? value : fallback
+function readString(source: Record<string, unknown>, key: string, fallback = "") {
+  const value = source[key];
+  return typeof value === "string" ? value : fallback;
 }
 
 async function readJson(response: Response): Promise<unknown> {
-  const text = await response.text()
-  if (!text) return null
+  const text = await response.text();
+  if (!text) return null;
 
   try {
-    return JSON.parse(text) as unknown
+    return JSON.parse(text) as unknown;
   } catch {
-    throw new Error('Backend returned invalid JSON.')
+    throw new Error("Backend returned invalid JSON.");
   }
 }
 
 async function requestJson(path: string, init?: RequestInit): Promise<unknown> {
-  const headers = new Headers(init?.headers)
-  if (!headers.has('Accept')) headers.set('Accept', 'application/json')
-  if (init?.body !== undefined && init.body !== null && !headers.has('Content-Type')) {
-    headers.set('Content-Type', 'application/json')
+  const headers = new Headers(init?.headers);
+  if (!headers.has("Accept")) headers.set("Accept", "application/json");
+  if (init?.body !== undefined && init.body !== null && !headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
   }
 
   const response = await fetch(apiUrl(path), {
     ...init,
     headers,
-  })
-  const body = await readJson(response)
+  });
+  const body = await readJson(response);
 
   if (!response.ok) {
-    const errorBody = asObject(body)
+    const errorBody = asObject(body);
     throw new HttpApiError(
-      readString(errorBody, 'message', `Request failed with status ${String(response.status)}.`),
+      readString(errorBody, "message", `Request failed with status ${String(response.status)}.`),
       response.status,
-    )
+    );
   }
 
-  return body
+  return body;
 }
 
 function toCreateCheckResponse(value: unknown): CreateCheckResponse {
-  return parseBackendPayload(createCheckResponseSchema, value, 'createCheck response')
+  return parseBackendPayload(createCheckResponseSchema, value, "createCheck response");
 }
 
 function toCheckRecord(value: unknown): CheckRecord {
-  return parseBackendPayload(checkRecordSchema, value, 'check record')
+  return parseBackendPayload(checkRecordSchema, value, "check record");
 }
 
 export async function createCheck(input: CheckInputDraft): Promise<CreateCheckResponse> {
-  const body = await requestJson('/checks', {
-    method: 'POST',
+  const body = await requestJson("/checks", {
+    method: "POST",
     body: JSON.stringify({
       input: {
         type: input.mode,
         content: input.value,
       },
     }),
-  })
+  });
 
-  return toCreateCheckResponse(body)
+  return toCreateCheckResponse(body);
 }
 
 export async function getCheck(checkId: string): Promise<CheckRecord> {
-  return toCheckRecord(await requestJson(`/checks/${encodeURIComponent(checkId)}`))
+  return toCheckRecord(await requestJson(`/checks/${encodeURIComponent(checkId)}`));
 }
 
 export async function listChecks(params?: CheckListParams): Promise<readonly CheckListItem[]> {
-  const query = new URLSearchParams()
-  if (params?.limit != null) query.set('limit', String(params.limit))
-  if (params?.offset != null) query.set('offset', String(params.offset))
-  const qs = query.toString()
+  const query = new URLSearchParams();
+  if (params?.limit != null) query.set("limit", String(params.limit));
+  if (params?.offset != null) query.set("offset", String(params.offset));
+  const qs = query.toString();
   return parseBackendPayload(
     checkListResponseSchema,
-    await requestJson(`/checks${qs ? `?${qs}` : ''}`),
-    'check list',
-  )
+    await requestJson(`/checks${qs ? `?${qs}` : ""}`),
+    "check list",
+  );
 }
 
 export function subscribeCheckEvents(
@@ -139,37 +139,37 @@ export function subscribeCheckEvents(
   handlers: CheckEventHandlers,
   options: CheckEventSubscriptionOptions = {},
 ): CheckEventSubscription {
-  if (typeof EventSource === 'undefined') {
+  if (typeof EventSource === "undefined") {
     queueMicrotask(() =>
-      handlers.onError?.(new Error('EventSource is not available in this browser.')),
-    )
-    return { close() {} }
+      handlers.onError?.(new Error("EventSource is not available in this browser.")),
+    );
+    return { close() {} };
   }
 
-  const baseEventsUrl = resolveEventsUrl(checkId, options.eventsUrl)
-  let eventSource: EventSource | null = null
-  let closed = false
-  let reconnectTimer: ReturnType<typeof setTimeout> | null = null
-  let reconnectAttempt = 0
-  let lastSeq = options.afterSeq ?? 0
+  const baseEventsUrl = resolveEventsUrl(checkId, options.eventsUrl);
+  let eventSource: EventSource | null = null;
+  let closed = false;
+  let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  let reconnectAttempt = 0;
+  let lastSeq = options.afterSeq ?? 0;
 
   function clearReconnectTimer() {
-    if (!reconnectTimer) return
-    clearTimeout(reconnectTimer)
-    reconnectTimer = null
+    if (!reconnectTimer) return;
+    clearTimeout(reconnectTimer);
+    reconnectTimer = null;
   }
 
   function closeCurrentStream() {
-    eventSource?.close()
-    eventSource = null
+    eventSource?.close();
+    eventSource = null;
   }
 
   function close(notify = true) {
-    if (closed) return
-    closed = true
-    clearReconnectTimer()
-    closeCurrentStream()
-    if (notify) handlers.onClose?.()
+    if (closed) return;
+    closed = true;
+    clearReconnectTimer();
+    closeCurrentStream();
+    if (notify) handlers.onClose?.();
   }
 
   function handleMessage(event: MessageEvent<string>) {
@@ -177,48 +177,48 @@ export function subscribeCheckEvents(
       const progressEvent = parseBackendPayload(
         progressEventSchema,
         JSON.parse(event.data) as unknown,
-        'progress event',
-      )
-      if (progressEvent.seq <= lastSeq) return
+        "progress event",
+      );
+      if (progressEvent.seq <= lastSeq) return;
 
-      lastSeq = progressEvent.seq
-      reconnectAttempt = 0
-      handlers.onEvent?.(progressEvent)
+      lastSeq = progressEvent.seq;
+      reconnectAttempt = 0;
+      handlers.onEvent?.(progressEvent);
 
-      if (progressEvent.status === 'completed' || progressEvent.status === 'failed') {
-        close()
+      if (progressEvent.status === "completed" || progressEvent.status === "failed") {
+        close();
       }
     } catch (error) {
-      handlers.onError?.(error)
-      close()
+      handlers.onError?.(error);
+      close();
     }
   }
 
   function openStream() {
-    if (closed) return
+    if (closed) return;
 
-    closeCurrentStream()
-    eventSource = new EventSource(appendAfterSeq(baseEventsUrl, lastSeq))
-    eventSource.addEventListener('progress', handleMessage)
-    eventSource.onmessage = handleMessage
+    closeCurrentStream();
+    eventSource = new EventSource(appendAfterSeq(baseEventsUrl, lastSeq));
+    eventSource.addEventListener("progress", handleMessage);
+    eventSource.onmessage = handleMessage;
     eventSource.onerror = () => {
-      if (closed) return
+      if (closed) return;
 
-      closeCurrentStream()
-      const delay = STREAM_RECONNECT_DELAYS_MS[reconnectAttempt]
+      closeCurrentStream();
+      const delay = STREAM_RECONNECT_DELAYS_MS[reconnectAttempt];
 
       if (delay !== undefined) {
-        reconnectAttempt += 1
-        reconnectTimer = setTimeout(openStream, delay)
-        return
+        reconnectAttempt += 1;
+        reconnectTimer = setTimeout(openStream, delay);
+        return;
       }
 
-      handlers.onError?.(new Error('Lost connection to the check progress stream.'))
-      close()
-    }
+      handlers.onError?.(new Error("Lost connection to the check progress stream."));
+      close();
+    };
   }
 
-  openStream()
+  openStream();
 
-  return { close }
+  return { close };
 }

@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { BadgeTone } from '@/types/ui'
+import type { BadgeTone } from "@/types/ui";
 
 withDefaults(
   defineProps<{
-    tone?: BadgeTone
+    tone?: BadgeTone;
   }>(),
-  { tone: 'default' },
-)
+  { tone: "default" },
+);
 </script>
 
 <template>

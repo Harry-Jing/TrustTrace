@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineProps<{
-  lines: readonly string[]
-}>()
+  lines: readonly string[];
+}>();
 </script>
 
 <template>

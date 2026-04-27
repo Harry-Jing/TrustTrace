@@ -34,8 +34,9 @@ The frontend in `apps/web` follows the `create-vue` tooling baseline. Project-sp
 - Bun workspaces: root scripts delegate into `apps/web` with `bun run --cwd apps/web ...`.
 - Test files: `*.test.ts` or `*.spec.ts` under `apps/web/src` (not `__tests__/`).
 - Tailwind CSS v4: enabled through `@tailwindcss/vite` and `@import "tailwindcss"` in `src/style.css`.
-- `prettier-plugin-tailwindcss` with `tailwindStylesheet: "./src/style.css"` for theme-aware class sorting.
+- Root-owned Prettier config follows Prettier defaults for semicolons and quotes, with `prettier-plugin-tailwindcss` and `tailwindStylesheet: "./apps/web/src/style.css"` for theme-aware class sorting.
 - `eslint.config.mjs` kept as JavaScript to avoid adding `jiti` for config loading, and sets the Vue ESLint project root explicitly for the monorepo workspace.
+- `.editorconfig` applies repo-wide UTF-8, LF line endings, two-space indentation, trailing whitespace trimming, and final newlines, with Markdown trailing whitespace preserved.
 
 ### Naming
 
@@ -106,6 +107,8 @@ References: [Tailwind utility-first](https://tailwindcss.com/docs/utility-first)
 3. `test`
 4. `build` (includes `typecheck` before `vite build`)
 
+`format:check` is repo-wide and covers app source, docs, and configuration files from the root Prettier config.
+
 Use `bun run test`, not bare `bun test` — frontend tests run through Vitest/Vite for Vue SFC transforms, path aliases, jsdom, and Vitest mocking APIs.
 
 ### Git hooks and CI
@@ -123,9 +126,11 @@ Local hooks are a developer safety net and can be bypassed by Git. The GitHub Ac
 ### Configuration files
 
 ```txt
+.editorconfig                    # Repo-wide editor defaults
+.prettierrc.json                 # Repo-wide Prettier config with Tailwind class sorting
+.prettierignore                  # Repo-wide Prettier ignore patterns
 apps/web/eslint.config.mjs       # ESLint flat config for Vue + TS + Vitest + Oxlint
 apps/web/.oxlintrc.json          # Oxlint correctness pass
-apps/web/.prettierrc.json        # Prettier config with Tailwind class sorting
 apps/web/env.d.ts                # Vite client types
 apps/web/tsconfig.app.json       # Browser app type-checking
 apps/web/tsconfig.node.json      # Tooling config type-checking

@@ -1,67 +1,67 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { computed, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
-import BasePageFooter from '@/components/BasePageFooter.vue'
-import BaseTagBadge from '@/components/BaseTagBadge.vue'
-import { getCheck } from '@/features/checks/api/checksApi'
-import { useCreateCheck } from '@/features/checks/composables/useCreateCheck'
-import { useChecksStore } from '@/features/checks/stores/checks.store'
-import type { CheckApiError } from '@/features/checks/types'
-import { useAsyncData } from '@/shared/composables/useAsyncData'
+import BasePageFooter from "@/components/BasePageFooter.vue";
+import BaseTagBadge from "@/components/BaseTagBadge.vue";
+import { getCheck } from "@/features/checks/api/checksApi";
+import { useCreateCheck } from "@/features/checks/composables/useCreateCheck";
+import { useChecksStore } from "@/features/checks/stores/checks.store";
+import type { CheckApiError } from "@/features/checks/types";
+import { useAsyncData } from "@/shared/composables/useAsyncData";
 
-const route = useRoute()
-const router = useRouter()
-const showDetail = ref(false)
-const checks = useChecksStore()
-const { createCheck, isSubmitting, submitError } = useCreateCheck()
-const detailId = 'error-detail'
+const route = useRoute();
+const router = useRouter();
+const showDetail = ref(false);
+const checks = useChecksStore();
+const { createCheck, isSubmitting, submitError } = useCreateCheck();
+const detailId = "error-detail";
 
-const checkId = computed(() => String(route.params.checkId ?? ''))
+const checkId = computed(() => String(route.params.checkId ?? ""));
 
-const { data: record } = useAsyncData(() => getCheck(checkId.value))
+const { data: record } = useAsyncData(() => getCheck(checkId.value));
 
-const error = computed<CheckApiError | null>(() => record.value?.error ?? null)
-const errorCode = computed(() => error.value?.code ?? 'UNKNOWN_ERROR')
-const errorCategory = computed(() => error.value?.category ?? 'unknown error')
+const error = computed<CheckApiError | null>(() => record.value?.error ?? null);
+const errorCode = computed(() => error.value?.code ?? "UNKNOWN_ERROR");
+const errorCategory = computed(() => error.value?.category ?? "unknown error");
 const errorMessage = computed(
-  () => error.value?.message ?? 'Something went wrong. You can retry with the same claim.',
-)
-const traceId = computed(() => error.value?.traceId ?? null)
-const isRetryable = computed(() => error.value?.retryable ?? true)
-const retryInput = computed(() => record.value?.input ?? checks.currentInput)
-const canRetry = computed(() => isRetryable.value && retryInput.value !== null)
+  () => error.value?.message ?? "Something went wrong. You can retry with the same claim.",
+);
+const traceId = computed(() => error.value?.traceId ?? null);
+const isRetryable = computed(() => error.value?.retryable ?? true);
+const retryInput = computed(() => record.value?.input ?? checks.currentInput);
+const canRetry = computed(() => isRetryable.value && retryInput.value !== null);
 const retryHelp = computed(() => {
-  if (canRetry.value) return 'You can retry with the same claim.'
-  if (isRetryable.value) return 'Return to the claim editor to start a new check.'
-  return 'Please try again with a different claim.'
-})
+  if (canRetry.value) return "You can retry with the same claim.";
+  if (isRetryable.value) return "Return to the claim editor to start a new check.";
+  return "Please try again with a different claim.";
+});
 const retryErrorMessage = computed(() => {
-  if (!submitError.value) return null
-  if (submitError.value instanceof Error) return submitError.value.message
-  return 'Could not retry this check. Please edit the claim and try again.'
-})
+  if (!submitError.value) return null;
+  if (submitError.value instanceof Error) return submitError.value.message;
+  return "Could not retry this check. Please edit the claim and try again.";
+});
 
 const ERROR_EXPLANATIONS: Record<string, string> = {
   PROVIDER_TIMEOUT:
-    'The AI provider (e.g. OpenAI) didn’t respond in time. This usually happens during high traffic. Your claim was received but analysis couldn’t complete.',
+    "The AI provider (e.g. OpenAI) didn’t respond in time. This usually happens during high traffic. Your claim was received but analysis couldn’t complete.",
   RATE_LIMITED:
-    'Too many requests were sent in a short period. The provider enforces rate limits to ensure fair usage. Waiting a moment before retrying usually resolves this.',
+    "Too many requests were sent in a short period. The provider enforces rate limits to ensure fair usage. Waiting a moment before retrying usually resolves this.",
   PROVIDER_ERROR:
-    'The AI provider returned an unexpected error. This is typically a temporary issue on their end.',
-}
+    "The AI provider returned an unexpected error. This is typically a temporary issue on their end.",
+};
 
 const errorExplanation = computed(
   () =>
     ERROR_EXPLANATIONS[errorCode.value] ??
-    'An unexpected error occurred while processing your check. If this keeps happening, the service may be experiencing issues.',
-)
+    "An unexpected error occurred while processing your check. If this keeps happening, the service may be experiencing issues.",
+);
 
 async function retryCheck() {
-  if (!retryInput.value) return
+  if (!retryInput.value) return;
 
   try {
-    await createCheck(retryInput.value)
+    await createCheck(retryInput.value);
   } catch {
     // useCreateCheck exposes submitError for this page.
   }
@@ -120,7 +120,7 @@ async function retryCheck() {
           :disabled="isSubmitting"
           @click="retryCheck"
         >
-          {{ isSubmitting ? 'Retrying…' : 'Retry check' }}
+          {{ isSubmitting ? "Retrying…" : "Retry check" }}
         </button>
         <button
           type="button"
@@ -174,8 +174,8 @@ async function retryCheck() {
               <p class="m-0 text-muted">
                 {{
                   isRetryable
-                    ? 'Wait a moment and retry. If this keeps happening, the provider may be experiencing an outage.'
-                    : 'If this keeps happening, please contact support.'
+                    ? "Wait a moment and retry. If this keeps happening, the provider may be experiencing an outage."
+                    : "If this keeps happening, please contact support."
                 }}
               </p>
             </div>

@@ -1,29 +1,29 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
+import { useRouter } from "vue-router";
 
-import BasePageFooter from '@/components/BasePageFooter.vue'
-import ClaimInputCard from '@/features/checks/components/ClaimInputCard.vue'
-import HowItWorksPanel from '@/features/checks/components/HowItWorksPanel.vue'
-import LandingInfoColumns from '@/features/checks/components/LandingInfoColumns.vue'
-import RecentChecksList from '@/features/checks/components/RecentChecksList.vue'
-import { useCreateCheck } from '@/features/checks/composables/useCreateCheck'
-import { useRecentChecks } from '@/features/checks/composables/useRecentChecks'
-import type { CheckInputDraft, CheckListItem } from '@/features/checks/types'
+import BasePageFooter from "@/components/BasePageFooter.vue";
+import ClaimInputCard from "@/features/checks/components/ClaimInputCard.vue";
+import HowItWorksPanel from "@/features/checks/components/HowItWorksPanel.vue";
+import LandingInfoColumns from "@/features/checks/components/LandingInfoColumns.vue";
+import RecentChecksList from "@/features/checks/components/RecentChecksList.vue";
+import { useCreateCheck } from "@/features/checks/composables/useCreateCheck";
+import { useRecentChecks } from "@/features/checks/composables/useRecentChecks";
+import type { CheckInputDraft, CheckListItem } from "@/features/checks/types";
 
-const router = useRouter()
-const { createCheck, isSubmitting, submitError } = useCreateCheck()
-const { recentChecks } = useRecentChecks()
+const router = useRouter();
+const { createCheck, isSubmitting, submitError } = useCreateCheck();
+const { recentChecks } = useRecentChecks();
 
 async function submit(input: CheckInputDraft) {
   try {
-    await createCheck(input)
+    await createCheck(input);
   } catch {
     // useCreateCheck exposes submitError for the input card.
   }
 }
 
 function selectRecentCheck(recentCheck: CheckListItem) {
-  void router.push({ name: 'result', params: { checkId: recentCheck.checkId } })
+  void router.push({ name: "result", params: { checkId: recentCheck.checkId } });
 }
 </script>
 

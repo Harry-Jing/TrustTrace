@@ -8,6 +8,8 @@
         "@commitlint/cli": "^20.5.2",
         "@commitlint/config-conventional": "^20.5.0",
         "lefthook": "^2.1.6",
+        "prettier": "3.8.3",
+        "prettier-plugin-tailwindcss": "0.7.2",
       },
     },
     "apps/web": {
@@ -38,8 +40,6 @@
         "eslint-plugin-vue": "^10.8.0",
         "jsdom": "^29.0.2",
         "oxlint": "^1.61.0",
-        "prettier": "3.8.3",
-        "prettier-plugin-tailwindcss": "0.7.2",
         "typescript": "~6.0.2",
         "vite": "^8.0.9",
         "vitest": "^4.1.4",

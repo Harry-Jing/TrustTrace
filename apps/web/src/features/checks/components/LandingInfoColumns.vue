@@ -1,15 +1,15 @@
 <script setup lang="ts">
 const columns = [
-  { title: 'What you get', description: 'Source cues, evidence items, and uncertainty notes.' },
+  { title: "What you get", description: "Source cues, evidence items, and uncertainty notes." },
   {
     title: "What you don't",
-    description: 'No binary verdict. No truth score. No context-free certainty.',
+    description: "No binary verdict. No truth score. No context-free certainty.",
   },
   {
-    title: 'Open by design',
-    description: 'Every source, cue, and uncertainty note is shown — nothing is hidden.',
+    title: "Open by design",
+    description: "Every source, cue, and uncertainty note is shown — nothing is hidden.",
   },
-]
+];
 </script>
 
 <template>

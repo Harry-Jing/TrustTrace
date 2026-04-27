@@ -1,15 +1,15 @@
-import { defineStore } from 'pinia'
+import { defineStore } from "pinia";
 
-import type { CheckInputDraft, CheckProgress, CreateCheckResponse } from '@/features/checks/types'
+import type { CheckInputDraft, CheckProgress, CreateCheckResponse } from "@/features/checks/types";
 
 interface ChecksState {
-  currentCheckId: string | null
-  currentInput: CheckInputDraft | null
-  progressByCheckId: Record<string, CheckProgress>
-  eventsUrlByCheckId: Record<string, string>
+  currentCheckId: string | null;
+  currentInput: CheckInputDraft | null;
+  progressByCheckId: Record<string, CheckProgress>;
+  eventsUrlByCheckId: Record<string, string>;
 }
 
-export const useChecksStore = defineStore('checks', {
+export const useChecksStore = defineStore("checks", {
   state: (): ChecksState => ({
     currentCheckId: null,
     currentInput: null,
@@ -18,17 +18,17 @@ export const useChecksStore = defineStore('checks', {
   }),
   actions: {
     rememberCreatedCheck(input: CheckInputDraft, response: CreateCheckResponse) {
-      this.currentCheckId = response.checkId
-      this.currentInput = input
-      this.progressByCheckId[response.checkId] = response.progress
-      this.eventsUrlByCheckId[response.checkId] = response.eventsUrl
+      this.currentCheckId = response.checkId;
+      this.currentInput = input;
+      this.progressByCheckId[response.checkId] = response.progress;
+      this.eventsUrlByCheckId[response.checkId] = response.eventsUrl;
     },
     setCurrentCheckId(checkId: string) {
-      this.currentCheckId = checkId
+      this.currentCheckId = checkId;
     },
     recordProgress(progress: CheckProgress) {
-      this.currentCheckId = progress.checkId
-      this.progressByCheckId[progress.checkId] = progress
+      this.currentCheckId = progress.checkId;
+      this.progressByCheckId[progress.checkId] = progress;
     },
   },
-})
+});

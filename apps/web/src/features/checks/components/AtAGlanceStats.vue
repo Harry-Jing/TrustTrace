@@ -1,56 +1,56 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed } from "vue";
 
-import type { ResultAtAGlance, UncertaintyLevel } from '@/features/checks/types'
+import type { ResultAtAGlance, UncertaintyLevel } from "@/features/checks/types";
 
 const props = defineProps<{
-  glance: ResultAtAGlance
-}>()
+  glance: ResultAtAGlance;
+}>();
 
 interface GlanceStat {
-  value: string
-  label: string
-  toneClass: string
+  value: string;
+  label: string;
+  toneClass: string;
 }
 
 const uncertaintyTone: Record<UncertaintyLevel, string> = {
-  low: 'text-good',
-  med: 'text-warn',
-  high: 'text-warn',
-}
+  low: "text-good",
+  med: "text-warn",
+  high: "text-warn",
+};
 
 const stats = computed<readonly GlanceStat[]>(() => [
   {
     value: String(props.glance.evidence),
-    label: 'evidence',
-    toneClass: 'text-ink',
+    label: "evidence",
+    toneClass: "text-ink",
   },
   {
     value: String(props.glance.independent),
-    label: 'independent',
-    toneClass: 'text-ink',
+    label: "independent",
+    toneClass: "text-ink",
   },
   {
     value: String(props.glance.fullText),
-    label: 'full-text',
-    toneClass: 'text-good',
+    label: "full-text",
+    toneClass: "text-good",
   },
   {
     value: String(props.glance.primary),
-    label: 'primary',
-    toneClass: 'text-accent',
+    label: "primary",
+    toneClass: "text-accent",
   },
   {
     value: String(props.glance.snippet),
-    label: 'snippet',
-    toneClass: 'text-ink-2',
+    label: "snippet",
+    toneClass: "text-ink-2",
   },
   {
     value: props.glance.uncertainty,
-    label: 'uncertainty',
+    label: "uncertainty",
     toneClass: uncertaintyTone[props.glance.uncertainty],
   },
-])
+]);
 </script>
 
 <template>

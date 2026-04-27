@@ -1,6 +1,6 @@
-import { z } from 'zod'
+import { z } from "zod";
 
-import { readVerdictCopy } from '@/features/checks/constants/resultFallbacks'
+import { readVerdictCopy } from "@/features/checks/constants/resultFallbacks";
 import type {
   CheckApiError,
   EvidenceItem,
@@ -11,33 +11,33 @@ import type {
   CheckResultViewModel,
   CreateCheckResponse,
   ProgressEvent,
-} from '@/features/checks/types'
-import { isSafeHttpUrl } from '@/features/checks/utils'
+} from "@/features/checks/types";
+import { isSafeHttpUrl } from "@/features/checks/utils";
 
-const checkStatusSchema = z.enum(['queued', 'running', 'completed', 'failed'])
+const checkStatusSchema = z.enum(["queued", "running", "completed", "failed"]);
 const checkPhaseSchema = z.enum([
-  'understanding',
-  'strategy',
-  'discovery',
-  'verify_read',
-  'weigh',
-  'verdict',
-  'completed',
-  'failed',
-])
+  "understanding",
+  "strategy",
+  "discovery",
+  "verify_read",
+  "weigh",
+  "verdict",
+  "completed",
+  "failed",
+]);
 
-const finiteNumberSchema = z.number().refine(Number.isFinite, 'Expected a finite number')
-const percentSchema = finiteNumberSchema.min(0).max(100)
-const isoStringSchema = z.string().min(1)
+const finiteNumberSchema = z.number().refine(Number.isFinite, "Expected a finite number");
+const percentSchema = finiteNumberSchema.min(0).max(100);
+const isoStringSchema = z.string().min(1);
 const nullableStringSchema = z
   .string()
   .nullable()
   .optional()
-  .transform((value) => value ?? null)
+  .transform((value) => value ?? null);
 
 const checkInputDtoSchema = z
   .object({
-    type: z.enum(['text', 'url']),
+    type: z.enum(["text", "url"]),
     content: z.string().min(1),
   })
   .transform(
@@ -45,7 +45,7 @@ const checkInputDtoSchema = z
       mode: input.type,
       value: input.content,
     }),
-  )
+  );
 
 const checkApiErrorSchema: z.ZodType<CheckApiError> = z.object({
   code: z.string().min(1),
@@ -54,7 +54,7 @@ const checkApiErrorSchema: z.ZodType<CheckApiError> = z.object({
   retryable: z.boolean(),
   traceId: nullableStringSchema,
   occurredAt: isoStringSchema,
-})
+});
 
 const checkProgressSchema: z.ZodType<CheckProgress> = z.object({
   checkId: z.string().min(1),
@@ -64,7 +64,7 @@ const checkProgressSchema: z.ZodType<CheckProgress> = z.object({
   message: z.string().min(1),
   eventSeq: finiteNumberSchema.min(0),
   updatedAt: isoStringSchema,
-})
+});
 
 const evidenceItemSchema: z.ZodType<EvidenceItem> = z
   .object({
@@ -74,16 +74,16 @@ const evidenceItemSchema: z.ZodType<EvidenceItem> = z
     date: z.string(),
     title: z.string().min(1),
     text: z.string().min(1),
-    url: z.string().refine(isSafeHttpUrl, 'Evidence URL must be absolute http(s).'),
-    relation: z.enum(['supports', 'contradicts', 'neutral']),
+    url: z.string().refine(isSafeHttpUrl, "Evidence URL must be absolute http(s)."),
+    relation: z.enum(["supports", "contradicts", "neutral"]),
     tier: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]),
     scopeMatch: finiteNumberSchema.min(0).max(1),
     clusterId: z.string().optional(),
   })
   .transform((item): EvidenceItem => {
-    const { clusterId, ...evidence } = item
-    return clusterId === undefined ? evidence : { ...evidence, clusterId }
-  })
+    const { clusterId, ...evidence } = item;
+    return clusterId === undefined ? evidence : { ...evidence, clusterId };
+  });
 
 const resultAtAGlanceSchema = z.object({
   evidence: finiteNumberSchema.min(0),
@@ -91,8 +91,8 @@ const resultAtAGlanceSchema = z.object({
   fullText: finiteNumberSchema.min(0),
   primary: finiteNumberSchema.min(0),
   snippet: finiteNumberSchema.min(0),
-  uncertainty: z.enum(['low', 'med', 'high']),
-})
+  uncertainty: z.enum(["low", "med", "high"]),
+});
 
 const credibilityCueSchema = z.object({
   name: z.string().min(1),
@@ -100,7 +100,7 @@ const credibilityCueSchema = z.object({
   note: z.string(),
   strength: finiteNumberSchema.min(0).max(5),
   tooltip: z.string().min(1),
-})
+});
 
 const checkResultSchema = z
   .object({
@@ -109,16 +109,16 @@ const checkResultSchema = z
     inputTypeLabel: z.string(),
     durationLabel: z.string(),
     verdictBand: z.enum([
-      'evidence_strong',
-      'evidence_mixed',
-      'evidence_weak',
-      'evidence_thin',
-      'needs_context',
-      'system_failed',
+      "evidence_strong",
+      "evidence_mixed",
+      "evidence_weak",
+      "evidence_thin",
+      "needs_context",
+      "system_failed",
     ]),
-    verdictLabel: z.string().optional().default(''),
-    headline: z.string().optional().default(''),
-    description: z.string().optional().default(''),
+    verdictLabel: z.string().optional().default(""),
+    headline: z.string().optional().default(""),
+    description: z.string().optional().default(""),
     atAGlance: resultAtAGlanceSchema,
     cues: z.array(credibilityCueSchema),
     evidence: z.array(evidenceItemSchema),
@@ -129,11 +129,11 @@ const checkResultSchema = z
   .transform(
     (result): CheckResultViewModel => ({
       ...result,
-      verdictLabel: readVerdictCopy(result.verdictBand, 'label', result.verdictLabel),
-      headline: readVerdictCopy(result.verdictBand, 'headline', result.headline),
-      description: readVerdictCopy(result.verdictBand, 'description', result.description),
+      verdictLabel: readVerdictCopy(result.verdictBand, "label", result.verdictLabel),
+      headline: readVerdictCopy(result.verdictBand, "headline", result.headline),
+      description: readVerdictCopy(result.verdictBand, "description", result.description),
     }),
-  )
+  );
 
 export const createCheckResponseSchema: z.ZodType<CreateCheckResponse> = z.object({
   checkId: z.string().min(1),
@@ -141,7 +141,7 @@ export const createCheckResponseSchema: z.ZodType<CreateCheckResponse> = z.objec
   progress: checkProgressSchema,
   eventsUrl: z.string().min(1),
   createdAt: isoStringSchema,
-})
+});
 
 export const checkRecordSchema: z.ZodType<CheckRecord> = z
   .object({
@@ -156,14 +156,14 @@ export const checkRecordSchema: z.ZodType<CheckRecord> = z
     completedAt: nullableStringSchema,
   })
   .superRefine((record, ctx) => {
-    if (record.status === 'completed' && !record.result) {
+    if (record.status === "completed" && !record.result) {
       ctx.addIssue({
-        code: 'custom',
-        path: ['result'],
-        message: 'Completed checks must include a result.',
-      })
+        code: "custom",
+        path: ["result"],
+        message: "Completed checks must include a result.",
+      });
     }
-  })
+  });
 
 const checkListItemSchema: z.ZodType<CheckListItem> = z.object({
   checkId: z.string().min(1),
@@ -171,8 +171,8 @@ const checkListItemSchema: z.ZodType<CheckListItem> = z.object({
   snippet: z.string(),
   createdAt: isoStringSchema,
   cue: z.string(),
-  tone: z.enum(['default', 'accent', 'warn', 'good', 'dark']),
-})
+  tone: z.enum(["default", "accent", "warn", "good", "dark"]),
+});
 
 export const checkListResponseSchema = z
   .union([
@@ -182,11 +182,11 @@ export const checkListResponseSchema = z
     z.object({ recent: z.array(checkListItemSchema) }),
   ])
   .transform((value): readonly CheckListItem[] => {
-    if (Array.isArray(value)) return value
-    if ('items' in value) return value.items
-    if ('checks' in value) return value.checks
-    return value.recent
-  })
+    if (Array.isArray(value)) return value;
+    if ("items" in value) return value.items;
+    if ("checks" in value) return value.checks;
+    return value.recent;
+  });
 
 export const progressEventSchema: z.ZodType<ProgressEvent> = z.object({
   seq: finiteNumberSchema.min(0),
@@ -202,23 +202,23 @@ export const progressEventSchema: z.ZodType<ProgressEvent> = z.object({
     .optional()
     .transform((value) => value ?? null),
   createdAt: isoStringSchema,
-})
+});
 
 export class BackendContractError extends Error {
   constructor(context: string, error: z.ZodError) {
     const details = error.issues
-      .map((issue) => `${issue.path.join('.') || '<root>'}: ${issue.message}`)
-      .join('; ')
-    super(`Backend contract violation in ${context}: ${details}`)
-    this.name = 'BackendContractError'
+      .map((issue) => `${issue.path.join(".") || "<root>"}: ${issue.message}`)
+      .join("; ");
+    super(`Backend contract violation in ${context}: ${details}`);
+    this.name = "BackendContractError";
   }
 }
 
 export function parseBackendPayload<T>(schema: z.ZodType<T>, value: unknown, context: string): T {
-  const parsed = schema.safeParse(value)
+  const parsed = schema.safeParse(value);
   if (!parsed.success) {
-    throw new BackendContractError(context, parsed.error)
+    throw new BackendContractError(context, parsed.error);
   }
 
-  return parsed.data
+  return parsed.data;
 }

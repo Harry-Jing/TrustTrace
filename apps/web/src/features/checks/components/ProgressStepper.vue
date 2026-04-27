@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import type { PhaseDefinition } from '@/features/checks/constants/checkProgress'
+import type { PhaseDefinition } from "@/features/checks/constants/checkProgress";
 
 defineProps<{
-  steps: readonly PhaseDefinition[]
-  currentIndex: number
-}>()
+  steps: readonly PhaseDefinition[];
+  currentIndex: number;
+}>();
 
 function isDone(index: number, currentIndex: number) {
-  return index < currentIndex
+  return index < currentIndex;
 }
 
 function isCurrent(index: number, currentIndex: number) {
-  return index === currentIndex
+  return index === currentIndex;
 }
 </script>
 

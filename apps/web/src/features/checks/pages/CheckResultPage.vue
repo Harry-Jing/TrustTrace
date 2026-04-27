@@ -1,35 +1,35 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from "vue";
 
-import BasePageFooter from '@/components/BasePageFooter.vue'
-import AtAGlanceStats from '@/features/checks/components/AtAGlanceStats.vue'
-import CredibilityCueList from '@/features/checks/components/CredibilityCueList.vue'
-import EvidenceLadder from '@/features/checks/components/EvidenceLadder.vue'
-import ResultActions from '@/features/checks/components/ResultActions.vue'
-import ResultHeader from '@/features/checks/components/ResultHeader.vue'
-import ResultNoteCallout from '@/features/checks/components/ResultNoteCallout.vue'
-import UncertaintyPanel from '@/features/checks/components/UncertaintyPanel.vue'
-import { useCheckResult } from '@/features/checks/composables/useCheckResult'
+import BasePageFooter from "@/components/BasePageFooter.vue";
+import AtAGlanceStats from "@/features/checks/components/AtAGlanceStats.vue";
+import CredibilityCueList from "@/features/checks/components/CredibilityCueList.vue";
+import EvidenceLadder from "@/features/checks/components/EvidenceLadder.vue";
+import ResultActions from "@/features/checks/components/ResultActions.vue";
+import ResultHeader from "@/features/checks/components/ResultHeader.vue";
+import ResultNoteCallout from "@/features/checks/components/ResultNoteCallout.vue";
+import UncertaintyPanel from "@/features/checks/components/UncertaintyPanel.vue";
+import { useCheckResult } from "@/features/checks/composables/useCheckResult";
 
-const copied = ref(false)
-const { checkStatus, result, isLoading, isError, reload } = useCheckResult()
+const copied = ref(false);
+const { checkStatus, result, isLoading, isError, reload } = useCheckResult();
 
 function handleCopy() {
-  if (!result.value) return
+  if (!result.value) return;
 
   void navigator.clipboard
     .writeText(result.value.summaryText)
     .then(() => {
-      copied.value = true
+      copied.value = true;
       setTimeout(() => {
-        copied.value = false
-      }, 2000)
+        copied.value = false;
+      }, 2000);
     })
     .catch(() => {
       // Clipboard write failed (permission denied or unsupported context).
       // Silently degrade — the button stays in its default "Copy summary" state,
       // which is preferable to showing a false "Copied!" confirmation.
-    })
+    });
 }
 </script>
 

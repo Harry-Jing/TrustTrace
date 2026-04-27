@@ -2,11 +2,11 @@
 
 Dev tooling is available only for local mock/demo flows. The app now separates the build environment from the API data source:
 
-| Setting | Meaning |
-|---|---|
-| `import.meta.env.DEV` | Vite development build. Does not imply mock data by itself. |
+| Setting                                    | Meaning                                                                               |
+| ------------------------------------------ | ------------------------------------------------------------------------------------- |
+| `import.meta.env.DEV`                      | Vite development build. Does not imply mock data by itself.                           |
 | `VITE_TRUSTTRACE_API_MODE=mock \| backend` | Selects the checks API client. Defaults to `mock` in dev and `backend` in production. |
-| `VITE_TRUSTTRACE_API_BASE_URL` | Base URL for the backend API client. Defaults to same-origin `/v1`. |
+| `VITE_TRUSTTRACE_API_BASE_URL`             | Base URL for the backend API client. Defaults to same-origin `/v1`.                   |
 
 `showDevTools` is true only when the app is running in Vite dev mode **and** `apiMode === 'mock'`. This keeps demo controls and fixture-backed loading evidence out of backend debugging, even when using `bun run dev`.
 
@@ -14,23 +14,23 @@ Dev tooling is available only for local mock/demo flows. The app now separates t
 
 All dev-only components live in `apps/web/src/app/` and are prefixed with `Dev`:
 
-| Component | Purpose |
-|---|---|
-| `DevNav.vue` | Floating action button (FAB) in the bottom-right corner. Opens a menu to jump between the 5 demo pages. Resets demo check progress when navigating to the loading page. |
+| Component                | Purpose                                                                                                                                                                                                                 |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DevNav.vue`             | Floating action button (FAB) in the bottom-right corner. Opens a menu to jump between the 5 demo pages. Resets demo check progress when navigating to the loading page.                                                 |
 | `DevLoadingControls.vue` | Phase switcher rendered at the bottom of the loading page. Lets you jump between the six pipeline phases (`understanding`, `strategy`, `discovery`, `verify_read`, `weigh`, `verdict`) and trigger the completion flow. |
 
 `DevNav` is mounted in `AppShell.vue` behind the `showDevTools` guard. `DevLoadingControls` is rendered in `CheckLoadingPage.vue` behind the same guard.
 
 ## Behavior by API mode
 
-| Area | Mock mode with dev tools | Backend mode |
-|---|---|---|
-| Loading page auto-redirect | Disabled while controls are visible, so each phase can be inspected. | Automatically redirects to result or error when the check completes or fails, including during `bun run dev`. |
-| Loading page completion | Must click "done" in the dev controls to trigger the celebration animation and redirect. | Triggered automatically by check status updates. |
-| Loading phase header | Shows the current phase's `nowLabel`, `title`, and a one-sentence `description` from `PHASE_DEFINITIONS`, followed by the calm trust line. No live status pill, dot, or percent — backend progress messages are not echoed back to the user. | Same — phase comes from backend SSE events; the page never renders a status pill regardless of message or percent. |
-| Demo check reset | `DevNav` calls `devResetCheckProgress()` before navigating to the loading page. | Not available; backend API data drives progress. |
-| Shorthand routes | `/loading`, `/result`, `/error` redirect to demo check routes. | Not registered. Only `/checks/:checkId/*` routes are available. |
-| Unknown check IDs | Known fixture IDs return demo records; unknown IDs return a mock not-found failure. | Backend API response is surfaced through the backend client. |
+| Area                       | Mock mode with dev tools                                                                                                                                                                                                                     | Backend mode                                                                                                       |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Loading page auto-redirect | Disabled while controls are visible, so each phase can be inspected.                                                                                                                                                                         | Automatically redirects to result or error when the check completes or fails, including during `bun run dev`.      |
+| Loading page completion    | Must click "done" in the dev controls to trigger the celebration animation and redirect.                                                                                                                                                     | Triggered automatically by check status updates.                                                                   |
+| Loading phase header       | Shows the current phase's `nowLabel`, `title`, and a one-sentence `description` from `PHASE_DEFINITIONS`, followed by the calm trust line. No live status pill, dot, or percent — backend progress messages are not echoed back to the user. | Same — phase comes from backend SSE events; the page never renders a status pill regardless of message or percent. |
+| Demo check reset           | `DevNav` calls `devResetCheckProgress()` before navigating to the loading page.                                                                                                                                                              | Not available; backend API data drives progress.                                                                   |
+| Shorthand routes           | `/loading`, `/result`, `/error` redirect to demo check routes.                                                                                                                                                                               | Not registered. Only `/checks/:checkId/*` routes are available.                                                    |
+| Unknown check IDs          | Known fixture IDs return demo records; unknown IDs return a mock not-found failure.                                                                                                                                                          | Backend API response is surfaced through the backend client.                                                       |
 
 ## API layer
 
@@ -53,8 +53,8 @@ Use `showDevTools` for demo/debug UI and `apiMode`/`isMockApiMode` for API-clien
 ```ts
 export const apiMode =
   readApiMode(import.meta.env.VITE_TRUSTTRACE_API_MODE) ??
-  (import.meta.env.DEV ? 'mock' : 'backend')
-export const showDevTools = import.meta.env.DEV && apiMode === 'mock'
+  (import.meta.env.DEV ? "mock" : "backend");
+export const showDevTools = import.meta.env.DEV && apiMode === "mock";
 ```
 
 Do not use `import.meta.env.DEV` alone to change check lifecycle behavior, because backend integration also happens in local dev mode.

@@ -1,14 +1,14 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it } from "vitest";
 
-import { router } from '@/router'
+import { router } from "@/router";
 
-describe('router document title', () => {
-  it('updates the document title from route metadata', async () => {
-    document.title = 'TrustTrace'
+describe("router document title", () => {
+  it("updates the document title from route metadata", async () => {
+    document.title = "TrustTrace";
 
-    await router.push({ name: 'history' })
-    await router.isReady()
+    await router.push({ name: "history" });
+    await router.isReady();
 
-    expect(document.title).toBe('History · TrustTrace')
-  })
-})
+    expect(document.title).toBe("History · TrustTrace");
+  });
+});

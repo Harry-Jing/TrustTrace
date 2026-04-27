@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import CueTooltip from '@/features/checks/components/CueTooltip.vue'
-import type { CredibilityCue } from '@/features/checks/types'
+import CueTooltip from "@/features/checks/components/CueTooltip.vue";
+import type { CredibilityCue } from "@/features/checks/types";
 
 defineProps<{
-  cues: readonly CredibilityCue[]
-}>()
+  cues: readonly CredibilityCue[];
+}>();
 </script>
 
 <template>
