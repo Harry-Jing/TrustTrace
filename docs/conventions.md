@@ -136,7 +136,7 @@ apps/web/tsconfig.app.json       # Browser app type-checking
 apps/web/tsconfig.node.json      # Tooling config type-checking
 apps/web/tsconfig.vitest.json    # Test type-checking
 apps/web/vitest.config.ts        # Vitest config merged with Vite config
-commitlint.config.mjs             # Conventional Commit message rules
+commitlint.config.mjs             # Official Conventional Commit preset
 lefthook.yml                      # Local Git hook orchestration
 .github/workflows/quality.yml     # CI quality gate for pushes and pull requests
 ```
