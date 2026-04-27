@@ -57,6 +57,24 @@ describe("deterministic evidence synthesis", () => {
         maxEvidenceSources: 6,
       }).verdictBand,
     ).toBe("needs_context");
+
+    const snippetOnlyResult = buildEvidenceResult({
+      record: record(),
+      extractions: [
+        source("https://one.test/a", "one.test", "snippet_only"),
+        source("https://two.test/a", "two.test", "snippet_only"),
+      ],
+      assessments: [
+        assessment("https://one.test/a", "supports", 0.95),
+        assessment("https://two.test/a", "supports", 0.9),
+      ],
+      completedAt: "2026-04-27T00:00:05.000Z",
+      maxEvidenceSources: 6,
+    });
+
+    expect(snippetOnlyResult.verdictBand).not.toBe("evidence_strong");
+    expect(snippetOnlyResult.atAGlance.fullText).toBe(0);
+    expect(snippetOnlyResult.atAGlance.snippet).toBe(2);
   });
 });
 
@@ -82,7 +100,11 @@ function record(): CheckRecordDto {
   };
 }
 
-function source(url: string, domain: string): SourceExtractionRecordDto {
+function source(
+  url: string,
+  domain: string,
+  verificationStatus: SourceExtractionRecordDto["verificationStatus"] = "fetched",
+): SourceExtractionRecordDto {
   return {
     id: `src-${domain}`,
     checkId: "check-1",
@@ -90,13 +112,14 @@ function source(url: string, domain: string): SourceExtractionRecordDto {
     resolvedUrl: url,
     domain,
     title: `${domain} title`,
+    discoverySnippet: null,
     discoveryProvider: "test",
     discoveryRank: 1,
-    verificationStatus: "fetched",
+    verificationStatus,
     httpStatus: 200,
     contentType: "text/html",
     contentHash: "a".repeat(64),
-    extractionMethod: "html_basic",
+    extractionMethod: verificationStatus === "snippet_only" ? "snippet_only" : "html_basic",
     extractedText:
       "Extracted source text that is long enough to evaluate the claim in a deterministic unit test.",
     textExcerpt:

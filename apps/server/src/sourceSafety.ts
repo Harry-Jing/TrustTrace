@@ -161,6 +161,10 @@ export async function assertSafeUrl(
   }
 }
 
+export function canonicalHttpUrl(value: string): string {
+  return parseHttpUrl(value).toString();
+}
+
 function parseHttpUrl(value: string): URL {
   let url: URL;
   try {

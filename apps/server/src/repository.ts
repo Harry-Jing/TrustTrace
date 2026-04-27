@@ -2,7 +2,15 @@ import { randomUUID } from "node:crypto";
 
 import { and, asc, desc, eq, gt } from "drizzle-orm";
 
-import { checksTable, progressEventsTable, sourceExtractionsTable } from "./schema";
+import {
+  checksTable,
+  claimAnalysesTable,
+  inputExtractionsTable,
+  progressEventsTable,
+  providerCallsTable,
+  sourceEvaluationsTable,
+  sourceExtractionsTable,
+} from "./schema";
 import type { TrustTraceDatabase } from "./database";
 import type {
   CheckApiErrorDto,
@@ -11,15 +19,25 @@ import type {
   CheckProgressDto,
   CheckRecordDto,
   CheckResultDto,
+  ClaimAnalysisDto,
   CreateCheckResponseDto,
+  InputExtractionRecordDto,
+  NewProviderCallDto,
   NewSourceExtractionDto,
+  ProviderCallRecordDto,
+  ProviderCallUpdateDto,
   ProgressEventDto,
+  SourceEvaluationRecordDto,
   SourceExtractionRecordDto,
   SourceExtractionUpdateDto,
 } from "./types";
 
 type CheckRow = typeof checksTable.$inferSelect;
+type ClaimAnalysisRow = typeof claimAnalysesTable.$inferSelect;
+type InputExtractionRow = typeof inputExtractionsTable.$inferSelect;
 type ProgressEventRow = typeof progressEventsTable.$inferSelect;
+type ProviderCallRow = typeof providerCallsTable.$inferSelect;
+type SourceEvaluationRow = typeof sourceEvaluationsTable.$inferSelect;
 type SourceExtractionRow = typeof sourceExtractionsTable.$inferSelect;
 
 export class ChecksRepository {
@@ -151,6 +169,7 @@ export class ChecksRepository {
       resolvedUrl: null,
       domain: null,
       title: input.title,
+      discoverySnippet: input.discoverySnippet,
       discoveryProvider: input.discoveryProvider,
       discoveryRank: input.discoveryRank,
       verificationStatus: "candidate",
@@ -214,6 +233,175 @@ export class ChecksRepository {
       .orderBy(asc(sourceExtractionsTable.discoveryRank))
       .all()
       .map(rowToSourceExtraction);
+  }
+
+  saveClaimAnalysis(input: ClaimAnalysisDto): ClaimAnalysisDto {
+    this.db
+      .insert(claimAnalysesTable)
+      .values(claimAnalysisToRow(input))
+      .onConflictDoUpdate({
+        target: claimAnalysesTable.checkId,
+        set: {
+          mainClaim: input.mainClaim,
+          claimType: input.claimType,
+          domain: input.domain,
+          temporalScope: input.temporalScope,
+          geographicScope: input.geographicScope,
+          ambiguityNotesJson: input.ambiguityNotes,
+          queryPlanJson: input.queryPlan,
+          updatedAt: input.updatedAt,
+        },
+      })
+      .run();
+    return input;
+  }
+
+  getClaimAnalysis(checkId: string): ClaimAnalysisDto | null {
+    const row = this.db
+      .select()
+      .from(claimAnalysesTable)
+      .where(eq(claimAnalysesTable.checkId, checkId))
+      .get();
+    return row ? rowToClaimAnalysis(row) : null;
+  }
+
+  createProviderCall(input: NewProviderCallDto): ProviderCallRecordDto {
+    const record: ProviderCallRecordDto = {
+      id: `provider_${randomUUID()}`,
+      checkId: input.checkId,
+      operation: input.operation,
+      provider: input.provider,
+      model: input.model,
+      status: "started",
+      requestJson: input.requestJson,
+      responseJson: null,
+      errorCode: null,
+      errorMessage: null,
+      createdAt: input.createdAt,
+      completedAt: null,
+    };
+
+    this.db.insert(providerCallsTable).values(providerCallToRow(record)).run();
+    return record;
+  }
+
+  updateProviderCall(id: string, update: ProviderCallUpdateDto): ProviderCallRecordDto | null {
+    this.db
+      .update(providerCallsTable)
+      .set({
+        status: update.status,
+        responseJson: update.responseJson ?? null,
+        errorCode: update.errorCode ?? null,
+        errorMessage: update.errorMessage ?? null,
+        completedAt: update.completedAt,
+      })
+      .where(eq(providerCallsTable.id, id))
+      .run();
+    const row = this.db
+      .select()
+      .from(providerCallsTable)
+      .where(eq(providerCallsTable.id, id))
+      .get();
+    return row ? rowToProviderCall(row) : null;
+  }
+
+  listProviderCalls(checkId: string): ProviderCallRecordDto[] {
+    return this.db
+      .select()
+      .from(providerCallsTable)
+      .where(eq(providerCallsTable.checkId, checkId))
+      .orderBy(asc(providerCallsTable.createdAt))
+      .all()
+      .map(rowToProviderCall);
+  }
+
+  createInputExtraction(input: {
+    checkId: string;
+    inputUrl: string;
+    createdAt: string;
+  }): InputExtractionRecordDto {
+    const record: InputExtractionRecordDto = {
+      id: `input_${randomUUID()}`,
+      checkId: input.checkId,
+      inputUrl: input.inputUrl,
+      resolvedUrl: null,
+      domain: null,
+      title: null,
+      verificationStatus: "candidate",
+      httpStatus: null,
+      contentType: null,
+      contentHash: null,
+      extractionMethod: null,
+      extractedText: null,
+      textExcerpt: null,
+      failureCode: null,
+      failureMessage: null,
+      createdAt: input.createdAt,
+      updatedAt: input.createdAt,
+    };
+    this.db.insert(inputExtractionsTable).values(inputExtractionToRow(record)).run();
+    return record;
+  }
+
+  updateInputExtraction(
+    id: string,
+    update: SourceExtractionUpdateDto,
+  ): InputExtractionRecordDto | null {
+    const values: Partial<typeof inputExtractionsTable.$inferInsert> = {
+      updatedAt: update.updatedAt,
+    };
+
+    if (update.resolvedUrl !== undefined) values.resolvedUrl = update.resolvedUrl;
+    if (update.domain !== undefined) values.domain = update.domain;
+    if (update.title !== undefined) values.title = update.title;
+    if (update.verificationStatus !== undefined) {
+      values.verificationStatus = update.verificationStatus;
+    }
+    if (update.httpStatus !== undefined) values.httpStatus = update.httpStatus;
+    if (update.contentType !== undefined) values.contentType = update.contentType;
+    if (update.contentHash !== undefined) values.contentHash = update.contentHash;
+    if (update.extractionMethod !== undefined) values.extractionMethod = update.extractionMethod;
+    if (update.extractedText !== undefined) values.extractedText = update.extractedText;
+    if (update.textExcerpt !== undefined) values.textExcerpt = update.textExcerpt;
+    if (update.failureCode !== undefined) values.failureCode = update.failureCode;
+    if (update.failureMessage !== undefined) values.failureMessage = update.failureMessage;
+
+    this.db.update(inputExtractionsTable).set(values).where(eq(inputExtractionsTable.id, id)).run();
+    const row = this.db
+      .select()
+      .from(inputExtractionsTable)
+      .where(eq(inputExtractionsTable.id, id))
+      .get();
+    return row ? rowToInputExtraction(row) : null;
+  }
+
+  listInputExtractions(checkId: string): InputExtractionRecordDto[] {
+    return this.db
+      .select()
+      .from(inputExtractionsTable)
+      .where(eq(inputExtractionsTable.checkId, checkId))
+      .orderBy(asc(inputExtractionsTable.createdAt))
+      .all()
+      .map(rowToInputExtraction);
+  }
+
+  createSourceEvaluation(input: Omit<SourceEvaluationRecordDto, "id">): SourceEvaluationRecordDto {
+    const record: SourceEvaluationRecordDto = {
+      id: `eval_${randomUUID()}`,
+      ...input,
+    };
+    this.db.insert(sourceEvaluationsTable).values(sourceEvaluationToRow(record)).run();
+    return record;
+  }
+
+  listSourceEvaluations(checkId: string): SourceEvaluationRecordDto[] {
+    return this.db
+      .select()
+      .from(sourceEvaluationsTable)
+      .where(eq(sourceEvaluationsTable.checkId, checkId))
+      .orderBy(asc(sourceEvaluationsTable.createdAt))
+      .all()
+      .map(rowToSourceEvaluation);
   }
 }
 
@@ -290,6 +478,7 @@ function sourceExtractionToRow(
     resolvedUrl: record.resolvedUrl,
     domain: record.domain,
     title: record.title,
+    discoverySnippet: record.discoverySnippet,
     discoveryProvider: record.discoveryProvider,
     discoveryRank: record.discoveryRank,
     verificationStatus: record.verificationStatus,
@@ -343,6 +532,7 @@ function rowToSourceExtraction(row: SourceExtractionRow): SourceExtractionRecord
     resolvedUrl: row.resolvedUrl ?? null,
     domain: row.domain ?? null,
     title: row.title ?? null,
+    discoverySnippet: row.discoverySnippet ?? null,
     discoveryProvider: row.discoveryProvider,
     discoveryRank: row.discoveryRank,
     verificationStatus: row.verificationStatus,
@@ -356,6 +546,154 @@ function rowToSourceExtraction(row: SourceExtractionRow): SourceExtractionRecord
     failureMessage: row.failureMessage ?? null,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
+  };
+}
+
+function claimAnalysisToRow(record: ClaimAnalysisDto): typeof claimAnalysesTable.$inferInsert {
+  return {
+    checkId: record.checkId,
+    mainClaim: record.mainClaim,
+    claimType: record.claimType,
+    domain: record.domain,
+    temporalScope: record.temporalScope,
+    geographicScope: record.geographicScope,
+    ambiguityNotesJson: record.ambiguityNotes,
+    queryPlanJson: record.queryPlan,
+    createdAt: record.createdAt,
+    updatedAt: record.updatedAt,
+  };
+}
+
+function rowToClaimAnalysis(row: ClaimAnalysisRow): ClaimAnalysisDto {
+  return {
+    checkId: row.checkId,
+    mainClaim: row.mainClaim,
+    claimType: row.claimType,
+    domain: row.domain,
+    temporalScope: row.temporalScope ?? null,
+    geographicScope: row.geographicScope ?? null,
+    ambiguityNotes: row.ambiguityNotesJson,
+    queryPlan: row.queryPlanJson,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+  };
+}
+
+function providerCallToRow(record: ProviderCallRecordDto): typeof providerCallsTable.$inferInsert {
+  return {
+    id: record.id,
+    checkId: record.checkId,
+    operation: record.operation,
+    provider: record.provider,
+    model: record.model,
+    status: record.status,
+    requestJson: record.requestJson,
+    responseJson: record.responseJson,
+    errorCode: record.errorCode,
+    errorMessage: record.errorMessage,
+    createdAt: record.createdAt,
+    completedAt: record.completedAt,
+  };
+}
+
+function rowToProviderCall(row: ProviderCallRow): ProviderCallRecordDto {
+  return {
+    id: row.id,
+    checkId: row.checkId,
+    operation: row.operation,
+    provider: row.provider,
+    model: row.model,
+    status: row.status,
+    requestJson: row.requestJson,
+    responseJson: row.responseJson,
+    errorCode: row.errorCode ?? null,
+    errorMessage: row.errorMessage ?? null,
+    createdAt: row.createdAt,
+    completedAt: row.completedAt ?? null,
+  };
+}
+
+function inputExtractionToRow(
+  record: InputExtractionRecordDto,
+): typeof inputExtractionsTable.$inferInsert {
+  return {
+    id: record.id,
+    checkId: record.checkId,
+    inputUrl: record.inputUrl,
+    resolvedUrl: record.resolvedUrl,
+    domain: record.domain,
+    title: record.title,
+    verificationStatus: record.verificationStatus,
+    httpStatus: record.httpStatus,
+    contentType: record.contentType,
+    contentHash: record.contentHash,
+    extractionMethod: record.extractionMethod,
+    extractedText: record.extractedText,
+    textExcerpt: record.textExcerpt,
+    failureCode: record.failureCode,
+    failureMessage: record.failureMessage,
+    createdAt: record.createdAt,
+    updatedAt: record.updatedAt,
+  };
+}
+
+function rowToInputExtraction(row: InputExtractionRow): InputExtractionRecordDto {
+  return {
+    id: row.id,
+    checkId: row.checkId,
+    inputUrl: row.inputUrl,
+    resolvedUrl: row.resolvedUrl ?? null,
+    domain: row.domain ?? null,
+    title: row.title ?? null,
+    verificationStatus: row.verificationStatus,
+    httpStatus: row.httpStatus ?? null,
+    contentType: row.contentType ?? null,
+    contentHash: row.contentHash ?? null,
+    extractionMethod: row.extractionMethod ?? null,
+    extractedText: row.extractedText ?? null,
+    textExcerpt: row.textExcerpt ?? null,
+    failureCode: row.failureCode ?? null,
+    failureMessage: row.failureMessage ?? null,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+  };
+}
+
+function sourceEvaluationToRow(
+  record: SourceEvaluationRecordDto,
+): typeof sourceEvaluationsTable.$inferInsert {
+  return {
+    id: record.id,
+    checkId: record.checkId,
+    sourceExtractionId: record.sourceExtractionId,
+    sourceUrl: record.sourceUrl,
+    provider: record.provider,
+    model: record.model,
+    relation: record.relation,
+    scopeMatch: record.scopeMatch,
+    credibilityLabel: record.credibilityLabel,
+    isPrimary: record.isPrimary,
+    rationale: record.rationale,
+    evidenceText: record.evidenceText,
+    createdAt: record.createdAt,
+  };
+}
+
+function rowToSourceEvaluation(row: SourceEvaluationRow): SourceEvaluationRecordDto {
+  return {
+    id: row.id,
+    checkId: row.checkId,
+    sourceExtractionId: row.sourceExtractionId,
+    sourceUrl: row.sourceUrl,
+    provider: row.provider,
+    model: row.model,
+    relation: row.relation,
+    scopeMatch: row.scopeMatch,
+    credibilityLabel: row.credibilityLabel,
+    isPrimary: row.isPrimary,
+    rationale: row.rationale,
+    evidenceText: row.evidenceText,
+    createdAt: row.createdAt,
   };
 }
 
