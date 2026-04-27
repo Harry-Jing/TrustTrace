@@ -30,6 +30,12 @@ describe("source URL safety", () => {
     await expect(assertSafeUrl("http://[::1]/admin", PUBLIC_RESOLVER)).rejects.toThrow(
       SourceFetchError,
     );
+    await expect(
+      assertSafeUrl("http://[::ffff:127.0.0.1]/admin", PUBLIC_RESOLVER),
+    ).rejects.toMatchObject({ code: "UNSAFE_IP_ADDRESS" });
+    await expect(
+      assertSafeUrl("http://[::ffff:c0a8:101]/admin", PUBLIC_RESOLVER),
+    ).rejects.toMatchObject({ code: "UNSAFE_IP_ADDRESS" });
     await expect(assertSafeUrl("https://example.test", async () => ["10.0.0.4"])).rejects.toThrow(
       SourceFetchError,
     );

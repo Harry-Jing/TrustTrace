@@ -224,8 +224,8 @@ function isUnsafeIpv4(address: string): boolean {
 
 function isUnsafeIpv6(address: string): boolean {
   const normalized = address.toLowerCase();
-  const mappedIpv4 = normalized.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/);
-  if (mappedIpv4?.[1]) return isUnsafeIpv4(mappedIpv4[1]);
+  const mappedIpv4 = readIpv4MappedAddress(normalized);
+  if (mappedIpv4) return isUnsafeIpv4(mappedIpv4);
 
   return (
     normalized === "::" ||
@@ -237,6 +237,22 @@ function isUnsafeIpv6(address: string): boolean {
     normalized.startsWith("fea") ||
     normalized.startsWith("feb")
   );
+}
+
+function readIpv4MappedAddress(address: string): string | null {
+  const dotted = address.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/);
+  if (dotted?.[1]) return dotted[1];
+
+  const hex = address.match(/^::ffff:([0-9a-f]{1,4}):([0-9a-f]{1,4})$/);
+  const highPart = hex?.[1];
+  const lowPart = hex?.[2];
+  if (!highPart || !lowPart) return null;
+
+  const high = Number.parseInt(highPart, 16);
+  const low = Number.parseInt(lowPart, 16);
+  if (high > 0xffff || low > 0xffff) return null;
+
+  return `${String(high >> 8)}.${String(high & 0xff)}.${String(low >> 8)}.${String(low & 0xff)}`;
 }
 
 async function fetchWithTimeout(url: string, options: SourceFetchOptions): Promise<Response> {

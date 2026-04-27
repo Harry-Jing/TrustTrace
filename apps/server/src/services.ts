@@ -32,7 +32,7 @@ export interface TrustTraceServices {
 }
 
 export function createServices(options: CreateServicesOptions): TrustTraceServices {
-  const logger = options.logger ?? pino({ level: Bun.env.TRUSTTRACE_LOG_LEVEL ?? "info" });
+  const logger = options.logger ?? pino({ level: "info" });
   const database = openDatabase(options.dbPath);
   const repository = new ChecksRepository(database.db);
   const events = new ProgressEventBus();

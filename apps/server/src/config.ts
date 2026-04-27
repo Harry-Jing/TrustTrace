@@ -1,11 +1,12 @@
 import { fileURLToPath } from "node:url";
 
 export type OpenAIReasoningEffort = "none" | "minimal" | "low" | "medium" | "high" | "xhigh";
+export type LogLevel = "trace" | "debug" | "info" | "warn" | "error" | "fatal" | "silent";
 
 export interface ServerConfig {
   port: number;
   dbPath: string;
-  logLevel: string;
+  logLevel: LogLevel;
   openAiApiKey: string | null;
   openAiModel: string;
   openAiReasoningEffort: OpenAIReasoningEffort;
@@ -19,7 +20,7 @@ export function readConfig(env: Record<string, string | undefined> = Bun.env): S
   return {
     port: readPort(env.TRUSTTRACE_PORT),
     dbPath: env.TRUSTTRACE_DB_PATH?.trim() || DEFAULT_DB_PATH,
-    logLevel: env.TRUSTTRACE_LOG_LEVEL?.trim() || "info",
+    logLevel: readLogLevel(env.TRUSTTRACE_LOG_LEVEL),
     openAiApiKey: readOptionalString(env.OPENAI_API_KEY),
     openAiModel: env.TRUSTTRACE_OPENAI_MODEL?.trim() || "gpt-5.5",
     openAiReasoningEffort: readReasoningEffort(env.TRUSTTRACE_OPENAI_REASONING_EFFORT),
@@ -48,6 +49,27 @@ function readPort(value: string | undefined): number {
 function readOptionalString(value: string | undefined): string | null {
   const trimmed = value?.trim();
   return trimmed ? trimmed : null;
+}
+
+function readLogLevel(value: string | undefined): LogLevel {
+  if (value === undefined || value.trim() === "") return "info";
+
+  const level = value.trim().toLowerCase();
+  if (
+    level === "trace" ||
+    level === "debug" ||
+    level === "info" ||
+    level === "warn" ||
+    level === "error" ||
+    level === "fatal" ||
+    level === "silent"
+  ) {
+    return level;
+  }
+
+  throw new Error(
+    'TRUSTTRACE_LOG_LEVEL must be one of "trace", "debug", "info", "warn", "error", "fatal", or "silent".',
+  );
 }
 
 function readReasoningEffort(value: string | undefined): OpenAIReasoningEffort {

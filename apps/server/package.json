@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "bun --watch src/index.ts",
+    "lint": "bun run typecheck",
     "test": "bun test",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "build": "bun run typecheck"
