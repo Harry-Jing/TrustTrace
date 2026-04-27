@@ -20,6 +20,7 @@ Bun runtime APIs such as `Bun.serve`, `bun:sqlite`, `Bun.sql`, or `Bun.file` are
 `apps/server` is the current `@trusttrace/server` backend. It uses Bun runtime APIs, Hono, Zod, Drizzle, SQLite, pino, and the OpenAI SDK.
 
 - Default port: `8000`. The frontend dev proxy forwards `/v1` to `http://127.0.0.1:8000`.
+- Backend TypeScript follows Bun's recommended runtime baseline: `lib`/`target` `ESNext`, `module` `Preserve`, `moduleResolution` `bundler`, `moduleDetection` `force`, and `noEmit`, with project stricter checks kept enabled.
 - Default SQLite path: `apps/server/data/trusttrace.sqlite`; leave `TRUSTTRACE_DB_PATH` blank to use it, or set a path relative to `apps/server` when running through `bun run --cwd apps/server ...`. Local database files are ignored by Git.
 - `TRUSTTRACE_LOG_LEVEL` is validated against pino's supported levels: `trace`, `debug`, `info`, `warn`, `error`, `fatal`, and `silent`.
 - Evidence discovery uses OpenAI Responses API web search only to discover candidate URLs; backend URL safety, fetching, extraction, persistence, and deterministic synthesis remain the evidence gate.
