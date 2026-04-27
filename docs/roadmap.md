@@ -61,7 +61,7 @@ The frontend runs on backend-shaped mocks: API contract, async `useCreateCheck`,
 
 ### Next
 
-Continue toward the full P1.0 verified evidence pipeline from [claim-checking-pipeline.md](claim-checking-pipeline.md): stronger claim parsing, authority-aware query planning, richer extraction, persistent provider/evaluation records, stricter source ranking, and LLM user explanation constrained to the verified evidence matrix.
+Move from the current P1.0 verified evidence pipeline toward P1.5 user-selectable discovery strategies from [claim-checking-pipeline.md](claim-checking-pipeline.md): expose an allowlisted `search_api | llm_web` strategy, add a dedicated web search provider path such as Tavily, keep OpenAI web search available as the LLM discovery path, record provider provenance for every candidate source, and route all discovered URLs through the existing URL safety, extraction, snippet-only downgrade, ranking/dedupe, source assessment, and deterministic synthesis gates. Do not add auto or parallel discovery modes in P1.5.
 
 ## Backlog
 

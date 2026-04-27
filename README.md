@@ -1,12 +1,13 @@
 # TrustTrace
 
-Evidence-oriented credibility checking service. Submit a URL or text, the system gathers evidence from web-grounded LLM providers, and presents cues, uncertainty, and source context instead of a binary true/false verdict.
+Evidence-oriented credibility checking service. Submit a URL or text, the system gathers evidence from web discovery providers, and presents cues, uncertainty, and source context instead of a binary true/false verdict.
 
 ## Status
 
 - **Current:** `apps/web` — Vue 3 frontend with mock/backend modes.
 - **Current:** `apps/server` — Hono backend with SQLite persistence, OpenAI-backed source discovery, backend URL safety/extraction, and progress SSE.
 - **Current:** `packages/contracts` — shared Zod schemas and inferred DTO types for TrustTrace API boundaries.
+- **Planned P1.5:** user-selectable source discovery strategy: dedicated search API or LLM web search; all discovered URLs still pass through the same backend evidence gate.
 
 ## Commands
 

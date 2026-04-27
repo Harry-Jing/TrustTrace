@@ -1,12 +1,13 @@
 # TrustTrace
 
-Evidence-oriented credibility checking service. Submit a URL or text, query LLM providers with web search grounding, collect structured evidence, synthesize results, and present non-binary credibility context.
+Evidence-oriented credibility checking service. Submit a URL or text, query web discovery providers, collect structured evidence, synthesize results, and present non-binary credibility context.
 
 ## Repository Status
 
 - **Current:** `apps/web` is the active Vue 3 frontend with mock/backend modes.
 - **Current:** `apps/server` is the Hono backend with SQLite persistence, OpenAI-backed source discovery, backend URL safety/extraction, and progress SSE.
 - **Current:** `packages/contracts` provides shared Zod schemas and inferred DTO types for frontend/backend API boundaries.
+- **Planned P1.5:** user-selectable source discovery strategy: dedicated search API or LLM web search; all discovered URLs still pass through the same backend evidence gate.
 
 ## Tech Stack
 
