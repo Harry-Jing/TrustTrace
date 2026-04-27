@@ -8,7 +8,6 @@ import {
   type CheckResultDto,
   type EvidenceItemDto,
 } from "@trusttrace/contracts/checks";
-import type { ZodError, ZodType } from "zod";
 
 import { readVerdictCopy } from "@/features/checks/constants/resultFallbacks";
 import type {
@@ -19,6 +18,21 @@ import type {
   EvidenceItem,
 } from "@/features/checks/types";
 
+interface ParseIssue {
+  path: readonly PropertyKey[];
+  message: string;
+}
+
+interface ParseErrorLike {
+  issues: readonly ParseIssue[];
+}
+
+type ParseResult<T> = { success: true; data: T } | { success: false; error: ParseErrorLike };
+
+interface ParseableSchema<T> {
+  safeParse(value: unknown): ParseResult<T>;
+}
+
 export { createCheckResponseSchema, progressEventSchema };
 
 export const checkRecordSchema = checkRecordDtoSchema.transform(mapCheckRecord);
@@ -28,16 +42,20 @@ export const checkListResponseSchema = checkListResponseDtoSchema.transform(
 );
 
 export class BackendContractError extends Error {
-  constructor(context: string, error: ZodError) {
+  constructor(context: string, error: ParseErrorLike) {
     const details = error.issues
-      .map((issue) => `${issue.path.join(".") || "<root>"}: ${issue.message}`)
+      .map((issue) => `${formatIssuePath(issue.path)}: ${issue.message}`)
       .join("; ");
     super(`Backend contract violation in ${context}: ${details}`);
     this.name = "BackendContractError";
   }
 }
 
-export function parseBackendPayload<T>(schema: ZodType<T>, value: unknown, context: string): T {
+export function parseBackendPayload<T>(
+  schema: ParseableSchema<T>,
+  value: unknown,
+  context: string,
+): T {
   const parsed = schema.safeParse(value);
   if (!parsed.success) {
     throw new BackendContractError(context, parsed.error);
@@ -74,4 +92,8 @@ function mapCheckResult(result: CheckResultDto): CheckResultViewModel {
 function mapEvidenceItem(item: EvidenceItemDto): EvidenceItem {
   const { clusterId, ...evidence } = item;
   return clusterId === undefined ? evidence : { ...evidence, clusterId };
+}
+
+function formatIssuePath(path: readonly PropertyKey[]): string {
+  return path.length === 0 ? "<root>" : path.map((part) => String(part)).join(".");
 }

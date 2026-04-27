@@ -32,7 +32,7 @@ bun run build        # type-check and build
 bun run check        # full quality gate: format:check → lint → test → build
 ```
 
-Use `bun run test`, not bare `bun test` from the repo root. Frontend tests run through Vitest/Vite; backend tests run through the `apps/server` Bun test script.
+Use `bun run test`, not bare `bun test` from the repo root. Contracts and backend tests run through Bun workspace scripts; frontend tests run through Vitest/Vite.
 
 ## Project Structure
 

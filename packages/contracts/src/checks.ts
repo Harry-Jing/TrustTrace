@@ -14,8 +14,9 @@ export const checkPhaseSchema = z.enum([
 ]);
 
 export const finiteNumberSchema = z.number().refine(Number.isFinite, "Expected a finite number");
-export const percentSchema = finiteNumberSchema.min(0).max(100);
-export const isoStringSchema = z.string().min(1);
+export const nonNegativeIntegerSchema = z.number().int().min(0);
+export const percentSchema = z.number().int().min(0).max(100);
+export const isoStringSchema = z.iso.datetime();
 
 export const nullableStringSchema = z
   .string()
@@ -86,7 +87,7 @@ export const checkProgressSchema = z.object({
   phase: checkPhaseSchema,
   percent: percentSchema,
   message: z.string().min(1),
-  eventSeq: finiteNumberSchema.min(0),
+  eventSeq: nonNegativeIntegerSchema,
   updatedAt: isoStringSchema,
 });
 
@@ -105,11 +106,11 @@ export const evidenceItemSchema = z.object({
 });
 
 export const resultAtAGlanceSchema = z.object({
-  evidence: finiteNumberSchema.min(0),
-  independent: finiteNumberSchema.min(0),
-  fullText: finiteNumberSchema.min(0),
-  primary: finiteNumberSchema.min(0),
-  snippet: finiteNumberSchema.min(0),
+  evidence: nonNegativeIntegerSchema,
+  independent: nonNegativeIntegerSchema,
+  fullText: nonNegativeIntegerSchema,
+  primary: nonNegativeIntegerSchema,
+  snippet: nonNegativeIntegerSchema,
   uncertainty: z.enum(["low", "med", "high"]),
 });
 
@@ -189,7 +190,7 @@ export const checkListResponseSchema = z.object({
 });
 
 export const progressEventSchema = z.object({
-  seq: finiteNumberSchema.min(0),
+  seq: nonNegativeIntegerSchema,
   checkId: z.string().min(1),
   status: checkStatusSchema,
   phase: checkPhaseSchema,

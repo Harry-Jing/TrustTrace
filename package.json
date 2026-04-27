@@ -23,7 +23,7 @@
     "lint:server": "bun run --cwd apps/server lint",
     "lint:fix": "bun run lint:fix:web",
     "lint:fix:web": "bun run --cwd apps/web lint:fix",
-    "test": "bun run test:web && bun run test:server",
+    "test": "bun run test:contracts && bun run test:web && bun run test:server",
     "test:web": "bun run --cwd apps/web test",
     "test:server": "bun run --cwd apps/server test",
     "test:watch": "bun run --cwd apps/web test:watch",
@@ -32,7 +32,8 @@
     "typecheck:server": "bun run --cwd apps/server typecheck",
     "build:contracts": "bun run --cwd packages/contracts build",
     "lint:contracts": "bun run --cwd packages/contracts lint",
-    "typecheck:contracts": "bun run --cwd packages/contracts typecheck"
+    "typecheck:contracts": "bun run --cwd packages/contracts typecheck",
+    "test:contracts": "bun run --cwd packages/contracts test"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.5.2",
@@ -41,5 +42,9 @@
     "prettier": "3.8.3",
     "prettier-plugin-tailwindcss": "0.7.2"
   },
-  "packageManager": "bun@1.3.13"
+  "packageManager": "bun@1.3.13",
+  "catalog": {
+    "typescript": "~6.0.2",
+    "zod": "^4.3.6"
+  }
 }

@@ -25,8 +25,7 @@
     "pinia": "^3.0.4",
     "tailwindcss": "^4.2.3",
     "vue": "^3.5.32",
-    "vue-router": "^5.0.4",
-    "zod": "^4.3.6"
+    "vue-router": "^5.0.4"
   },
   "devDependencies": {
     "@tsconfig/node24": "^24.0.4",
@@ -43,7 +42,7 @@
     "eslint-plugin-vue": "^10.8.0",
     "jsdom": "^29.0.2",
     "oxlint": "^1.61.0",
-    "typescript": "~6.0.2",
+    "typescript": "catalog:",
     "vite": "^8.0.9",
     "vitest": "^4.1.4",
     "vue-tsc": "^3.2.7"

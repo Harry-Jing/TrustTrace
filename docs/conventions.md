@@ -8,10 +8,12 @@ For the current frontend, Bun is the package manager and workspace script runner
 - Use `bun run <script>` instead of `npm run <script>` / `yarn` / `pnpm`.
 - Root scripts delegate into the `apps/*` and `packages/*` workspaces. `bun run dev` runs the Vite dev server in `apps/web`; `bun run dev:server` runs the Hono API in `apps/server`.
 - Do not replace frontend tooling with Bun-native equivalents: use Vite for dev/build, Vitest for unit tests, and `vue-tsc` for Vue-aware type checking.
-- Use `bun run test`, not bare `bun test` from the repo root. The root script runs frontend Vitest tests and backend Bun tests through their workspace scripts.
+- Use `bun run test`, not bare `bun test` from the repo root. The root script runs contracts Bun tests, frontend Vitest tests, and backend Bun tests through their workspace scripts.
 - Use `bun run build`, not `bun build`, because the root build delegates to the frontend Vite build and the backend type-check build.
 - Use `bunx <package>` instead of `npx <package>` when a one-off package runner is needed.
 - Bun automatically loads `.env`; don't add `dotenv` unless a future non-Bun runtime explicitly needs it.
+- Shared dependency versions that appear in multiple workspaces belong in the root Bun `catalog`; workspace package manifests should reference them with `catalog:`.
+- The root `tsconfig.json` is a solution file with `files: []` and references to the active workspace projects.
 
 Bun runtime APIs such as `Bun.serve`, `bun:sqlite`, `Bun.sql`, or `Bun.file` are backend concerns only. Do not use them inside `apps/web` browser code.
 
@@ -135,8 +137,8 @@ References: [Tailwind utility-first](https://tailwindcss.com/docs/utility-first)
 
 1. `format:check`
 2. `lint` (frontend lint + backend strict TypeScript check)
-3. `test` (frontend Vitest + backend Bun tests)
-4. `build` (frontend `vue-tsc`/Vite build + backend type-check build)
+3. `test` (contracts Bun tests + frontend Vitest + backend Bun tests)
+4. `build` (contracts type-check build + frontend `vue-tsc`/Vite build + backend type-check build)
 
 `format:check` is repo-wide and covers app source, docs, and configuration files from the root Prettier config.
 
