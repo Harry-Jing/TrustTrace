@@ -2,11 +2,11 @@
 
 Dev tooling is available only for local mock/demo flows. The app now separates the build environment from the API data source:
 
-| Setting                                    | Meaning                                                                               |
-| ------------------------------------------ | ------------------------------------------------------------------------------------- |
-| `import.meta.env.DEV`                      | Vite development build. Does not imply mock data by itself.                           |
-| `VITE_TRUSTTRACE_API_MODE=mock \| backend` | Selects the checks API client. Defaults to `mock` in dev and `backend` in production. |
-| `VITE_TRUSTTRACE_API_BASE_URL`             | Base URL for the backend API client. Defaults to same-origin `/v1`.                   |
+| Setting                                    | Meaning                                                                                                   |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| `import.meta.env.DEV`                      | Vite development build. Does not imply mock data by itself.                                               |
+| `VITE_TRUSTTRACE_API_MODE=mock \| backend` | Selects the checks API client. Defaults to `backend`; set `mock` explicitly for fixture-backed demo mode. |
+| `VITE_TRUSTTRACE_API_BASE_URL`             | Base URL for the backend API client. Defaults to same-origin `/v1`.                                       |
 
 `showDevTools` is true only when the app is running in Vite dev mode **and** `apiMode === 'mock'`. This keeps demo controls and fixture-backed loading evidence out of backend debugging, even when using `bun run dev`.
 
@@ -51,9 +51,7 @@ The mock client keeps in-memory demo records plus a capped set of recent non-dem
 Use `showDevTools` for demo/debug UI and `apiMode`/`isMockApiMode` for API-client behavior:
 
 ```ts
-export const apiMode =
-  readApiMode(import.meta.env.VITE_TRUSTTRACE_API_MODE) ??
-  (import.meta.env.DEV ? "mock" : "backend");
+export const apiMode = readApiMode(import.meta.env.VITE_TRUSTTRACE_API_MODE) ?? "backend";
 export const showDevTools = import.meta.env.DEV && apiMode === "mock";
 ```
 

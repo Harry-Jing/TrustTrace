@@ -9,8 +9,7 @@ export function readApiMode(value: unknown): ApiMode | null {
   throw new Error('VITE_TRUSTTRACE_API_MODE must be "mock" or "backend".');
 }
 
-export const apiMode: ApiMode =
-  readApiMode(import.meta.env.VITE_TRUSTTRACE_API_MODE) ?? (isDevMode ? "mock" : "backend");
+export const apiMode: ApiMode = readApiMode(import.meta.env.VITE_TRUSTTRACE_API_MODE) ?? "backend";
 
 export const isMockApiMode = apiMode === "mock";
 export const isBackendApiMode = apiMode === "backend";

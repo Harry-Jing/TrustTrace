@@ -5,7 +5,7 @@ import {
   getCheck,
   listChecks,
   subscribeCheckEvents,
-} from "@/features/checks/api/checksApi";
+} from "@/features/checks/api/mockChecksClient";
 
 describe("checksApi backend-shaped mock", () => {
   afterEach(() => {
