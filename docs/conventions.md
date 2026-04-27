@@ -155,6 +155,7 @@ tsconfig.json                    # Root TypeScript project references
 apps/server/.env.example         # Backend environment variable template
 apps/server/.gitignore           # Backend-local Bun/SQLite ignore patterns
 apps/server/tsconfig.json        # Backend Bun runtime type-checking
+apps/web/.env.example            # Frontend Vite environment variable template
 apps/web/.gitignore              # Frontend-local Vite/Vue ignore patterns
 apps/web/eslint.config.mjs       # ESLint flat config for Vue + TS + Vitest + Oxlint
 apps/web/.oxlintrc.json          # Oxlint correctness pass
