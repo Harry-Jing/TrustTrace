@@ -15,3 +15,7 @@ coverage
 # Python cache artifacts
 __pycache__/
 *.py[cod]
+
+# TrustTrace server local data
+apps/server/data/*.sqlite
+apps/server/data/*.sqlite-*

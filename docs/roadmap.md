@@ -1,6 +1,6 @@
 # Roadmap
 
-Frontend readiness priorities for backend integration, plus longer-horizon backlog.
+Frontend/backend readiness priorities, plus longer-horizon backlog.
 
 ## Frontend Readiness
 
@@ -51,13 +51,21 @@ The frontend runs on backend-shaped mocks: API contract, async `useCreateCheck`,
 - Frontend i18n.
 - Extract stable DTO schemas to `packages/contracts` after `apps/server` settles.
 
-## Next: Backend Implementation
+## Backend Implementation
 
-Frontend is largely backend-ready. The next track is `apps/server`, following [claim-checking-pipeline.md](claim-checking-pipeline.md): claim parsing → authority-aware search → URL verification → extraction → per-source evaluation → deterministic synthesis → LLM explanation.
+### Done
+
+- `apps/server` exists as a backend-connectable slice: Hono API, SQLite/Drizzle persistence, pino logging, simulated progress SSE, and frontend-compatible placeholder results.
+- Implemented `/v1/health`, `POST /v1/checks`, `GET /v1/checks/:checkId`, `GET /v1/checks`, and `GET /v1/checks/:checkId/events`.
+- Backend records persist the original input and progress events so loading/result/error routes can refresh against real server state.
+
+### Next
+
+Replace the deterministic placeholder pipeline with the P1.0 verified evidence pipeline from [claim-checking-pipeline.md](claim-checking-pipeline.md): claim parsing → authority-aware search → URL verification → extraction → per-source evaluation → deterministic synthesis → LLM explanation.
 
 ## Backlog
 
-Revisit only after the backend powers the core check flow, contracts are settled, and basic tests exist.
+Revisit only after the backend powers the real evidence flow, contracts are settled, and provider-backed tests/evals exist.
 
 - **i18n/localization** — for a real multilingual launch.
 - **Design system cleanup** — extract shared components after UI patterns settle.

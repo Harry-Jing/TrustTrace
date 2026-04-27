@@ -6,14 +6,25 @@ For the current frontend, Bun is the package manager and workspace script runner
 
 - Use `bun install` instead of `npm install` / `yarn install` / `pnpm install`.
 - Use `bun run <script>` instead of `npm run <script>` / `yarn` / `pnpm`.
-- Root scripts delegate into workspaces, for example `bun run dev` runs the Vite dev server in `apps/web`.
+- Root scripts delegate into workspaces. `bun run dev` runs the Vite dev server in `apps/web`; `bun run dev:server` runs the Hono API in `apps/server`.
 - Do not replace frontend tooling with Bun-native equivalents: use Vite for dev/build, Vitest for unit tests, and `vue-tsc` for Vue-aware type checking.
-- Use `bun run test`, not bare `bun test`, because the Vue frontend tests require Vite path aliases, Vue SFC transforms, jsdom, and Vitest mocking APIs such as `vi.hoisted`.
-- Use `bun run build`, not `bun build`, because production frontend builds are Vite builds preceded by `vue-tsc`.
+- Use `bun run test`, not bare `bun test` from the repo root. The root script runs frontend Vitest tests and backend Bun tests through their workspace scripts.
+- Use `bun run build`, not `bun build`, because the root build delegates to the frontend Vite build and the backend type-check build.
 - Use `bunx <package>` instead of `npx <package>` when a one-off package runner is needed.
 - Bun automatically loads `.env`; don't add `dotenv` unless a future non-Bun runtime explicitly needs it.
 
 Bun runtime APIs such as `Bun.serve`, `bun:sqlite`, `Bun.sql`, or `Bun.file` are backend concerns only. Do not use them inside `apps/web` browser code.
+
+## Backend Workspace
+
+`apps/server` is the current `@trusttrace/server` backend slice. It uses Bun runtime APIs, Hono, Zod, Drizzle, SQLite, and pino.
+
+- Default port: `8000`. The frontend dev proxy forwards `/v1` to `http://127.0.0.1:8000`.
+- Default SQLite path: `apps/server/data/trusttrace.sqlite`; local database files are ignored by Git.
+- The first backend slice intentionally returns `needs_context` placeholder results with an empty evidence list. Do not fabricate evidence while the verified evidence pipeline is still stubbed.
+- Backend response DTOs must continue to satisfy the frontend Zod schemas in `apps/web/src/features/checks/api/backendCheckSchemas.ts` until shared contracts are extracted.
+- Backend tests may use `bun test` inside `apps/server`, but run them through `bun run test:server` or the root `bun run test` in normal workflow.
+- Keep migrations/schema changes small and explicit. The current SQLite schema stores check records and progress events only; do not add provider/source/evidence tables until the real pipeline needs them.
 
 ## Frontend Quality Tooling
 
@@ -106,12 +117,12 @@ References: [Tailwind utility-first](https://tailwindcss.com/docs/utility-first)
 
 1. `format:check`
 2. `lint`
-3. `test`
-4. `build` (includes `typecheck` before `vite build`)
+3. `test` (frontend Vitest + backend Bun tests)
+4. `build` (frontend `vue-tsc`/Vite build + backend type-check build)
 
 `format:check` is repo-wide and covers app source, docs, and configuration files from the root Prettier config.
 
-Use `bun run test`, not bare `bun test` — frontend tests run through Vitest/Vite for Vue SFC transforms, path aliases, jsdom, and Vitest mocking APIs.
+Use `bun run test`, not bare `bun test` from the repo root — frontend tests run through Vitest/Vite, and backend tests run through the server workspace script.
 
 ### Git hooks and CI
 

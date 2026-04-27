@@ -4,8 +4,8 @@ Evidence-oriented credibility checking service. Submit a URL or text, query LLM 
 
 ## Repository Status
 
-- **Current:** `apps/web` is the active Vue 3 frontend, running with static/demo data.
-- **Planned:** `apps/server` for the TypeScript backend.
+- **Current:** `apps/web` is the active Vue 3 frontend with mock/backend modes.
+- **Current:** `apps/server` is the Hono backend slice with SQLite persistence, simulated progress SSE, and frontend-compatible placeholder results.
 
 ## Tech Stack
 
@@ -13,13 +13,14 @@ Current frontend: Vue 3, TypeScript, Vite, Tailwind CSS v4, Vue Router, Pinia, v
 
 For the current frontend, Bun is used for dependency installation and script orchestration only; dev/build/test remain Vite/Vitest/vue-tsc workflows.
 
-Planned backend: Bun, Hono, Zod, Drizzle, SQLite, pino, OpenAI and Gemini provider SDKs.
+Current backend: Bun runtime, Hono, Zod, Drizzle, SQLite, and pino. Planned provider integrations: OpenAI and Gemini provider SDKs.
 
 ## Commands
 
 ```sh
 bun install          # install workspace dependencies
 bun run dev          # start the frontend dev server
+bun run dev:server   # start the backend API server on port 8000
 bun run format       # format files
 bun run lint         # lint checks
 bun run typecheck    # type checks
@@ -28,13 +29,13 @@ bun run build        # type-check and build
 bun run check        # full quality gate: format:check → lint → test → build
 ```
 
-Use `bun run test`, not bare `bun test` — frontend tests run through Vitest/Vite for Vue SFC transforms, path aliases, jsdom, and Vitest mocking APIs.
+Use `bun run test`, not bare `bun test` from the repo root. Frontend tests run through Vitest/Vite; backend tests run through the `apps/server` Bun test script.
 
 ## Project Structure
 
 ```txt
 apps/web/            # Current: @trusttrace/web — Vue 3 frontend
-apps/server/         # Planned: @trusttrace/server — Hono backend
+apps/server/         # Current: @trusttrace/server — Hono backend slice
 docs/                # Project documentation
 ```
 

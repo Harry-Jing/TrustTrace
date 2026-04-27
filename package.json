@@ -9,8 +9,10 @@
   "scripts": {
     "dev": "bun run dev:web",
     "dev:web": "bun run --cwd apps/web dev",
-    "build": "bun run build:web",
+    "dev:server": "bun run --cwd apps/server dev",
+    "build": "bun run build:web && bun run build:server",
     "build:web": "bun run --cwd apps/web build",
+    "build:server": "bun run --cwd apps/server build",
     "check": "bun run format:check && bun run lint && bun run test && bun run build",
     "prepare": "lefthook install",
     "commitlint": "commitlint",
@@ -20,11 +22,13 @@
     "lint:web": "bun run --cwd apps/web lint",
     "lint:fix": "bun run lint:fix:web",
     "lint:fix:web": "bun run --cwd apps/web lint:fix",
-    "test": "bun run test:web",
+    "test": "bun run test:web && bun run test:server",
     "test:web": "bun run --cwd apps/web test",
+    "test:server": "bun run --cwd apps/server test",
     "test:watch": "bun run --cwd apps/web test:watch",
-    "typecheck": "bun run typecheck:web",
-    "typecheck:web": "bun run --cwd apps/web typecheck"
+    "typecheck": "bun run typecheck:web && bun run typecheck:server",
+    "typecheck:web": "bun run --cwd apps/web typecheck",
+    "typecheck:server": "bun run --cwd apps/server typecheck"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.5.2",
