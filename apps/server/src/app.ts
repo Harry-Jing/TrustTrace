@@ -3,9 +3,10 @@ import type { Logger } from "pino";
 import { z } from "zod";
 
 import { ProgressEventBus } from "./events";
-import { EvidencePipeline } from "./pipeline";
-import { ChecksRepository, toCreateCheckResponse } from "./repository";
-import type { CheckStatus, ProgressEventDto } from "./types";
+import { EvidencePipeline } from "./pipeline/EvidencePipeline";
+import { toCreateCheckResponse } from "./repositories/mappers/checkMapper";
+import { ChecksRepository } from "./repositories/repositoryFacade";
+import type { CheckStatus, ProgressEventDto } from "./types/checks";
 
 export interface AppServices {
   repository: ChecksRepository;

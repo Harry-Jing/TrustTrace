@@ -1,40 +1,8 @@
-import { mkdirSync } from "node:fs";
-import { dirname } from "node:path";
+import type { Database } from "bun:sqlite";
 
-import { Database } from "bun:sqlite";
-import { drizzle, type BunSQLiteDatabase } from "drizzle-orm/bun-sqlite";
+import { ensureColumn } from "./migrations";
 
-import * as schema from "./schema";
-
-export type TrustTraceDatabase = BunSQLiteDatabase<typeof schema>;
-
-export interface OpenDatabaseResult {
-  db: TrustTraceDatabase;
-  sqlite: Database;
-  close: () => void;
-}
-
-export function openDatabase(dbPath: string): OpenDatabaseResult {
-  if (dbPath !== ":memory:") {
-    mkdirSync(dirname(dbPath), { recursive: true });
-  }
-
-  const sqlite = new Database(dbPath);
-  sqlite.exec("PRAGMA foreign_keys = ON;");
-  if (dbPath !== ":memory:") {
-    sqlite.exec("PRAGMA journal_mode = WAL;");
-  }
-
-  initializeSchema(sqlite);
-
-  return {
-    sqlite,
-    db: drizzle(sqlite, { schema }),
-    close: () => sqlite.close(),
-  };
-}
-
-function initializeSchema(sqlite: Database) {
+export function initializeSchema(sqlite: Database) {
   sqlite.exec(`
     CREATE TABLE IF NOT EXISTS checks (
       id TEXT PRIMARY KEY,
@@ -167,10 +135,4 @@ function initializeSchema(sqlite: Database) {
   `);
 
   ensureColumn(sqlite, "source_extractions", "discovery_snippet", "discovery_snippet TEXT");
-}
-
-function ensureColumn(sqlite: Database, tableName: string, columnName: string, columnSql: string) {
-  const rows = sqlite.query(`PRAGMA table_info(${tableName})`).all() as Array<{ name: string }>;
-  if (rows.some((row) => row.name === columnName)) return;
-  sqlite.exec(`ALTER TABLE ${tableName} ADD COLUMN ${columnSql};`);
 }

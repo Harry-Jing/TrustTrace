@@ -1,4 +1,4 @@
-import type { SourceExtractionRecordDto } from "./types";
+import type { SourceExtractionRecordDto } from "../types/sources";
 
 export interface DiscoveredSourceLike {
   url: string;

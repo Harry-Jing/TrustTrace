@@ -1,12 +1,8 @@
 import { describe, expect, it } from "bun:test";
 
-import {
-  assertSafeUrl,
-  fetchAndExtractSource,
-  SourceFetchError,
-  type FetchLike,
-  type SourceFetchOptions,
-} from "../sourceSafety";
+import { fetchAndExtractSource } from "../sourceSafety/fetchSource";
+import { SourceFetchError, type FetchLike, type SourceFetchOptions } from "../sourceSafety/types";
+import { assertSafeUrl } from "../sourceSafety/urlSafety";
 
 const PUBLIC_RESOLVER = async () => ["93.184.216.34"];
 

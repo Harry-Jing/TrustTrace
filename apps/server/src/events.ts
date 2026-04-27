@@ -1,4 +1,4 @@
-import type { ProgressEventDto } from "./types";
+import type { ProgressEventDto } from "./types/checks";
 
 type ProgressListener = (event: ProgressEventDto) => void;
 

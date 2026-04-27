@@ -2,12 +2,13 @@ import pino, { type Logger } from "pino";
 
 import { createApp } from "./app";
 import type { OpenAIReasoningEffort } from "./config";
-import { openDatabase, type OpenDatabaseResult } from "./database";
-import { type EvidenceProvider, OpenAIEvidenceProvider } from "./evidenceProvider";
+import { openDatabase, type OpenDatabaseResult } from "./database/openDatabase";
+import { OpenAIEvidenceProvider } from "./evidenceProvider/OpenAIEvidenceProvider";
+import type { EvidenceProvider } from "./evidenceProvider/types";
 import { ProgressEventBus } from "./events";
-import { EvidencePipeline } from "./pipeline";
-import { ChecksRepository } from "./repository";
-import type { SourceFetchOptions } from "./sourceSafety";
+import { EvidencePipeline } from "./pipeline/EvidencePipeline";
+import { ChecksRepository } from "./repositories/repositoryFacade";
+import type { SourceFetchOptions } from "./sourceSafety/types";
 
 export interface CreateServicesOptions {
   dbPath: string;

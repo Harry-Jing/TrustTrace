@@ -1,8 +1,9 @@
 import { describe, expect, it } from "bun:test";
 
-import type { SourceAssessment } from "../evidenceProvider";
-import { buildEvidenceResult } from "../synthesis";
-import type { CheckRecordDto, SourceExtractionRecordDto } from "../types";
+import type { SourceAssessment } from "../evidenceProvider/types";
+import { buildEvidenceResult } from "../synthesis/buildEvidenceResult";
+import type { CheckRecordDto } from "../types/checks";
+import type { SourceExtractionRecordDto } from "../types/sources";
 
 describe("deterministic evidence synthesis", () => {
   it("selects strong, mixed, thin, and needs-context bands from backend rules", () => {

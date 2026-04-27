@@ -4,8 +4,8 @@ import {
   authorityScoreForUrl,
   rankDiscoveredSources,
   selectBestEvidenceByDomain,
-} from "../sourceRanking";
-import type { SourceExtractionRecordDto } from "../types";
+} from "../sources/ranking";
+import type { SourceExtractionRecordDto } from "../types/sources";
 
 describe("source authority ranking", () => {
   it("boosts official and academic sources above generic pages", () => {

@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { Database } from "bun:sqlite";
 import { describe, expect, it } from "bun:test";
 
-import { openDatabase } from "../database";
+import { openDatabase } from "../database/openDatabase";
 
 describe("database schema initialization", () => {
   it("adds P1.0 audit tables and source snippet column to existing SQLite files", () => {

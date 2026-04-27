@@ -6,7 +6,7 @@ For the current frontend, Bun is the package manager and workspace script runner
 
 - Use `bun install` instead of `npm install` / `yarn install` / `pnpm install`.
 - Use `bun run <script>` instead of `npm run <script>` / `yarn` / `pnpm`.
-- Root scripts delegate into workspaces. `bun run dev` runs the Vite dev server in `apps/web`; `bun run dev:server` runs the Hono API in `apps/server`.
+- Root scripts delegate into the `apps/*` workspaces. `bun run dev` runs the Vite dev server in `apps/web`; `bun run dev:server` runs the Hono API in `apps/server`.
 - Do not replace frontend tooling with Bun-native equivalents: use Vite for dev/build, Vitest for unit tests, and `vue-tsc` for Vue-aware type checking.
 - Use `bun run test`, not bare `bun test` from the repo root. The root script runs frontend Vitest tests and backend Bun tests through their workspace scripts.
 - Use `bun run build`, not `bun build`, because the root build delegates to the frontend Vite build and the backend type-check build.
@@ -28,6 +28,8 @@ Bun runtime APIs such as `Bun.serve`, `bun:sqlite`, `Bun.sql`, or `Bun.file` are
 - P1.0 audit persistence includes claim analysis, input extraction, provider calls, source extractions, and source evaluations. `snippet_only` source rows are weak context and must not independently produce an `evidence_strong` band.
 - The server must start without `OPENAI_API_KEY`, but checks should fail with a provider configuration error instead of fabricating placeholder evidence.
 - Backend response DTOs must continue to satisfy the frontend Zod schemas in `apps/web/src/features/checks/api/backendCheckSchemas.ts` until shared contracts are extracted.
+- Backend implementation directories are organized by responsibility: `types/` for DTO groups, `schema/` for Drizzle tables, `database/` for SQLite initialization/migrations, `repositories/` for persistence facades/mappers, `pipeline/` for evidence pipeline steps, `evidenceProvider/` for provider interfaces/OpenAI code, `sourceSafety/` and `sources/` for URL/fetch/ranking helpers, and `synthesis/` for deterministic result construction.
+- Do not add root-level compatibility barrels for backend internals. Import the concrete module that owns the symbol, for example `database/openDatabase`, `repositories/repositoryFacade`, `repositories/mappers/progressMapper`, `schema/checks`, `sourceSafety/fetchSource`, `sources/ranking`, or `synthesis/buildEvidenceResult`. Directory-local files such as `pipeline/types.ts` or `evidenceProvider/types.ts` are allowed when they define that module's own contract rather than re-exporting old entry points.
 - Backend lint currently runs the server TypeScript strict check; use `bun run lint:server` or the root `bun run lint`.
 - Backend tests may use `bun test` inside `apps/server`, but run them through `bun run test:server` or the root `bun run test` in normal workflow.
 - Keep migrations/schema changes small and explicit. The current SQLite schema stores check records, progress events, claim analysis, input extraction, provider calls, source extraction records, and source evaluations.
@@ -48,7 +50,7 @@ The frontend in `apps/web` follows the `create-vue` tooling baseline. Project-sp
 
 ### TrustTrace differences from create-vue
 
-- Bun workspaces: root scripts delegate into `apps/web` with `bun run --cwd apps/web ...`.
+- Bun workspaces: root scripts delegate into `apps/web` and `apps/server` with `bun run --cwd ...`.
 - Test files: `*.test.ts` or `*.spec.ts` under `apps/web/src` (not `__tests__/`).
 - Tailwind CSS v4: enabled through `@tailwindcss/vite` and `@import "tailwindcss"` in `src/style.css`.
 - Root-owned Prettier config follows Prettier defaults for semicolons and quotes, with `prettier-plugin-tailwindcss` and `tailwindStylesheet: "./apps/web/src/style.css"` for theme-aware class sorting.
