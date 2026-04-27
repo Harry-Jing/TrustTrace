@@ -1,27 +1,30 @@
-node_modules
-dist
-coverage
-.vite
-.vite-temp
-.eslintcache
+# Shared JavaScript workspace dependencies
+node_modules/
+
+# Shared coverage output from root quality workflows
+coverage/
+
+# TypeScript incremental build metadata
 *.tsbuildinfo
 
-.env
-.env.*
-!.env.example
+# Root-level local environment files
+/.env
+/.env.*
+!/.env.example
 
+# Repository-wide logs
+logs/
+*.log
+
+# OS and editor noise shared across workspaces
 .DS_Store
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
-# Python cache artifacts
+# Python cache artifacts used by local utility scripts
 __pycache__/
 *.py[cod]
-
-# TrustTrace server local data
-apps/server/data/*.sqlite
-apps/server/data/*.sqlite-*
-
-# SQLite databases and journals
-*.sqlite
-*.sqlite-*
-*.db
-*.db-*
