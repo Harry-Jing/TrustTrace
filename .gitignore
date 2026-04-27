@@ -1,22 +1,22 @@
-# Shared JavaScript workspace dependencies
+# Dependencies
 node_modules/
 
-# Shared coverage output from root quality workflows
+# Build/test
 coverage/
 
-# TypeScript incremental build metadata
+# TypeScript
 *.tsbuildinfo
 
-# Root-level local environment files
+# Env
 /.env
 /.env.*
 !/.env.example
 
-# Repository-wide logs
+# Logs
 logs/
 *.log
 
-# OS and editor noise shared across workspaces
+# OS/editor
 .DS_Store
 .idea/
 *.suo
@@ -25,6 +25,6 @@ logs/
 *.sln
 *.sw?
 
-# Python cache artifacts used by local utility scripts
+# Python
 __pycache__/
 *.py[cod]

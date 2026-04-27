@@ -22,7 +22,6 @@ Bun runtime APIs such as `Bun.serve`, `bun:sqlite`, `Bun.sql`, or `Bun.file` are
 - Default port: `8000`. The frontend dev proxy forwards `/v1` to `http://127.0.0.1:8000`.
 - Backend TypeScript follows Bun's recommended runtime baseline: `lib`/`target` `ESNext`, `module` `Preserve`, `moduleResolution` `bundler`, `moduleDetection` `force`, and `noEmit`, with project stricter checks kept enabled.
 - Default SQLite path: `apps/server/data/trusttrace.sqlite`; leave `TRUSTTRACE_DB_PATH` blank to use it, or set a path relative to `apps/server` when running through `bun run --cwd apps/server ...`. Local database files are ignored by Git.
-- `apps/server/.gitignore` owns backend-local runtime artifacts: Bun-loaded `.env` files, local logs, build/test output, TypeScript cache metadata, and SQLite database/WAL/SHM files.
 - `TRUSTTRACE_LOG_LEVEL` is validated against pino's supported levels: `trace`, `debug`, `info`, `warn`, `error`, `fatal`, and `silent`.
 - Evidence discovery uses OpenAI Responses API web search only to discover candidate URLs; backend URL safety, fetching, extraction, persistence, and deterministic synthesis remain the evidence gate.
 - The server must start without `OPENAI_API_KEY`, but checks should fail with a provider configuration error instead of fabricating placeholder evidence.
@@ -53,7 +52,6 @@ The frontend in `apps/web` follows the `create-vue` tooling baseline. Project-sp
 - Root-owned Prettier config follows Prettier defaults for semicolons and quotes, with `prettier-plugin-tailwindcss` and `tailwindStylesheet: "./apps/web/src/style.css"` for theme-aware class sorting.
 - `eslint.config.mjs` kept as JavaScript to avoid adding `jiti` for config loading, and sets the Vue ESLint project root explicitly for the monorepo workspace.
 - `.editorconfig` applies repo-wide UTF-8, LF line endings, two-space indentation, trailing whitespace trimming, and final newlines, with Markdown trailing whitespace preserved.
-- `apps/web/.gitignore` follows the Vite/create-vite baseline for logs, `node_modules`, `dist`, `dist-ssr`, `*.local` env files, and editor noise, plus frontend cache files used by this workspace.
 
 ### Naming
 
@@ -144,13 +142,7 @@ Local hooks are a developer safety net and can be bypassed by Git. The GitHub Ac
 
 ### Configuration files
 
-Git ignore patterns are intentionally split across three layers:
-
-- Root `.gitignore`: shared workspace concerns such as root dependencies, root env files, repo-wide logs, editor/OS noise, and generic TypeScript/Python cache artifacts.
-- `apps/web/.gitignore`: frontend-specific Vite/Vue output, local Vite env files, frontend dependency/cache files, and Vite-template editor/log patterns.
-- `apps/server/.gitignore`: backend-specific Bun runtime env files, local Hono/Bun logs, backend build/test output, and SQLite database/WAL/SHM files.
-
-Small overlap between layers is acceptable when it makes each package self-explanatory or mirrors an official framework template.
+Ignore rules are split into root, `apps/web`, and `apps/server` layers so shared, frontend-only, and backend-only artifacts stay easy to scan.
 
 ```txt
 .editorconfig                    # Repo-wide editor defaults
@@ -187,6 +179,5 @@ lefthook.yml                      # Local Git hook orchestration
 - Keep formatting and linting separate: Prettier formats; ESLint catches code-quality and Vue issues.
 - Keep `eslint-plugin-vue` even with Oxlint — Vue template-aware checks still belong to ESLint.
 - Put frontend dependencies in `apps/web/package.json`; root scripts only orchestrate workspaces.
-- Prefer package-local ignore rules when they make frontend/backend boundaries clearer. Keep truly shared configuration such as Prettier, hooks, workspace scripts, and CI at the repository root.
 - Prefer the default `create-vue` shape unless a TrustTrace-specific difference is documented here.
 - For theme-dependent segmented controls, keep selected labels on an explicit contrast token and verify both light and dark mode states.

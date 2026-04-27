@@ -1,5 +1,4 @@
-# Bun runtime local env files
-# Bun automatically loads .env, mode-specific .env files, and .env.local.
+# Env
 .env
 .env.*
 !.env.example
@@ -7,31 +6,28 @@
 # Dependencies
 node_modules/
 
-# Backend build/test output
+# Build/test
 coverage/
 dist/
 build/
 out/
 
-# Server logs and runtime dumps
+# Logs/runtime
 logs/
 *.log
 *.pid
 *.seed
 *.pid.lock
 
-# TypeScript and Bun/tool caches
+# Caches
 *.tsbuildinfo
 .cache/
 
-# TrustTrace SQLite local persistence
-# The default development database lives in data/trusttrace.sqlite.
+# SQLite
 data/*.sqlite
 data/*.sqlite-*
 data/*.db
 data/*.db-*
-
-# SQLite databases, rollback journals, and WAL/SHM sidecar files generated under apps/server.
 *.sqlite
 *.sqlite-*
 *.db
@@ -40,7 +36,7 @@ data/*.db-*
 *.db-wal
 *.db-shm
 
-# Editor and OS noise near backend files
+# OS/editor
 .idea/
 .DS_Store
 *.sw?
