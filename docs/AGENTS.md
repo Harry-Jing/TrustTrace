@@ -5,7 +5,7 @@ Evidence-oriented credibility checking service. Submit a URL or text, query LLM 
 ## Repository Status
 
 - **Current:** `apps/web` is the active Vue 3 frontend with mock/backend modes.
-- **Current:** `apps/server` is the Hono backend slice with SQLite persistence, simulated progress SSE, and frontend-compatible placeholder results.
+- **Current:** `apps/server` is the Hono backend with SQLite persistence, OpenAI-backed source discovery, backend URL safety/extraction, and progress SSE.
 
 ## Tech Stack
 
@@ -13,7 +13,7 @@ Current frontend: Vue 3, TypeScript, Vite, Tailwind CSS v4, Vue Router, Pinia, v
 
 For the current frontend, Bun is used for dependency installation and script orchestration only; dev/build/test remain Vite/Vitest/vue-tsc workflows.
 
-Current backend: Bun runtime, Hono, Zod, Drizzle, SQLite, and pino. Planned provider integrations: OpenAI and Gemini provider SDKs.
+Current backend: Bun runtime, Hono, Zod, Drizzle, SQLite, pino, and the OpenAI SDK. Planned later provider integration: Gemini provider SDK.
 
 ## Commands
 

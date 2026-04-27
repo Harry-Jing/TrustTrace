@@ -3,14 +3,14 @@ import type { Logger } from "pino";
 import { z } from "zod";
 
 import { ProgressEventBus } from "./events";
-import { SimulatedPipeline } from "./pipeline";
+import { EvidencePipeline } from "./pipeline";
 import { ChecksRepository, toCreateCheckResponse } from "./repository";
 import type { CheckStatus, ProgressEventDto } from "./types";
 
 export interface AppServices {
   repository: ChecksRepository;
   events: ProgressEventBus;
-  pipeline: SimulatedPipeline;
+  pipeline: EvidencePipeline;
   logger: Logger;
 }
 

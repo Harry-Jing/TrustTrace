@@ -19,3 +19,9 @@ __pycache__/
 # TrustTrace server local data
 apps/server/data/*.sqlite
 apps/server/data/*.sqlite-*
+
+# SQLite databases and journals
+*.sqlite
+*.sqlite-*
+*.db
+*.db-*

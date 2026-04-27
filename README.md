@@ -5,7 +5,7 @@ Evidence-oriented credibility checking service. Submit a URL or text, the system
 ## Status
 
 - **Current:** `apps/web` — Vue 3 frontend with mock/backend modes.
-- **Current:** `apps/server` — Hono backend slice with SQLite persistence, simulated progress SSE, and frontend-compatible placeholder results.
+- **Current:** `apps/server` — Hono backend with SQLite persistence, OpenAI-backed source discovery, backend URL safety/extraction, and progress SSE.
 - **Planned:** `packages/shared` — shared Zod schemas once backend contracts settle.
 
 ## Commands

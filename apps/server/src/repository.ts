@@ -2,20 +2,25 @@ import { randomUUID } from "node:crypto";
 
 import { and, asc, desc, eq, gt } from "drizzle-orm";
 
-import { checksTable, progressEventsTable } from "./schema";
+import { checksTable, progressEventsTable, sourceExtractionsTable } from "./schema";
 import type { TrustTraceDatabase } from "./database";
 import type {
+  CheckApiErrorDto,
   CheckInputDto,
   CheckListItemDto,
   CheckProgressDto,
   CheckRecordDto,
   CheckResultDto,
   CreateCheckResponseDto,
+  NewSourceExtractionDto,
   ProgressEventDto,
+  SourceExtractionRecordDto,
+  SourceExtractionUpdateDto,
 } from "./types";
 
 type CheckRow = typeof checksTable.$inferSelect;
 type ProgressEventRow = typeof progressEventsTable.$inferSelect;
+type SourceExtractionRow = typeof sourceExtractionsTable.$inferSelect;
 
 export class ChecksRepository {
   constructor(private readonly db: TrustTraceDatabase) {}
@@ -120,6 +125,96 @@ export class ChecksRepository {
         .run();
     });
   }
+
+  failCheckWithEvent(event: ProgressEventDto, error: CheckApiErrorDto): void {
+    this.db.transaction((tx) => {
+      tx.insert(progressEventsTable).values(eventToRow(event)).run();
+      tx.update(checksTable)
+        .set({
+          status: "failed",
+          progressJson: eventToProgress(event),
+          resultJson: null,
+          errorJson: error,
+          updatedAt: event.createdAt,
+          completedAt: event.createdAt,
+        })
+        .where(eq(checksTable.id, event.checkId))
+        .run();
+    });
+  }
+
+  createSourceExtraction(input: NewSourceExtractionDto): SourceExtractionRecordDto {
+    const record: SourceExtractionRecordDto = {
+      id: `src_${randomUUID()}`,
+      checkId: input.checkId,
+      candidateUrl: input.candidateUrl,
+      resolvedUrl: null,
+      domain: null,
+      title: input.title,
+      discoveryProvider: input.discoveryProvider,
+      discoveryRank: input.discoveryRank,
+      verificationStatus: "candidate",
+      httpStatus: null,
+      contentType: null,
+      contentHash: null,
+      extractionMethod: null,
+      extractedText: null,
+      textExcerpt: null,
+      failureCode: null,
+      failureMessage: null,
+      createdAt: input.createdAt,
+      updatedAt: input.createdAt,
+    };
+
+    this.db.insert(sourceExtractionsTable).values(sourceExtractionToRow(record)).run();
+    return record;
+  }
+
+  updateSourceExtraction(
+    id: string,
+    update: SourceExtractionUpdateDto,
+  ): SourceExtractionRecordDto | null {
+    const values: Partial<typeof sourceExtractionsTable.$inferInsert> = {
+      updatedAt: update.updatedAt,
+    };
+
+    if (update.resolvedUrl !== undefined) values.resolvedUrl = update.resolvedUrl;
+    if (update.domain !== undefined) values.domain = update.domain;
+    if (update.title !== undefined) values.title = update.title;
+    if (update.verificationStatus !== undefined) {
+      values.verificationStatus = update.verificationStatus;
+    }
+    if (update.httpStatus !== undefined) values.httpStatus = update.httpStatus;
+    if (update.contentType !== undefined) values.contentType = update.contentType;
+    if (update.contentHash !== undefined) values.contentHash = update.contentHash;
+    if (update.extractionMethod !== undefined) values.extractionMethod = update.extractionMethod;
+    if (update.extractedText !== undefined) values.extractedText = update.extractedText;
+    if (update.textExcerpt !== undefined) values.textExcerpt = update.textExcerpt;
+    if (update.failureCode !== undefined) values.failureCode = update.failureCode;
+    if (update.failureMessage !== undefined) values.failureMessage = update.failureMessage;
+
+    this.db
+      .update(sourceExtractionsTable)
+      .set(values)
+      .where(eq(sourceExtractionsTable.id, id))
+      .run();
+    const row = this.db
+      .select()
+      .from(sourceExtractionsTable)
+      .where(eq(sourceExtractionsTable.id, id))
+      .get();
+    return row ? rowToSourceExtraction(row) : null;
+  }
+
+  listSourceExtractions(checkId: string): SourceExtractionRecordDto[] {
+    return this.db
+      .select()
+      .from(sourceExtractionsTable)
+      .where(eq(sourceExtractionsTable.checkId, checkId))
+      .orderBy(asc(sourceExtractionsTable.discoveryRank))
+      .all()
+      .map(rowToSourceExtraction);
+  }
 }
 
 export function toCreateCheckResponse(record: CheckRecordDto): CreateCheckResponseDto {
@@ -141,6 +236,8 @@ export function makeProgressEvent(input: {
   stepCode: string;
   createdAt?: string;
   status?: ProgressEventDto["status"];
+  provider?: string | null;
+  error?: CheckApiErrorDto | null;
 }): ProgressEventDto {
   return {
     seq: input.seq,
@@ -149,9 +246,9 @@ export function makeProgressEvent(input: {
     phase: input.phase,
     percent: input.percent,
     message: input.message,
-    provider: null,
+    provider: input.provider ?? null,
     stepCode: input.stepCode,
-    error: null,
+    error: input.error ?? null,
     createdAt: input.createdAt ?? new Date().toISOString(),
   };
 }
@@ -180,6 +277,32 @@ function eventToRow(event: ProgressEventDto): typeof progressEventsTable.$inferI
     stepCode: event.stepCode,
     errorJson: event.error,
     createdAt: event.createdAt,
+  };
+}
+
+function sourceExtractionToRow(
+  record: SourceExtractionRecordDto,
+): typeof sourceExtractionsTable.$inferInsert {
+  return {
+    id: record.id,
+    checkId: record.checkId,
+    candidateUrl: record.candidateUrl,
+    resolvedUrl: record.resolvedUrl,
+    domain: record.domain,
+    title: record.title,
+    discoveryProvider: record.discoveryProvider,
+    discoveryRank: record.discoveryRank,
+    verificationStatus: record.verificationStatus,
+    httpStatus: record.httpStatus,
+    contentType: record.contentType,
+    contentHash: record.contentHash,
+    extractionMethod: record.extractionMethod,
+    extractedText: record.extractedText,
+    textExcerpt: record.textExcerpt,
+    failureCode: record.failureCode,
+    failureMessage: record.failureMessage,
+    createdAt: record.createdAt,
+    updatedAt: record.updatedAt,
   };
 }
 
@@ -212,6 +335,30 @@ function rowToEvent(row: ProgressEventRow): ProgressEventDto {
   };
 }
 
+function rowToSourceExtraction(row: SourceExtractionRow): SourceExtractionRecordDto {
+  return {
+    id: row.id,
+    checkId: row.checkId,
+    candidateUrl: row.candidateUrl,
+    resolvedUrl: row.resolvedUrl ?? null,
+    domain: row.domain ?? null,
+    title: row.title ?? null,
+    discoveryProvider: row.discoveryProvider,
+    discoveryRank: row.discoveryRank,
+    verificationStatus: row.verificationStatus,
+    httpStatus: row.httpStatus ?? null,
+    contentType: row.contentType ?? null,
+    contentHash: row.contentHash ?? null,
+    extractionMethod: row.extractionMethod ?? null,
+    extractedText: row.extractedText ?? null,
+    textExcerpt: row.textExcerpt ?? null,
+    failureCode: row.failureCode ?? null,
+    failureMessage: row.failureMessage ?? null,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+  };
+}
+
 function rowToListItem(row: CheckRow): CheckListItemDto {
   return {
     checkId: row.id,
@@ -230,7 +377,7 @@ function listSnippet(row: CheckRow): string {
   if (row.status === "failed") {
     return row.errorJson?.message ?? "The backend check failed.";
   }
-  return "Check is running through the backend pipeline.";
+  return "Check is running through the backend evidence pipeline.";
 }
 
 function listCue(row: CheckRow): string {

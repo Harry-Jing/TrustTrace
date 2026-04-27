@@ -65,6 +65,30 @@ function initializeSchema(sqlite: Database) {
     CREATE UNIQUE INDEX IF NOT EXISTS progress_events_check_seq_idx
       ON progress_events(check_id, seq);
 
+    CREATE TABLE IF NOT EXISTS source_extractions (
+      id TEXT PRIMARY KEY,
+      check_id TEXT NOT NULL REFERENCES checks(id) ON DELETE CASCADE,
+      candidate_url TEXT NOT NULL,
+      resolved_url TEXT,
+      domain TEXT,
+      title TEXT,
+      discovery_provider TEXT NOT NULL,
+      discovery_rank INTEGER NOT NULL,
+      verification_status TEXT NOT NULL,
+      http_status INTEGER,
+      content_type TEXT,
+      content_hash TEXT,
+      extraction_method TEXT,
+      extracted_text TEXT,
+      text_excerpt TEXT,
+      failure_code TEXT,
+      failure_message TEXT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+
     CREATE INDEX IF NOT EXISTS checks_created_at_idx ON checks(created_at);
+    CREATE INDEX IF NOT EXISTS source_extractions_check_rank_idx
+      ON source_extractions(check_id, discovery_rank);
   `);
 }

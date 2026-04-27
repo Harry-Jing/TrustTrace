@@ -55,13 +55,13 @@ The frontend runs on backend-shaped mocks: API contract, async `useCreateCheck`,
 
 ### Done
 
-- `apps/server` exists as a backend-connectable slice: Hono API, SQLite/Drizzle persistence, pino logging, simulated progress SSE, and frontend-compatible placeholder results.
+- `apps/server` exists as a backend-connectable service: Hono API, SQLite/Drizzle persistence, pino logging, OpenAI-backed candidate source discovery, backend URL safety/extraction, deterministic synthesis, and progress SSE.
 - Implemented `/v1/health`, `POST /v1/checks`, `GET /v1/checks/:checkId`, `GET /v1/checks`, and `GET /v1/checks/:checkId/events`.
-- Backend records persist the original input and progress events so loading/result/error routes can refresh against real server state.
+- Backend records persist the original input, progress events, and source extraction records so loading/result/error routes can refresh against real server state.
 
 ### Next
 
-Replace the deterministic placeholder pipeline with the P1.0 verified evidence pipeline from [claim-checking-pipeline.md](claim-checking-pipeline.md): claim parsing → authority-aware search → URL verification → extraction → per-source evaluation → deterministic synthesis → LLM explanation.
+Continue toward the full P1.0 verified evidence pipeline from [claim-checking-pipeline.md](claim-checking-pipeline.md): stronger claim parsing, authority-aware query planning, richer extraction, persistent provider/evaluation records, stricter source ranking, and LLM user explanation constrained to the verified evidence matrix.
 
 ## Backlog
 

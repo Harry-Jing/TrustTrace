@@ -17,14 +17,15 @@ Bun runtime APIs such as `Bun.serve`, `bun:sqlite`, `Bun.sql`, or `Bun.file` are
 
 ## Backend Workspace
 
-`apps/server` is the current `@trusttrace/server` backend slice. It uses Bun runtime APIs, Hono, Zod, Drizzle, SQLite, and pino.
+`apps/server` is the current `@trusttrace/server` backend. It uses Bun runtime APIs, Hono, Zod, Drizzle, SQLite, pino, and the OpenAI SDK.
 
 - Default port: `8000`. The frontend dev proxy forwards `/v1` to `http://127.0.0.1:8000`.
 - Default SQLite path: `apps/server/data/trusttrace.sqlite`; local database files are ignored by Git.
-- The first backend slice intentionally returns `needs_context` placeholder results with an empty evidence list. Do not fabricate evidence while the verified evidence pipeline is still stubbed.
+- Evidence discovery uses OpenAI Responses API web search only to discover candidate URLs; backend URL safety, fetching, extraction, persistence, and deterministic synthesis remain the evidence gate.
+- The server must start without `OPENAI_API_KEY`, but checks should fail with a provider configuration error instead of fabricating placeholder evidence.
 - Backend response DTOs must continue to satisfy the frontend Zod schemas in `apps/web/src/features/checks/api/backendCheckSchemas.ts` until shared contracts are extracted.
 - Backend tests may use `bun test` inside `apps/server`, but run them through `bun run test:server` or the root `bun run test` in normal workflow.
-- Keep migrations/schema changes small and explicit. The current SQLite schema stores check records and progress events only; do not add provider/source/evidence tables until the real pipeline needs them.
+- Keep migrations/schema changes small and explicit. The current SQLite schema stores check records, progress events, and source extraction records; do not add full provider/evaluation tables until the next pipeline slice needs them.
 
 ## Frontend Quality Tooling
 
