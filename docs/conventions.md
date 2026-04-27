@@ -83,6 +83,8 @@ These are hard rules for production code under `apps/web/src`:
 
 - `apps/web/src/style.css` owns theme custom properties, the Tailwind `@theme` bridge, base defaults, shared component classes, and motion utilities.
 - Prefer Tailwind utility classes directly in Vue templates for layout, spacing, color, typography, state, and responsive behavior.
+- Prefer Tailwind canonical utilities over arbitrary values when they express the same value through the active theme, for example `max-w-120` instead of `max-w-[480px]` and `gap-0.75` instead of `gap-[3px]`.
+- Keep arbitrary values for one-off values outside the theme scale, complex CSS expressions, exact external constraints, and cases where the literal CSS value is clearer than the canonical form.
 - When utility combinations become meaningfully duplicated, prefer extracting a Vue component before adding a global CSS class.
 - Add custom CSS only when utilities or component extraction would be less clear: theme tokens, global base defaults, Vue transition class names, reusable cross-component behavior, and motion helpers.
 - Keep custom CSS in Tailwind-aware layers: `@layer base` for global defaults, `@layer components` for reusable UI, and `@utility` for reusable utility-style helpers.

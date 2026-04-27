@@ -15,7 +15,7 @@ const emit = defineEmits<{
 <template>
   <div class="flex stagger-2 flex-wrap items-center gap-2.5">
     <div
-      class="flex min-w-[200px] flex-1 items-center gap-2 rounded-lg border border-line bg-card px-3.5 py-2 transition-[border-color] duration-200 focus-within:border-accent"
+      class="flex min-w-50 flex-1 items-center gap-2 rounded-lg border border-line bg-card px-3.5 py-2 transition-[border-color] duration-200 focus-within:border-accent"
     >
       <svg
         class="size-4 shrink-0 text-muted"

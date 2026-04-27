@@ -31,11 +31,11 @@ function isCurrent(index: number, currentIndex: number) {
            never feels frozen between phase events. -->
       <div
         v-if="index < steps.length - 1"
-        class="absolute top-[18px] left-1/2 -z-0 h-px w-full overflow-hidden bg-line"
+        class="absolute top-4.5 left-1/2 -z-0 h-px w-full overflow-hidden bg-line"
         aria-hidden="true"
       >
         <div
-          class="h-full w-full origin-left bg-good transition-transform duration-500 ease-[var(--ease-snappy)]"
+          class="h-full w-full origin-left bg-good transition-transform duration-500 ease-(--ease-snappy)"
           :style="{ transform: isDone(index, currentIndex) ? 'scaleX(1)' : 'scaleX(0)' }"
         />
         <div

@@ -69,7 +69,7 @@ async function retryCheck() {
 </script>
 
 <template>
-  <div class="mx-auto max-w-[520px] px-6 pt-25 pb-20 text-center">
+  <div class="mx-auto max-w-130 px-6 pt-25 pb-20 text-center">
     <div class="anim-up">
       <!-- SVG illustration -->
       <svg
@@ -108,7 +108,7 @@ async function retryCheck() {
         {{ errorMessage }}
       </h1>
 
-      <p class="mx-auto mb-7 max-w-[400px] text-sm leading-[1.75] text-muted">
+      <p class="mx-auto mb-7 max-w-100 text-sm leading-[1.75] text-muted">
         {{ retryHelp }}
       </p>
 
@@ -116,7 +116,7 @@ async function retryCheck() {
         <button
           v-if="canRetry"
           type="button"
-          class="tt-btn rounded-md border-none bg-ink px-7 py-[11px] text-sm font-semibold text-surface"
+          class="tt-btn rounded-md border-none bg-ink px-7 py-2.75 text-sm font-semibold text-surface"
           :disabled="isSubmitting"
           @click="retryCheck"
         >
@@ -124,7 +124,7 @@ async function retryCheck() {
         </button>
         <button
           type="button"
-          class="tt-btn rounded-md border border-line-strong bg-transparent px-5 py-[11px] text-sm text-ink-2"
+          class="tt-btn rounded-md border border-line-strong bg-transparent px-5 py-2.75 text-sm text-ink-2"
           @click="router.push({ name: 'landing' })"
         >
           Edit claim
@@ -142,7 +142,7 @@ async function retryCheck() {
       </div>
 
       <!-- Expandable explanation -->
-      <div class="mx-auto mt-6 max-w-[400px] text-left">
+      <div class="mx-auto mt-6 max-w-100 text-left">
         <button
           type="button"
           class="flex items-center gap-1.5 border-none bg-transparent p-0 font-mono text-xs text-muted"

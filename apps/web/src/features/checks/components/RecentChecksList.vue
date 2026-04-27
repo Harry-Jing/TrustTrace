@@ -25,7 +25,7 @@ function formatRelativeTime(iso: string) {
 <template>
   <div class="mt-6 stagger-6 text-left">
     <div class="mb-2.5 flex items-center gap-2">
-      <span class="font-mono text-[10px] tracking-[0.1em] text-muted uppercase">recent checks</span>
+      <span class="font-mono text-[10px] tracking-widest text-muted uppercase">recent checks</span>
       <div class="h-px flex-1 bg-line" />
     </div>
     <button

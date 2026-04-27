@@ -134,7 +134,7 @@ function evidenceHref(item: EvidenceItem) {
             <span class="font-mono text-[10px] tracking-[0.06em] text-muted uppercase"
               >scope match</span
             >
-            <div class="flex h-[3px] w-32 overflow-hidden rounded-sm bg-line">
+            <div class="flex h-0.75 w-32 overflow-hidden rounded-sm bg-line">
               <div
                 class="ladder-scope-bar h-full origin-left rounded-sm transition-transform duration-600 ease-out"
                 :class="group.config.barClass"

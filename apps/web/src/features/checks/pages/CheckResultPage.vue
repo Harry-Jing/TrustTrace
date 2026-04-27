@@ -34,7 +34,7 @@ function handleCopy() {
 </script>
 
 <template>
-  <div class="mx-auto max-w-[1120px] px-6 pt-12 pb-20">
+  <div class="mx-auto max-w-280 px-6 pt-12 pb-20">
     <div
       v-if="isLoading || checkStatus === 'queued' || checkStatus === 'running'"
       class="py-20 text-center text-muted"

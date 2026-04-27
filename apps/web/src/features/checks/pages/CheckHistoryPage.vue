@@ -16,7 +16,7 @@ function selectHistoryItem(historyItem: CheckListItem) {
 </script>
 
 <template>
-  <div class="mx-auto max-w-[1120px] px-6 pt-12 pb-20">
+  <div class="mx-auto max-w-280 px-6 pt-12 pb-20">
     <div class="mb-6 flex stagger-1 flex-col gap-4 md:flex-row md:items-end md:justify-between">
       <div>
         <h1 class="mt-2.5 mb-1.5 font-serif text-4xl tracking-tight">Your checks</h1>

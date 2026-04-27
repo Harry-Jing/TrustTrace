@@ -27,7 +27,7 @@ const emit = defineEmits<{
         v-for="phaseOption in phases"
         :key="phaseOption"
         type="button"
-        class="tt-btn rounded px-2 py-[3px] font-mono text-[10px]"
+        class="tt-btn rounded px-2 py-0.75 font-mono text-[10px]"
         :class="
           phase === phaseOption
             ? 'border border-ink bg-ink text-surface'
@@ -40,7 +40,7 @@ const emit = defineEmits<{
       </button>
       <button
         type="button"
-        class="tt-btn inline-flex items-center gap-1 rounded border border-good bg-transparent px-2 py-[3px] font-mono text-[10px] text-good"
+        class="tt-btn inline-flex items-center gap-1 rounded border border-good bg-transparent px-2 py-0.75 font-mono text-[10px] text-good"
         @click="emit('done')"
       >
         <svg

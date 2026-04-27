@@ -68,14 +68,14 @@ function submit() {
     <!-- Mode toggle + char count -->
     <div class="mb-3.5 flex items-center gap-3">
       <div
-        class="relative isolate inline-flex overflow-hidden rounded-full bg-surface-alt p-[3px]"
+        class="relative isolate inline-flex overflow-hidden rounded-full bg-surface-alt p-0.75"
         role="group"
         aria-label="Claim input type"
       >
         <!-- Sliding indicator -->
         <div
-          class="pointer-events-none absolute top-[3px] z-0 h-[calc(100%-6px)] w-[calc(50%-3px)] rounded-full bg-ink transition-[left] duration-250 ease-snappy"
-          :class="mode === 'text' ? 'left-[3px]' : 'left-1/2'"
+          class="pointer-events-none absolute top-0.75 z-0 h-[calc(100%-6px)] w-[calc(50%-3px)] rounded-full bg-ink transition-[left] duration-250 ease-snappy"
+          :class="mode === 'text' ? 'left-0.75' : 'left-1/2'"
         />
         <button
           v-for="modeOption in ['text', 'url'] as const"
@@ -116,7 +116,7 @@ function submit() {
       v-model="value"
       placeholder="Paste the claim or excerpt you want to double-check…"
       :rows="3"
-      class="max-h-[200px] min-h-20 w-full resize-y border-none bg-transparent text-[15px] leading-[1.7] text-ink outline-none"
+      class="max-h-50 min-h-20 w-full resize-y border-none bg-transparent text-[15px] leading-[1.7] text-ink outline-none"
       :disabled="isDisabled"
     />
 

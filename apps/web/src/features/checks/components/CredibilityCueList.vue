@@ -20,11 +20,11 @@ defineProps<{
       <div class="mb-1 flex items-center gap-2">
         <span class="flex-1 text-[13px] leading-snug font-semibold">{{ cue.name }}</span>
         <CueTooltip :text="cue.tooltip" />
-        <div class="flex gap-[3px]" :aria-label="`Strength ${cue.strength} of 5`" role="img">
+        <div class="flex gap-0.75" :aria-label="`Strength ${cue.strength} of 5`" role="img">
           <div
             v-for="d in 5"
             :key="d"
-            class="size-[5px] rounded-full transition-colors duration-300"
+            class="size-1.25 rounded-full transition-colors duration-300"
             :class="d <= cue.strength ? 'bg-warn' : 'bg-line'"
           />
         </div>

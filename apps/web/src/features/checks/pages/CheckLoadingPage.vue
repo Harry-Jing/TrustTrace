@@ -99,7 +99,7 @@ onBeforeUnmount(clearRedirectTimer);
 </script>
 
 <template>
-  <div class="mx-auto max-w-[920px] px-6 pt-12 pb-20">
+  <div class="mx-auto max-w-230 px-6 pt-12 pb-20">
     <!-- Celebration state -->
     <div v-if="showCelebration" class="anim-up py-30 text-center">
       <div
@@ -159,13 +159,13 @@ onBeforeUnmount(clearRedirectTimer);
         <circle cx="36" cy="46" r="1.5" class="fill-warn" />
       </svg>
       <h1 class="mb-2.5 font-serif text-[28px] tracking-tight">Could not load progress</h1>
-      <p class="mx-auto mb-6 max-w-[420px] text-sm leading-[1.75] text-muted">
+      <p class="mx-auto mb-6 max-w-105 text-sm leading-[1.75] text-muted">
         The check was created, but the live progress stream could not be loaded. You can retry the
         connection without starting over.
       </p>
       <button
         type="button"
-        class="tt-btn rounded-md border-none bg-ink px-7 py-[11px] text-sm font-semibold text-surface"
+        class="tt-btn rounded-md border-none bg-ink px-7 py-2.75 text-sm font-semibold text-surface"
         @click="retryProgress"
       >
         Retry progress
@@ -191,11 +191,11 @@ onBeforeUnmount(clearRedirectTimer);
 
       <!-- Phase header: now label + title + plain-English description.
            Crossfades on phase change so text swaps feel intentional. -->
-      <section class="mb-6 min-h-[160px]" aria-live="polite">
+      <section class="mb-6 min-h-40" aria-live="polite">
         <Transition name="phase-header" mode="out-in">
           <div :key="phaseDefinition.key">
             <div
-              class="mb-2 flex items-center gap-2 font-mono text-[11px] tracking-[0.1em] text-warn uppercase"
+              class="mb-2 flex items-center gap-2 font-mono text-[11px] tracking-widest text-warn uppercase"
             >
               <span class="size-1.5 anim-pulse-dot rounded-full bg-warn" aria-hidden="true" />
               <span>now &middot; {{ phaseDefinition.nowLabel }}</span>
@@ -203,7 +203,7 @@ onBeforeUnmount(clearRedirectTimer);
             <h2 class="mb-2 font-serif text-[clamp(24px,3.4vw,32px)] tracking-tight">
               {{ phaseDefinition.title }}
             </h2>
-            <p class="max-w-[640px] text-[14px] leading-[1.7] text-ink-2">
+            <p class="max-w-160 text-[14px] leading-[1.7] text-ink-2">
               {{ phaseDefinition.description }}
             </p>
           </div>
@@ -211,7 +211,7 @@ onBeforeUnmount(clearRedirectTimer);
       </section>
 
       <!-- Calm trust line (no live status box, no backend message echoed back) -->
-      <p class="mt-6 max-w-[640px] text-[12px] leading-[1.6] text-muted">
+      <p class="mt-6 max-w-160 text-[12px] leading-[1.6] text-muted">
         Sources are verified for safety and substance before they become evidence.
       </p>
 

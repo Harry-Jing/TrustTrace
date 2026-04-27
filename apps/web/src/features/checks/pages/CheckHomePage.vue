@@ -28,7 +28,7 @@ function selectRecentCheck(recentCheck: CheckListItem) {
 </script>
 
 <template>
-  <div class="mx-auto max-w-[1120px] px-6 pt-18 pb-15">
+  <div class="mx-auto max-w-280 px-6 pt-18 pb-15">
     <!-- Hero: stacked on mobile, side-by-side on desktop -->
     <div
       class="flex flex-col items-center text-center lg:flex-row lg:items-center lg:gap-16 lg:text-left"
@@ -47,14 +47,14 @@ function selectRecentCheck(recentCheck: CheckListItem) {
           Check the claim,<br />not just the headline.
         </h1>
 
-        <p class="mb-9 max-w-[500px] stagger-3 text-base leading-[1.7] text-ink-2 lg:mb-0">
+        <p class="mb-9 max-w-125 stagger-3 text-base leading-[1.7] text-ink-2 lg:mb-0">
           Paste a link or a short excerpt. TrustTrace surfaces what it found, what it doubts, and
           what stays unknown.
         </p>
       </div>
 
       <!-- Right: input card -->
-      <div class="w-full lg:w-[440px] lg:shrink-0">
+      <div class="w-full lg:w-110 lg:shrink-0">
         <ClaimInputCard :submitting="isSubmitting" :error="submitError" @submit="submit" />
       </div>
     </div>

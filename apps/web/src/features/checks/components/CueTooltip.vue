@@ -66,7 +66,7 @@ onBeforeUnmount(clearCloseTimer);
         v-if="show"
         :id="tooltipId"
         role="tooltip"
-        class="absolute bottom-[calc(100%+8px)] left-1/2 z-10 w-[260px] -translate-x-1/2 rounded-md bg-ink p-3 text-xs leading-relaxed text-surface shadow-lg"
+        class="absolute bottom-[calc(100%+8px)] left-1/2 z-10 w-65 -translate-x-1/2 rounded-md bg-ink p-3 text-xs leading-relaxed text-surface shadow-lg"
         @mouseenter="open"
         @mouseleave="scheduleClose"
       >

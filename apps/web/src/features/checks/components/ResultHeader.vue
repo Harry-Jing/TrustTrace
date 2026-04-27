@@ -53,7 +53,7 @@ const description = computed(() =>
   <h1 class="mb-3 stagger-2 font-serif text-[clamp(28px,4.2vw,40px)] leading-[1.15] tracking-tight">
     {{ headline }}
   </h1>
-  <p class="mb-2 max-w-[640px] stagger-2 text-[14px] leading-[1.7] text-ink-2">
+  <p class="mb-2 max-w-160 stagger-2 text-[14px] leading-[1.7] text-ink-2">
     {{ description }}
   </p>
 </template>

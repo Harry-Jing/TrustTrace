@@ -52,7 +52,7 @@ watch(
 
     <!-- Page content with transition -->
     <main id="main-content" ref="mainEl" tabindex="-1">
-      <div v-if="renderError" class="mx-auto max-w-[480px] px-6 py-20 text-center">
+      <div v-if="renderError" class="mx-auto max-w-120 px-6 py-20 text-center">
         <p class="mb-4 text-muted">Something went wrong.</p>
         <button
           type="button"
