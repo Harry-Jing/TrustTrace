@@ -11,6 +11,7 @@
     "build": "bun run typecheck"
   },
   "dependencies": {
+    "@trusttrace/contracts": "workspace:*",
     "drizzle-orm": "^0.45.0",
     "hono": "^4.10.7",
     "openai": "^6.34.0",

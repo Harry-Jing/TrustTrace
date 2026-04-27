@@ -6,7 +6,7 @@ Evidence-oriented credibility checking service. Submit a URL or text, the system
 
 - **Current:** `apps/web` — Vue 3 frontend with mock/backend modes.
 - **Current:** `apps/server` — Hono backend with SQLite persistence, OpenAI-backed source discovery, backend URL safety/extraction, and progress SSE.
-- **Planned:** `packages/shared` — shared Zod schemas once backend contracts settle.
+- **Current:** `packages/contracts` — shared Zod schemas and inferred DTO types for TrustTrace API boundaries.
 
 ## Commands
 
@@ -29,7 +29,7 @@ bun run check        # full quality gate: format:check → lint → test → bui
 ```txt
 apps/web/            # @trusttrace/web — Vue 3 frontend
 apps/server/         # @trusttrace/server — Hono backend slice
-packages/shared/     # Planned: @trusttrace/shared — Zod schemas + types
+packages/contracts/  # @trusttrace/contracts — shared API Zod schemas + DTO types
 docs/                # Project documentation
 ```
 

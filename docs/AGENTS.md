@@ -6,6 +6,7 @@ Evidence-oriented credibility checking service. Submit a URL or text, query LLM 
 
 - **Current:** `apps/web` is the active Vue 3 frontend with mock/backend modes.
 - **Current:** `apps/server` is the Hono backend with SQLite persistence, OpenAI-backed source discovery, backend URL safety/extraction, and progress SSE.
+- **Current:** `packages/contracts` provides shared Zod schemas and inferred DTO types for frontend/backend API boundaries.
 
 ## Tech Stack
 
@@ -14,6 +15,8 @@ Current frontend: Vue 3, TypeScript, Vite, Tailwind CSS v4, Vue Router, Pinia, v
 For the current frontend, Bun is used for dependency installation and script orchestration only; dev/build/test remain Vite/Vitest/vue-tsc workflows.
 
 Current backend: Bun runtime, Hono, Zod, Drizzle, SQLite, pino, and the OpenAI SDK. Planned later provider integration: Gemini provider SDK.
+
+Current contracts package: Zod schemas plus `z.infer` DTO types for HTTP/SSE wire payloads only.
 
 ## Commands
 
@@ -36,6 +39,7 @@ Use `bun run test`, not bare `bun test` from the repo root. Frontend tests run t
 ```txt
 apps/web/            # Current: @trusttrace/web — Vue 3 frontend
 apps/server/         # Current: @trusttrace/server — Hono backend slice
+packages/contracts/  # Current: @trusttrace/contracts — shared API Zod schemas + DTO types
 docs/                # Project documentation
 ```
 

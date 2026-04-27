@@ -1,6 +1,7 @@
 import { Hono, type Context } from "hono";
 import type { Logger } from "pino";
 import { z } from "zod";
+import { createCheckRequestSchema } from "@trusttrace/contracts/checks";
 
 import { ProgressEventBus } from "./events";
 import { EvidencePipeline } from "./pipeline/EvidencePipeline";
@@ -14,47 +15,6 @@ export interface AppServices {
   pipeline: EvidencePipeline;
   logger: Logger;
 }
-
-const createCheckBodySchema = z
-  .object({
-    input: z.object({
-      type: z.enum(["text", "url"]),
-      content: z.string(),
-    }),
-  })
-  .transform((body) => ({
-    input: {
-      type: body.input.type,
-      content: body.input.content.trim(),
-    },
-  }))
-  .superRefine((body, ctx) => {
-    if (body.input.type === "text") {
-      if (body.input.content.length < 3) {
-        ctx.addIssue({
-          code: "custom",
-          path: ["input", "content"],
-          message: "Text checks must be at least 3 characters.",
-        });
-      }
-      if (body.input.content.length > 10000) {
-        ctx.addIssue({
-          code: "custom",
-          path: ["input", "content"],
-          message: "Text checks must be 10,000 characters or fewer.",
-        });
-      }
-      return;
-    }
-
-    if (!isHttpUrl(body.input.content)) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["input", "content"],
-        message: "URL checks must use an absolute http(s) URL.",
-      });
-    }
-  });
 
 const listQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(50).default(20),
@@ -77,7 +37,7 @@ export function createApp(services: AppServices): Hono {
 
   app.post("/v1/checks", async (c) => {
     const body = await readJsonBody(c);
-    const parsed = createCheckBodySchema.safeParse(body);
+    const parsed = createCheckRequestSchema.safeParse(body);
 
     if (!parsed.success) {
       return c.json(
@@ -208,13 +168,4 @@ function formatSseEvent(event: ProgressEventDto): string {
 
 function isFinalStatus(status: CheckStatus): boolean {
   return status === "completed" || status === "failed";
-}
-
-function isHttpUrl(value: string): boolean {
-  try {
-    const url = new URL(value);
-    return url.protocol === "http:" || url.protocol === "https:";
-  } catch {
-    return false;
-  }
 }

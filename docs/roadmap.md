@@ -49,7 +49,7 @@ The frontend runs on backend-shaped mocks: API contract, async `useCreateCheck`,
 
 - History storage: local-only, server-backed, or hybrid.
 - Frontend i18n.
-- Extract stable DTO schemas to `packages/contracts` after `apps/server` settles.
+- Expand `packages/contracts` beyond the current checks API surface only as additional backend contracts stabilize.
 
 ## Backend Implementation
 

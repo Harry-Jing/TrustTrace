@@ -1,0 +1,21 @@
+{
+  "name": "@trusttrace/contracts",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./checks": "./src/checks.ts"
+  },
+  "scripts": {
+    "build": "bun run typecheck",
+    "lint": "bun run typecheck",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.2"
+  }
+}

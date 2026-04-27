@@ -6,7 +6,7 @@ For the current frontend, Bun is the package manager and workspace script runner
 
 - Use `bun install` instead of `npm install` / `yarn install` / `pnpm install`.
 - Use `bun run <script>` instead of `npm run <script>` / `yarn` / `pnpm`.
-- Root scripts delegate into the `apps/*` workspaces. `bun run dev` runs the Vite dev server in `apps/web`; `bun run dev:server` runs the Hono API in `apps/server`.
+- Root scripts delegate into the `apps/*` and `packages/*` workspaces. `bun run dev` runs the Vite dev server in `apps/web`; `bun run dev:server` runs the Hono API in `apps/server`.
 - Do not replace frontend tooling with Bun-native equivalents: use Vite for dev/build, Vitest for unit tests, and `vue-tsc` for Vue-aware type checking.
 - Use `bun run test`, not bare `bun test` from the repo root. The root script runs frontend Vitest tests and backend Bun tests through their workspace scripts.
 - Use `bun run build`, not `bun build`, because the root build delegates to the frontend Vite build and the backend type-check build.
@@ -14,6 +14,16 @@ For the current frontend, Bun is the package manager and workspace script runner
 - Bun automatically loads `.env`; don't add `dotenv` unless a future non-Bun runtime explicitly needs it.
 
 Bun runtime APIs such as `Bun.serve`, `bun:sqlite`, `Bun.sql`, or `Bun.file` are backend concerns only. Do not use them inside `apps/web` browser code.
+
+## Contracts Workspace
+
+`packages/contracts` is the current `@trusttrace/contracts` package. It owns shared Zod schemas and `z.infer` DTO types for frontend/backend wire contracts.
+
+- Keep contracts limited to HTTP/SSE boundary payloads: request bodies, response DTOs, API error DTOs, progress events, and stable enum-like fields.
+- Do not put backend internals, Drizzle schema, repository types, pipeline state, frontend ViewModels, mock fixtures, or UI component types in contracts.
+- Frontend code must still validate backend JSON with these Zod schemas at the API boundary, then map DTOs into frontend feature/view-model types.
+- Backend code may use the same schemas to validate incoming request bodies and may alias DTO types from contracts when those types describe wire payloads.
+- Add new contract modules only when a real boundary exists; avoid catch-all shared utility modules.
 
 ## Backend Workspace
 
@@ -27,7 +37,7 @@ Bun runtime APIs such as `Bun.serve`, `bun:sqlite`, `Bun.sql`, or `Bun.file` are
 - URL inputs are fetched as the object being checked and stored separately from candidate evidence; never treat the submitted URL as supporting evidence unless it is rediscovered and verified through the normal source flow.
 - P1.0 audit persistence includes claim analysis, input extraction, provider calls, source extractions, and source evaluations. `snippet_only` source rows are weak context and must not independently produce an `evidence_strong` band.
 - The server must start without `OPENAI_API_KEY`, but checks should fail with a provider configuration error instead of fabricating placeholder evidence.
-- Backend response DTOs must continue to satisfy the frontend Zod schemas in `apps/web/src/features/checks/api/backendCheckSchemas.ts` until shared contracts are extracted.
+- Backend response DTOs must satisfy the shared Zod schemas in `packages/contracts` before frontend mapping.
 - Backend implementation directories are organized by responsibility: `types/` for DTO groups, `schema/` for Drizzle tables, `database/` for SQLite initialization/migrations, `repositories/` for persistence facades/mappers, `pipeline/` for evidence pipeline steps, `evidenceProvider/` for provider interfaces/OpenAI code, `sourceSafety/` and `sources/` for URL/fetch/ranking helpers, and `synthesis/` for deterministic result construction.
 - Do not add root-level compatibility barrels for backend internals. Import the concrete module that owns the symbol, for example `database/openDatabase`, `repositories/repositoryFacade`, `repositories/mappers/progressMapper`, `schema/checks`, `sourceSafety/fetchSource`, `sources/ranking`, or `synthesis/buildEvidenceResult`. Directory-local files such as `pipeline/types.ts` or `evidenceProvider/types.ts` are allowed when they define that module's own contract rather than re-exporting old entry points.
 - Backend lint currently runs the server TypeScript strict check; use `bun run lint:server` or the root `bun run lint`.
@@ -50,7 +60,7 @@ The frontend in `apps/web` follows the `create-vue` tooling baseline. Project-sp
 
 ### TrustTrace differences from create-vue
 
-- Bun workspaces: root scripts delegate into `apps/web` and `apps/server` with `bun run --cwd ...`.
+- Bun workspaces: root scripts delegate into `apps/web`, `apps/server`, and `packages/contracts` with `bun run --cwd ...`.
 - Test files: `*.test.ts` or `*.spec.ts` under `apps/web/src` (not `__tests__/`).
 - Tailwind CSS v4: enabled through `@tailwindcss/vite` and `@import "tailwindcss"` in `src/style.css`.
 - Root-owned Prettier config follows Prettier defaults for semicolons and quotes, with `prettier-plugin-tailwindcss` and `tailwindStylesheet: "./apps/web/src/style.css"` for theme-aware class sorting.
@@ -65,8 +75,8 @@ The frontend in `apps/web` follows the `create-vue` tooling baseline. Project-sp
 - Prefix booleans with intent when practical: `is`, `has`, `can`, `should`, or `show`.
 - Keep framework/configuration conventions where required (for example Vite environment variables and TypeScript config paths).
 - Name shared app-level UI primitives with the `Base*` prefix (for example `BaseTagBadge` and `BasePageFooter`).
-- Keep check feature type boundaries explicit: API DTOs, events, progress, evidence, list items, and result ViewModels live in focused files under `features/checks/types/`.
-- Validate backend JSON at the frontend API boundary with Zod before mapping it into check feature types. Keep these schemas in `apps/web` until the backend DTOs are stable enough to extract into a shared `packages/contracts` package.
+- Keep check feature type boundaries explicit: API DTO contracts live in `packages/contracts`; frontend events, progress, evidence, list items, and result ViewModels live in focused files under `features/checks/types/`.
+- Validate backend JSON at the frontend API boundary with `@trusttrace/contracts` Zod schemas before mapping it into check feature types.
 - CSS naming follows the utility-first rules below.
 
 ### Enforced TypeScript and Vue standards
@@ -146,7 +156,7 @@ Local hooks are a developer safety net and can be bypassed by Git. The GitHub Ac
 
 ### Configuration files
 
-Ignore rules are split into root, `apps/web`, and `apps/server` layers so shared, frontend-only, and backend-only artifacts stay easy to scan.
+Ignore rules are split into root, `apps/web`, `apps/server`, and package layers as needed so shared, frontend-only, and backend-only artifacts stay easy to scan.
 
 ```txt
 .editorconfig                    # Repo-wide editor defaults
@@ -170,6 +180,8 @@ apps/web/tsconfig.node.json      # Tooling config type-checking
 apps/web/tsconfig.vitest.json    # Test type-checking
 apps/web/vite.config.ts          # Vite config and local /v1 backend proxy
 apps/web/vitest.config.ts        # Vitest config merged with Vite config
+packages/contracts/package.json  # Shared API contracts package manifest
+packages/contracts/tsconfig.json # Contracts package strict type-checking
 commitlint.config.mjs             # Official Conventional Commit preset
 lefthook.yml                      # Local Git hook orchestration
 .github/workflows/quality.yml     # CI quality gate for pushes and pull requests

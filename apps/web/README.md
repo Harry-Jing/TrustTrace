@@ -7,7 +7,7 @@
 ```txt
 src/app/                         # App shell and navigation
 src/components/                  # Shared Base* UI primitives
-src/features/checks/api/         # Backend-shaped mock API boundary
+src/features/checks/api/         # API clients and DTO-to-view-model mapping
 src/features/checks/components/  # Check-flow presentation components
 src/features/checks/composables/ # Page-facing data/lifecycle composables
 src/features/checks/constants/   # Product constants shared by runtime code
@@ -35,6 +35,7 @@ src/router/                      # Vue Router configuration
 ## Current Behavior
 
 - `checksApi.ts` is the stable frontend API boundary. It selects `mockChecksClient.ts` or `backendChecksClient.ts` based on `VITE_TRUSTTRACE_API_MODE`.
+- Backend JSON is validated with shared `@trusttrace/contracts` Zod schemas at the API boundary before being mapped into frontend view-model types.
 - Creating a check is modeled as an async operation returning a `checkId`; routes are driven by `/checks/:checkId/*`, and submit failures are surfaced in the input card.
 - `checks.store.ts` is a lightweight cache for current check metadata and progress by check ID.
 - `useAsyncData.ts` tracks `idle/loading/success/error` status with a sequence counter to discard stale responses on rapid `reload()` calls, preventing race conditions.
