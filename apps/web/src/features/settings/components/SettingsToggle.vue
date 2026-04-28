@@ -22,7 +22,7 @@ function toggle() {
     :aria-checked="modelValue"
     :aria-label="label"
     :disabled="disabled"
-    class="relative inline-flex h-[26px] w-[46px] items-center rounded-full border transition-colors duration-200"
+    class="inline-flex h-6 w-11 shrink-0 items-center rounded-full border p-[2px] transition-colors duration-200"
     :class="[
       modelValue ? 'border-ink bg-ink' : 'border-line-strong bg-surface-alt',
       disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
@@ -30,8 +30,8 @@ function toggle() {
     @click="toggle"
   >
     <span
-      class="pointer-events-none absolute top-1/2 size-[18px] -translate-y-1/2 rounded-full bg-white shadow-[0_1px_2px_rgba(0,0,0,0.22),0_0_0_0.5px_rgba(0,0,0,0.04)] transition-transform duration-200 ease-snappy"
-      :style="{ transform: modelValue ? 'translate(23px, -50%)' : 'translate(3px, -50%)' }"
+      class="pointer-events-none block size-[18px] rounded-full bg-white shadow-[0_1px_2px_rgba(0,0,0,0.25),0_0_0_0.5px_rgba(0,0,0,0.06)] transition-transform duration-200 ease-snappy"
+      :style="{ transform: modelValue ? 'translateX(20px)' : 'translateX(0)' }"
       aria-hidden="true"
     />
   </button>
