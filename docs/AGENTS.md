@@ -5,9 +5,9 @@ Evidence-oriented credibility checking service. Submit a URL or text, query web 
 ## Repository Status
 
 - **Current:** `apps/web` is the active Vue 3 frontend with mock/backend modes.
-- **Current:** `apps/server` is the Hono backend with SQLite persistence, OpenAI-backed source discovery, backend URL safety/extraction, and progress SSE.
+- **Current:** `apps/server` is the Hono backend with SQLite persistence, selectable Tavily/OpenAI-backed source discovery, backend URL safety/extraction, and progress SSE.
 - **Current:** `packages/contracts` provides shared Zod schemas and inferred DTO types for frontend/backend API boundaries.
-- **Planned P1.5:** user-selectable source discovery strategy: dedicated search API or LLM web search; all discovered URLs still pass through the same backend evidence gate.
+- **Current P1.5 backend:** create-check requests require `discoveryStrategy` (`search_api` or `llm_web`); all discovered URLs still pass through the same backend evidence gate.
 
 ## Tech Stack
 
@@ -15,7 +15,7 @@ Current frontend: Vue 3, TypeScript, Vite, Tailwind CSS v4, Vue Router, Pinia, v
 
 For the current frontend, Bun is used for dependency installation and script orchestration only; dev/build/test remain Vite/Vitest/vue-tsc workflows.
 
-Current backend: Bun runtime, Hono, Zod, Drizzle, SQLite, pino, and the OpenAI SDK. Planned later provider integration: Gemini provider SDK.
+Current backend: Bun runtime, Hono, Zod, Drizzle, SQLite, pino, the OpenAI SDK, and the Tavily SDK. Planned later provider integration: Gemini provider SDK.
 
 Current contracts package: Zod schemas plus `z.infer` DTO types for HTTP/SSE wire payloads only.
 

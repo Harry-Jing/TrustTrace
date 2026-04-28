@@ -26,6 +26,7 @@ function makeCreateResponse(checkId = "mock-check-created"): CreateCheckResponse
   return {
     checkId,
     status: "running",
+    discoveryStrategy: "search_api",
     progress: {
       checkId,
       status: "running",

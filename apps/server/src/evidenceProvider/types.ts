@@ -10,17 +10,6 @@ export interface ClaimAnalysisInput {
   extractedTextExcerpt: string | null;
 }
 
-export interface DiscoveryInput {
-  originalInput: CheckInputDto;
-  claimAnalysis: ClaimAnalysisResult;
-}
-
-export interface DiscoveredSource {
-  url: string;
-  title: string | null;
-  snippet?: string | null | undefined;
-}
-
 export interface SourceForAssessment {
   resolvedUrl: string;
   domain: string;
@@ -57,14 +46,12 @@ export interface ResultCopy {
 
 export interface EvidenceProviderMetadata {
   provider: string;
-  discoveryProvider: string;
   model: string;
 }
 
 export interface EvidenceProvider {
   readonly metadata: EvidenceProviderMetadata;
   analyzeClaim(input: ClaimAnalysisInput): Promise<ClaimAnalysisResult>;
-  discoverSources(input: DiscoveryInput, maxCandidates: number): Promise<DiscoveredSource[]>;
   assessSources(
     claim: string,
     sources: readonly SourceForAssessment[],

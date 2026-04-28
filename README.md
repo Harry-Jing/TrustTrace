@@ -5,9 +5,9 @@ Evidence-oriented credibility checking service. Submit a URL or text, the system
 ## Status
 
 - **Current:** `apps/web` — Vue 3 frontend with mock/backend modes.
-- **Current:** `apps/server` — Hono backend with SQLite persistence, OpenAI-backed source discovery, backend URL safety/extraction, and progress SSE.
+- **Current:** `apps/server` — Hono backend with SQLite persistence, selectable Tavily/OpenAI-backed source discovery, backend URL safety/extraction, and progress SSE.
 - **Current:** `packages/contracts` — shared Zod schemas and inferred DTO types for TrustTrace API boundaries.
-- **Planned P1.5:** user-selectable source discovery strategy: dedicated search API or LLM web search; all discovered URLs still pass through the same backend evidence gate.
+- **Current P1.5 backend:** create-check requests require `discoveryStrategy` (`search_api` or `llm_web`); all discovered URLs still pass through the same backend evidence gate.
 
 ## Commands
 

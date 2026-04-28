@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const checkStatusSchema = z.enum(["queued", "running", "completed", "failed"]);
+export const discoveryStrategySchema = z.enum(["search_api", "llm_web"]);
 
 export const checkPhaseSchema = z.enum([
   "understanding",
@@ -37,12 +38,14 @@ export const createCheckRequestSchema = z
       type: z.enum(["text", "url"]),
       content: z.string(),
     }),
+    discoveryStrategy: discoveryStrategySchema,
   })
   .transform((body) => ({
     input: {
       type: body.input.type,
       content: body.input.content.trim(),
     },
+    discoveryStrategy: body.discoveryStrategy,
   }))
   .superRefine((body, ctx) => {
     if (body.input.type === "text") {
@@ -149,6 +152,7 @@ export const checkResultSchema = z.object({
 export const createCheckResponseSchema = z.object({
   checkId: z.string().min(1),
   status: checkStatusSchema,
+  discoveryStrategy: discoveryStrategySchema,
   progress: checkProgressSchema,
   eventsUrl: z.string().min(1),
   createdAt: isoStringSchema,
@@ -158,6 +162,7 @@ export const checkRecordSchema = z
   .object({
     checkId: z.string().min(1),
     status: checkStatusSchema,
+    discoveryStrategy: discoveryStrategySchema,
     input: checkInputSchema.nullish().transform((value) => value ?? null),
     progress: checkProgressSchema,
     result: checkResultSchema.nullable(),
@@ -206,6 +211,7 @@ export const progressEventSchema = z.object({
 });
 
 export type CheckStatusDto = z.infer<typeof checkStatusSchema>;
+export type DiscoveryStrategyDto = z.infer<typeof discoveryStrategySchema>;
 export type CheckPhaseDto = z.infer<typeof checkPhaseSchema>;
 export type CheckInputDto = z.infer<typeof checkInputSchema>;
 export type CreateCheckRequestDto = z.infer<typeof createCheckRequestSchema>;

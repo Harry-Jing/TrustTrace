@@ -2,6 +2,7 @@ import type {
   CheckApiErrorDto as ContractCheckApiErrorDto,
   CheckInputDto as ContractCheckInputDto,
   CheckListItemDto as ContractCheckListItemDto,
+  DiscoveryStrategyDto as ContractDiscoveryStrategyDto,
   CheckPhaseDto,
   CheckProgressDto as ContractCheckProgressDto,
   CheckRecordDto as ContractCheckRecordDto,
@@ -13,6 +14,7 @@ import type {
 export type CheckStatus = CheckStatusDto;
 export type CheckPhase = CheckPhaseDto;
 export type InputType = ContractCheckInputDto["type"];
+export type DiscoveryStrategy = ContractDiscoveryStrategyDto;
 export type CheckInputDto = ContractCheckInputDto;
 export type CheckApiErrorDto = ContractCheckApiErrorDto;
 export type CheckProgressDto = ContractCheckProgressDto;

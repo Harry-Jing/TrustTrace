@@ -10,6 +10,7 @@ describe("server config", () => {
     expect(config.dbPath.endsWith("apps/server/data/trusttrace.sqlite")).toBe(true);
     expect(config.logLevel).toBe("debug");
     expect(config.openAiApiKey).toBeNull();
+    expect(config.tavilyApiKey).toBeNull();
     expect(config.openAiModel).toBe("gpt-5.5");
     expect(config.openAiReasoningEffort).toBe("low");
   });

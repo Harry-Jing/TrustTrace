@@ -9,6 +9,7 @@ import type {
   CheckApiErrorDto,
   CheckInputDto,
   CheckListItemDto,
+  DiscoveryStrategy,
   CheckRecordDto,
   ProgressEventDto,
 } from "../types/checks";
@@ -44,8 +45,8 @@ export class ChecksRepository {
     this.sourceExtractions = new SourceExtractionsRepository(db);
   }
 
-  createCheck(input: CheckInputDto): CheckRecordDto {
-    return this.checks.createCheck(input);
+  createCheck(input: CheckInputDto, discoveryStrategy: DiscoveryStrategy): CheckRecordDto {
+    return this.checks.createCheck(input, discoveryStrategy);
   }
 
   getCheck(checkId: string): CheckRecordDto | null {

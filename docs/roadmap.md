@@ -55,13 +55,13 @@ The frontend runs on backend-shaped mocks: API contract, async `useCreateCheck`,
 
 ### Done
 
-- `apps/server` exists as a backend-connectable service: Hono API, SQLite/Drizzle persistence, pino logging, OpenAI-backed candidate source discovery, backend URL safety/extraction, deterministic synthesis, and progress SSE.
+- `apps/server` exists as a backend-connectable service: Hono API, SQLite/Drizzle persistence, pino logging, selectable Tavily/OpenAI-backed candidate source discovery, backend URL safety/extraction, deterministic synthesis, and progress SSE.
 - Implemented `/v1/health`, `POST /v1/checks`, `GET /v1/checks/:checkId`, `GET /v1/checks`, and `GET /v1/checks/:checkId/events`.
 - Backend records persist the original input, progress events, and source extraction records so loading/result/error routes can refresh against real server state.
 
 ### Next
 
-Move from the current P1.0 verified evidence pipeline toward P1.5 user-selectable discovery strategies from [claim-checking-pipeline.md](claim-checking-pipeline.md): expose an allowlisted `search_api | llm_web` strategy, add a dedicated web search provider path such as Tavily, keep OpenAI web search available as the LLM discovery path, record provider provenance for every candidate source, and route all discovered URLs through the existing URL safety, extraction, snippet-only downgrade, ranking/dedupe, source assessment, and deterministic synthesis gates. Do not add auto or parallel discovery modes in P1.5.
+Continue hardening P1.5 user-selectable discovery strategies from [claim-checking-pipeline.md](claim-checking-pipeline.md): wire frontend strategy selection, compare Tavily `search_api` against OpenAI `llm_web` in evals, and keep all discovered URLs routed through URL safety, extraction, snippet-only downgrade, ranking/dedupe, source assessment, and deterministic synthesis gates. Do not add auto or parallel discovery modes in P1.5.
 
 ## Backlog
 

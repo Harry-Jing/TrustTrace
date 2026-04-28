@@ -40,6 +40,7 @@ function makeFailedRecord(): CheckRecord {
   return {
     checkId: "check-1",
     status: "failed",
+    discoveryStrategy: "search_api",
     input: { mode: "text", value: "A persisted failed claim" },
     progress: {
       checkId: "check-1",

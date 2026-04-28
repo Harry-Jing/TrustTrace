@@ -261,6 +261,7 @@ describe("backendChecksClient response contracts", () => {
     return {
       checkId: "check-1",
       status: "completed",
+      discoveryStrategy: "search_api",
       input: { type: "text", content: "Seat belts reduce serious injury in crashes" },
       progress: makeProgress(),
       result: makeResult(),

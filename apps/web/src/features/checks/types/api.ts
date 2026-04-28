@@ -1,4 +1,8 @@
-import type { CheckProgress, CheckStatus } from "@/features/checks/types/progress";
+import type {
+  CheckProgress,
+  CheckStatus,
+  DiscoveryStrategy,
+} from "@/features/checks/types/progress";
 import type { CheckResultViewModel } from "@/features/checks/types/resultViewModel";
 import type { CheckInputDraft } from "@/features/checks/types/input";
 
@@ -19,6 +23,7 @@ export interface CheckApiError {
 export interface CreateCheckResponse {
   checkId: string;
   status: CheckStatus;
+  discoveryStrategy: DiscoveryStrategy;
   progress: CheckProgress;
   eventsUrl: string;
   createdAt: string;
@@ -27,6 +32,7 @@ export interface CreateCheckResponse {
 export interface CheckRecord {
   checkId: string;
   status: CheckStatus;
+  discoveryStrategy: DiscoveryStrategy;
   input: CheckInputDraft | null;
   progress: CheckProgress;
   result: CheckResultViewModel | null;

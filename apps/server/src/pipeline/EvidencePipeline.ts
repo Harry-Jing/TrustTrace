@@ -1,6 +1,7 @@
 import type { Logger } from "pino";
 
 import type { EvidenceProvider } from "../evidenceProvider/types";
+import type { SourceDiscoveryProvider } from "../sourceDiscovery/types";
 import { ProgressEventBus } from "../events";
 import { makeProgressEvent } from "../repositories/mappers/progressMapper";
 import { ChecksRepository } from "../repositories/repositoryFacade";
@@ -14,7 +15,7 @@ import {
 } from "../sources/ranking";
 import { buildEvidenceResult } from "../synthesis/buildEvidenceResult";
 import { makeCheckError } from "../synthesis/errors";
-import type { CheckApiErrorDto, ProgressEventDto } from "../types/checks";
+import type { CheckApiErrorDto, DiscoveryStrategy, ProgressEventDto } from "../types/checks";
 import { prepareClaim } from "./claimPreparation";
 import { errorToCheckError, nextFailureSeq } from "./errors";
 import { callProvider as recordProviderCall } from "./providerCalls";
@@ -28,6 +29,7 @@ export class EvidencePipeline {
   private readonly delayMs: number;
   private readonly logger: Logger;
   private readonly evidenceProvider: EvidenceProvider;
+  private readonly discoveryProviders: Record<DiscoveryStrategy, SourceDiscoveryProvider>;
   private readonly sourceFetchOptions: SourceFetchOptions;
   private readonly maxCandidateSources: number;
   private readonly maxEvidenceSources: number;
@@ -41,6 +43,7 @@ export class EvidencePipeline {
     this.delayMs = options.delayMs ?? 0;
     this.logger = options.logger;
     this.evidenceProvider = options.evidenceProvider;
+    this.discoveryProviders = options.discoveryProviders;
     this.sourceFetchOptions = options.sourceFetchOptions ?? defaultSourceFetchOptions();
     this.maxCandidateSources = options.maxCandidateSources;
     this.maxEvidenceSources = options.maxEvidenceSources;
@@ -65,14 +68,28 @@ export class EvidencePipeline {
     const record = this.repository.getCheck(checkId);
     if (!record || record.status !== "running") return;
     const input = record.input ?? { type: "text", content: "" };
-    const callProviderForCheck = <T>(
+    const callEvidenceProviderForCheck = <T>(
       operation: string,
       requestJson: unknown,
       execute: () => Promise<T>,
     ) =>
       recordProviderCall(
         this.repository,
-        this.evidenceProvider,
+        this.evidenceProvider.metadata,
+        checkId,
+        operation,
+        requestJson,
+        execute,
+      );
+    const discoveryProvider = this.discoveryProviders[record.discoveryStrategy];
+    const callDiscoveryProviderForCheck = <T>(
+      operation: string,
+      requestJson: unknown,
+      execute: () => Promise<T>,
+    ) =>
+      recordProviderCall(
+        this.repository,
+        discoveryProvider.metadata,
         checkId,
         operation,
         requestJson,
@@ -98,7 +115,7 @@ export class EvidencePipeline {
         repository: this.repository,
         evidenceProvider: this.evidenceProvider,
         sourceFetchOptions: this.sourceFetchOptions,
-        callProvider: callProviderForCheck,
+        callProvider: callEvidenceProviderForCheck,
       });
 
       await this.recordAndPublish(
@@ -109,11 +126,11 @@ export class EvidencePipeline {
           percent: 35,
           message: "Searching for candidate source URLs.",
           stepCode: "source_discovery",
-          provider: this.evidenceProvider.metadata.discoveryProvider,
+          provider: discoveryProvider.metadata.provider,
         }),
       );
 
-      const candidates = await callProviderForCheck(
+      const candidates = await callDiscoveryProviderForCheck(
         "source_discovery",
         {
           mainClaim: prepared.claimAnalysis.mainClaim,
@@ -121,7 +138,7 @@ export class EvidencePipeline {
           maxCandidates: this.maxCandidateSources,
         },
         () =>
-          this.evidenceProvider.discoverSources(
+          discoveryProvider.discoverSources(
             {
               originalInput: input,
               claimAnalysis: prepared.claimAnalysis,
@@ -140,7 +157,8 @@ export class EvidencePipeline {
           makeCheckError({
             code: "SOURCE_DISCOVERY_FAILED",
             category: "source discovery",
-            message: "OpenAI did not return candidate source URLs for this check.",
+            message:
+              "The selected discovery provider did not return candidate source URLs for this check.",
           }),
         );
         return;
@@ -153,7 +171,7 @@ export class EvidencePipeline {
           candidateUrl: candidate.url,
           title: candidate.title,
           discoverySnippet: candidate.snippet ?? null,
-          discoveryProvider: this.evidenceProvider.metadata.discoveryProvider,
+          discoveryProvider: discoveryProvider.metadata.provider,
           discoveryRank: index + 1,
           createdAt,
         }),
@@ -204,7 +222,7 @@ export class EvidencePipeline {
       );
 
       const assessmentInputs = evidenceSources.map(sourceToAssessmentInput);
-      const assessments = await callProviderForCheck(
+      const assessments = await callEvidenceProviderForCheck(
         "source_assessment",
         {
           mainClaim: prepared.claimAnalysis.mainClaim,
@@ -250,7 +268,7 @@ export class EvidencePipeline {
         evidenceProvider: this.evidenceProvider,
         repository: this.repository,
         logger: this.logger,
-        callProvider: callProviderForCheck,
+        callProvider: callEvidenceProviderForCheck,
       });
       const completedEvent = makeProgressEvent({
         checkId,

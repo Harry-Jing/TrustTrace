@@ -9,6 +9,7 @@ const services = createServices({
   dbPath: config.dbPath,
   logger,
   openAiApiKey: config.openAiApiKey,
+  tavilyApiKey: config.tavilyApiKey,
   openAiModel: config.openAiModel,
   openAiReasoningEffort: config.openAiReasoningEffort,
   maxCandidateSources: config.maxCandidateSources,

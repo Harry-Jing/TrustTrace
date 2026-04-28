@@ -9,6 +9,7 @@ import type {
   CheckApiErrorDto,
   CheckInputDto,
   CheckListItemDto,
+  DiscoveryStrategy,
   CheckRecordDto,
   ProgressEventDto,
 } from "../types/checks";
@@ -24,7 +25,7 @@ import {
 export class CheckRecordsRepository {
   constructor(private readonly db: TrustTraceDatabase) {}
 
-  createCheck(input: CheckInputDto): CheckRecordDto {
+  createCheck(input: CheckInputDto, discoveryStrategy: DiscoveryStrategy): CheckRecordDto {
     const checkId = `check-${randomUUID()}`;
     const createdAt = new Date().toISOString();
     const initialEvent = makeProgressEvent({
@@ -44,6 +45,7 @@ export class CheckRecordsRepository {
           id: checkId,
           status: "running",
           inputJson: input,
+          discoveryStrategy,
           progressJson: progress,
           resultJson: null,
           errorJson: null,
@@ -58,6 +60,7 @@ export class CheckRecordsRepository {
     return {
       checkId,
       status: "running",
+      discoveryStrategy,
       input,
       progress,
       result: null,

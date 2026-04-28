@@ -1,3 +1,5 @@
+export type DiscoveryStrategy = "search_api" | "llm_web";
+
 export type CheckStatus = "queued" | "running" | "completed" | "failed";
 
 export type ActiveCheckPhase =

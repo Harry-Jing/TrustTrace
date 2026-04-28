@@ -175,6 +175,7 @@ function makeCompletedRecord(checkId: string, input?: CheckInputDraft): CheckRec
   return {
     checkId,
     status: "completed",
+    discoveryStrategy: "search_api",
     input: input ?? null,
     progress,
     result: makeResultForCheck(checkId, input),
@@ -205,6 +206,7 @@ function makeFailedRecord(checkId: string): CheckRecord {
   return {
     checkId,
     status: "failed",
+    discoveryStrategy: "search_api",
     input: mockInputs.get(checkId) ?? null,
     progress,
     result: null,
@@ -235,6 +237,7 @@ function makeNotFoundRecord(checkId: string): CheckRecord {
   return {
     checkId,
     status: "failed",
+    discoveryStrategy: "search_api",
     input: null,
     progress,
     result: null,
@@ -298,6 +301,7 @@ export function createCheck(input: CheckInputDraft): Promise<CreateCheckResponse
   rememberMockRecord(checkId, {
     checkId,
     status: "running",
+    discoveryStrategy: "search_api",
     input,
     progress: initialProgress,
     result: null,
@@ -310,6 +314,7 @@ export function createCheck(input: CheckInputDraft): Promise<CreateCheckResponse
   return resolveMock({
     checkId,
     status: "running",
+    discoveryStrategy: "search_api",
     progress: initialProgress,
     eventsUrl: `/v1/checks/${checkId}/events`,
     createdAt,
@@ -346,6 +351,7 @@ export function devResetCheckProgress(checkId: string): void {
   rememberMockRecord(checkId, {
     checkId,
     status: "running",
+    discoveryStrategy: "search_api",
     input: mockInputs.get(checkId) ?? null,
     progress: initialProgress,
     result: null,

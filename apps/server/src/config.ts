@@ -8,6 +8,7 @@ export interface ServerConfig {
   dbPath: string;
   logLevel: LogLevel;
   openAiApiKey: string | null;
+  tavilyApiKey: string | null;
   openAiModel: string;
   openAiReasoningEffort: OpenAIReasoningEffort;
   maxCandidateSources: number;
@@ -22,6 +23,7 @@ export function readConfig(env: Record<string, string | undefined> = Bun.env): S
     dbPath: env.TRUSTTRACE_DB_PATH?.trim() || DEFAULT_DB_PATH,
     logLevel: readLogLevel(env.TRUSTTRACE_LOG_LEVEL),
     openAiApiKey: readOptionalString(env.OPENAI_API_KEY),
+    tavilyApiKey: readOptionalString(env.TAVILY_API_KEY),
     openAiModel: env.TRUSTTRACE_OPENAI_MODEL?.trim() || "gpt-5.5",
     openAiReasoningEffort: readReasoningEffort(env.TRUSTTRACE_OPENAI_REASONING_EFFORT),
     maxCandidateSources: readPositiveInteger(env.TRUSTTRACE_MAX_CANDIDATE_SOURCES, 10, {

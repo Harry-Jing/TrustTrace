@@ -83,6 +83,7 @@ function record(): CheckRecordDto {
   return {
     checkId: "check-1",
     status: "running",
+    discoveryStrategy: "search_api",
     input: { type: "text", content: "A claim" },
     progress: {
       checkId: "check-1",

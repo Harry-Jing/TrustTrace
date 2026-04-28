@@ -21,6 +21,7 @@ describe("TrustTrace server API", () => {
 
     expect(recordResponse.status).toBe(200);
     expect(record.checkId).toBe(created.checkId);
+    expect(record.discoveryStrategy).toBe("search_api");
     expect(record.input).toEqual({ type: "text", content: "A claim worth checking" });
     expect(record.createdAt).toBe(created.createdAt);
   });
@@ -58,16 +59,42 @@ describe("TrustTrace server API", () => {
     const shortText = await services.app.request("/v1/checks", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ input: { type: "text", content: "no" } }),
+      body: JSON.stringify({
+        input: { type: "text", content: "no" },
+        discoveryStrategy: "search_api",
+      }),
     });
     const unsafeUrl = await services.app.request("/v1/checks", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ input: { type: "url", content: "javascript:alert(1)" } }),
+      body: JSON.stringify({
+        input: { type: "url", content: "javascript:alert(1)" },
+        discoveryStrategy: "search_api",
+      }),
     });
+
+    const missingStrategy = await services.app.request("/v1/checks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ input: { type: "text", content: "A valid claim" } }),
+    });
+    const invalidStrategy = await services.app.request("/v1/checks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        input: { type: "text", content: "A valid claim" },
+        discoveryStrategy: "auto",
+      }),
+    });
+    const missingStrategyBody = (await missingStrategy.json()) as Record<string, unknown>;
+    const invalidStrategyBody = (await invalidStrategy.json()) as Record<string, unknown>;
 
     expect(shortText.status).toBe(400);
     expect(unsafeUrl.status).toBe(400);
+    expect(missingStrategy.status).toBe(400);
+    expect(missingStrategyBody.code).toBe("INVALID_CHECK_INPUT");
+    expect(invalidStrategy.status).toBe(400);
+    expect(invalidStrategyBody.code).toBe("INVALID_CHECK_INPUT");
   });
 
   it("returns 404 JSON for unknown check ids", async () => {

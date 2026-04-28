@@ -45,6 +45,7 @@ function makeRecord(status: CheckRecord["status"]): CheckRecord {
   return {
     checkId: "check-1",
     status,
+    discoveryStrategy: "search_api",
     input: null,
     progress: {
       checkId: "check-1",

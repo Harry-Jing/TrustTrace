@@ -9,12 +9,32 @@ import {
 describe("checks API contracts", () => {
   it("trims and validates create-check requests", () => {
     expect(
-      createCheckRequestSchema.parse({ input: { type: "text", content: "  A checkable claim  " } }),
-    ).toEqual({ input: { type: "text", content: "A checkable claim" } });
+      createCheckRequestSchema.parse({
+        input: { type: "text", content: "  A checkable claim  " },
+        discoveryStrategy: "search_api",
+      }),
+    ).toEqual({
+      input: { type: "text", content: "A checkable claim" },
+      discoveryStrategy: "search_api",
+    });
 
     expect(() =>
-      createCheckRequestSchema.parse({ input: { type: "url", content: "javascript:alert(1)" } }),
+      createCheckRequestSchema.parse({
+        input: { type: "url", content: "javascript:alert(1)" },
+        discoveryStrategy: "llm_web",
+      }),
     ).toThrow("URL checks must use an absolute http(s) URL.");
+
+    expect(() =>
+      createCheckRequestSchema.parse({ input: { type: "text", content: "A valid claim" } }),
+    ).toThrow();
+
+    expect(() =>
+      createCheckRequestSchema.parse({
+        input: { type: "text", content: "A valid claim" },
+        discoveryStrategy: "auto",
+      }),
+    ).toThrow();
   });
 
   it("keeps the check-list response shape explicit", () => {

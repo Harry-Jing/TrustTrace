@@ -8,13 +8,25 @@ import { describe, expect, it } from "bun:test";
 import { openDatabase } from "../database/openDatabase";
 
 describe("database schema initialization", () => {
-  it("adds P1.0 audit tables and source snippet column to existing SQLite files", () => {
+  it("adds P1.0 audit tables, discovery strategy, and source snippet column to existing SQLite files", () => {
     const dir = mkdtempSync(join(tmpdir(), "trusttrace-schema-"));
     const dbPath = join(dir, "old.sqlite");
 
     try {
       const oldDb = new Database(dbPath);
       oldDb.exec(`
+        CREATE TABLE checks (
+          id TEXT PRIMARY KEY,
+          status TEXT NOT NULL,
+          input_json TEXT NOT NULL,
+          progress_json TEXT NOT NULL,
+          result_json TEXT,
+          error_json TEXT,
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL,
+          completed_at TEXT
+        );
+
         CREATE TABLE source_extractions (
           id TEXT PRIMARY KEY,
           check_id TEXT NOT NULL,
@@ -40,6 +52,9 @@ describe("database schema initialization", () => {
       oldDb.close();
 
       const database = openDatabase(dbPath);
+      const checkColumns = database.sqlite.query("PRAGMA table_info(checks)").all() as Array<{
+        name: string;
+      }>;
       const sourceColumns = database.sqlite
         .query("PRAGMA table_info(source_extractions)")
         .all() as Array<{ name: string }>;
@@ -47,6 +62,7 @@ describe("database schema initialization", () => {
         .query("SELECT name FROM sqlite_master WHERE type = 'table'")
         .all() as Array<{ name: string }>;
 
+      expect(checkColumns.map((column) => column.name)).toContain("discovery_strategy");
       expect(sourceColumns.map((column) => column.name)).toContain("discovery_snippet");
       expect(tables.map((table) => table.name)).toContain("provider_calls");
       expect(tables.map((table) => table.name)).toContain("source_evaluations");

@@ -1,47 +1,45 @@
 import type {
   ClaimAnalysisInput,
-  DiscoveredSource,
   EvidenceProvider,
   ResultCopy,
   ResultCopyInput,
   SourceAssessment,
   SourceForAssessment,
 } from "../../evidenceProvider/types";
+import type {
+  DiscoveredSource,
+  DiscoveryInput,
+  SourceDiscoveryProvider,
+} from "../../sourceDiscovery/types";
 
 export class FakeEvidenceProvider implements EvidenceProvider {
   readonly metadata = {
     provider: "fake",
-    discoveryProvider: "fake:search",
     model: "fake-model",
   };
 
-  private readonly candidates: DiscoveredSource[];
   private readonly assessments: SourceAssessment[];
   private readonly failResultCopy: boolean;
   assessedSources: SourceForAssessment[] = [];
 
   constructor(
     options: {
-      candidates?: DiscoveredSource[];
       assessments?: SourceAssessment[];
       failResultCopy?: boolean;
     } = {},
   ) {
-    this.candidates = options.candidates ?? [
-      { url: "https://source.test/article", title: "source.test source" },
-    ];
     this.failResultCopy = options.failResultCopy ?? false;
-    this.assessments =
-      options.assessments ??
-      this.candidates.map((candidate) => ({
-        sourceUrl: candidate.url,
+    this.assessments = options.assessments ?? [
+      {
+        sourceUrl: "https://source.test/article",
         relation: "supports",
         scopeMatch: 0.82,
         credibilityLabel: "Verified source",
         isPrimary: false,
         rationale: "The excerpt directly discusses the submitted claim.",
         evidenceText: "The verified article directly discusses and supports the submitted claim.",
-      }));
+      },
+    ];
   }
 
   analyzeClaim(input: ClaimAnalysisInput) {
@@ -58,10 +56,6 @@ export class FakeEvidenceProvider implements EvidenceProvider {
         challenge: [`${input.input.content} criticism`],
       },
     });
-  }
-
-  discoverSources(): Promise<DiscoveredSource[]> {
-    return Promise.resolve(this.candidates);
   }
 
   assessSources(
@@ -112,4 +106,25 @@ export function assessment(
     rationale: "Test assessment.",
     evidenceText: "Evidence text from the source excerpt.",
   };
+}
+
+export class FakeDiscoveryProvider implements SourceDiscoveryProvider {
+  readonly metadata: SourceDiscoveryProvider["metadata"];
+  readonly candidates: DiscoveredSource[];
+  inputs: DiscoveryInput[] = [];
+
+  constructor(
+    candidates: DiscoveredSource[] = [
+      { url: "https://source.test/article", title: "source.test source" },
+    ],
+    provider = "fake:search",
+  ) {
+    this.candidates = candidates;
+    this.metadata = { provider, model: "fake-search-model" };
+  }
+
+  discoverSources(input: DiscoveryInput): Promise<DiscoveredSource[]> {
+    this.inputs.push(input);
+    return Promise.resolve(this.candidates);
+  }
 }

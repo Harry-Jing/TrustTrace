@@ -7,6 +7,7 @@ export function toCreateCheckResponse(record: CheckRecordDto): CreateCheckRespon
   return {
     checkId: record.checkId,
     status: record.status,
+    discoveryStrategy: record.discoveryStrategy,
     progress: record.progress,
     eventsUrl: `/v1/checks/${encodeURIComponent(record.checkId)}/events`,
     createdAt: record.createdAt,
@@ -17,6 +18,7 @@ export function rowToRecord(row: CheckRow): CheckRecordDto {
   return {
     checkId: row.id,
     status: row.status,
+    discoveryStrategy: row.discoveryStrategy,
     input: row.inputJson,
     progress: row.progressJson,
     result: row.resultJson ?? null,

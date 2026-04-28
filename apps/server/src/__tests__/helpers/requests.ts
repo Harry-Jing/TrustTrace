@@ -1,16 +1,22 @@
 import { expect } from "bun:test";
 
 import type { TrustTraceServices } from "../../services";
-import type { CheckRecordDto, CreateCheckResponseDto, ProgressEventDto } from "../../types/checks";
+import type {
+  CheckRecordDto,
+  CreateCheckResponseDto,
+  DiscoveryStrategy,
+  ProgressEventDto,
+} from "../../types/checks";
 
 export async function createCheck(
   services: TrustTraceServices,
   content: string,
+  discoveryStrategy: DiscoveryStrategy = "search_api",
 ): Promise<CreateCheckResponseDto> {
   const response = await services.app.request("/v1/checks", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ input: { type: "text", content } }),
+    body: JSON.stringify({ input: { type: "text", content }, discoveryStrategy }),
   });
 
   expect(response.status).toBe(201);
@@ -20,11 +26,12 @@ export async function createCheck(
 export async function createUrlCheck(
   services: TrustTraceServices,
   content: string,
+  discoveryStrategy: DiscoveryStrategy = "search_api",
 ): Promise<CreateCheckResponseDto> {
   const response = await services.app.request("/v1/checks", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ input: { type: "url", content } }),
+    body: JSON.stringify({ input: { type: "url", content }, discoveryStrategy }),
   });
 
   expect(response.status).toBe(201);

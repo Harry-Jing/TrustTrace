@@ -49,7 +49,10 @@ export function createApp(services: AppServices): Hono {
       );
     }
 
-    const record = services.repository.createCheck(parsed.data.input);
+    const record = services.repository.createCheck(
+      parsed.data.input,
+      parsed.data.discoveryStrategy,
+    );
     services.pipeline.start(record.checkId);
 
     return c.json(toCreateCheckResponse(record), 201);

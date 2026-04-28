@@ -1,7 +1,11 @@
 import { afterEach, describe, expect, it } from "bun:test";
 
 import { cleanupTestContexts, createTestContext } from "./helpers/context";
-import { assessment, FakeEvidenceProvider } from "./helpers/fakeEvidenceProvider";
+import {
+  assessment,
+  FakeDiscoveryProvider,
+  FakeEvidenceProvider,
+} from "./helpers/fakeEvidenceProvider";
 import { fakeSourceFetchOptions } from "./helpers/fakeSourceFetch";
 import { createCheck, createUrlCheck, getRecord } from "./helpers/requests";
 
@@ -52,11 +56,38 @@ describe("TrustTrace evidence pipeline integration", () => {
     expect(evidenceUrls).not.toContain("https://submitted.test/story");
   });
 
+  it("uses the selected discovery provider and records provenance", async () => {
+    const searchProvider = new FakeDiscoveryProvider(
+      [{ url: "https://search-api.test/article", title: "Search API source" }],
+      "fake:search_api",
+    );
+    const llmProvider = new FakeDiscoveryProvider(
+      [{ url: "https://llm-web.test/article", title: "LLM web source" }],
+      "fake:llm_web",
+    );
+    const { services } = createTestContext({
+      discoveryProviders: { search_api: searchProvider, llm_web: llmProvider },
+    });
+    const created = await createCheck(services, "A claim using LLM discovery", "llm_web");
+
+    await services.pipeline.waitForIdle();
+
+    const providerCalls = services.repository.listProviderCalls(created.checkId);
+    const extractions = services.repository.listSourceExtractions(created.checkId);
+
+    expect(searchProvider.inputs).toHaveLength(0);
+    expect(llmProvider.inputs).toHaveLength(1);
+    expect(providerCalls.find((call) => call.operation === "source_discovery")?.provider).toBe(
+      "fake:llm_web",
+    );
+    expect(extractions[0]?.discoveryProvider).toBe("fake:llm_web");
+  });
+
   it("does not turn unsafe discovered URLs into evidence", async () => {
     const { services } = createTestContext({
-      evidenceProvider: new FakeEvidenceProvider({
-        candidates: [{ url: "http://127.0.0.1/private", title: "Unsafe local URL" }],
-      }),
+      discoveryProvider: new FakeDiscoveryProvider([
+        { url: "http://127.0.0.1/private", title: "Unsafe local URL" },
+      ]),
     });
     const created = await createCheck(services, "A claim with unsafe search results");
 
@@ -73,14 +104,15 @@ describe("TrustTrace evidence pipeline integration", () => {
   });
 
   it("deduplicates same-domain sources before assessment", async () => {
-    const provider = new FakeEvidenceProvider({
-      candidates: [
+    const provider = new FakeEvidenceProvider();
+    const { services } = createTestContext({
+      evidenceProvider: provider,
+      discoveryProvider: new FakeDiscoveryProvider([
         { url: "https://same.test/first", title: "Same source" },
         { url: "https://same.test/second", title: "Same source duplicate" },
         { url: "https://agency.gov/report", title: "Agency report" },
-      ],
+      ]),
     });
-    const { services } = createTestContext({ evidenceProvider: provider });
     const created = await createCheck(services, "A same-domain dedupe claim");
 
     await services.pipeline.waitForIdle();
@@ -94,7 +126,14 @@ describe("TrustTrace evidence pipeline integration", () => {
 
   it("keeps snippet-only context from producing a strong evidence band", async () => {
     const provider = new FakeEvidenceProvider({
-      candidates: [
+      assessments: [
+        assessment("https://snippet-one.test/article", "supports", 0.95),
+        assessment("https://snippet-two.test/article", "supports", 0.92),
+      ],
+    });
+    const { services } = createTestContext({
+      evidenceProvider: provider,
+      discoveryProvider: new FakeDiscoveryProvider([
         {
           url: "https://snippet-one.test/article",
           title: "Snippet one",
@@ -106,14 +145,7 @@ describe("TrustTrace evidence pipeline integration", () => {
           snippet:
             "Snippet two independently says the checked claim is supported by public evidence.",
         },
-      ],
-      assessments: [
-        assessment("https://snippet-one.test/article", "supports", 0.95),
-        assessment("https://snippet-two.test/article", "supports", 0.92),
-      ],
-    });
-    const { services } = createTestContext({
-      evidenceProvider: provider,
+      ]),
       sourceFetchOptions: fakeSourceFetchOptions({
         fetch: async () => new Response("not found", { status: 404 }),
       }),

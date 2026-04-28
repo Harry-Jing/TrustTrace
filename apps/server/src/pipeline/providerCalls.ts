@@ -1,10 +1,14 @@
-import type { EvidenceProvider } from "../evidenceProvider/types";
 import type { ChecksRepository } from "../repositories/repositoryFacade";
 import { errorMessage, providerAuditErrorCode } from "./errors";
 
+export interface ProviderCallMetadata {
+  provider: string;
+  model: string;
+}
+
 export async function callProvider<T>(
   repository: ChecksRepository,
-  evidenceProvider: EvidenceProvider,
+  metadata: ProviderCallMetadata,
   checkId: string,
   operation: string,
   requestJson: unknown,
@@ -13,11 +17,8 @@ export async function callProvider<T>(
   const providerCall = repository.createProviderCall({
     checkId,
     operation,
-    provider:
-      operation === "source_discovery"
-        ? evidenceProvider.metadata.discoveryProvider
-        : evidenceProvider.metadata.provider,
-    model: evidenceProvider.metadata.model,
+    provider: metadata.provider,
+    model: metadata.model,
     requestJson: compactJson(requestJson),
     createdAt: new Date().toISOString(),
   });

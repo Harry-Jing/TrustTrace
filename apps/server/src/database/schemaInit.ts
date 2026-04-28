@@ -8,6 +8,7 @@ export function initializeSchema(sqlite: Database) {
       id TEXT PRIMARY KEY,
       status TEXT NOT NULL,
       input_json TEXT NOT NULL,
+      discovery_strategy TEXT NOT NULL DEFAULT 'llm_web',
       progress_json TEXT NOT NULL,
       result_json TEXT,
       error_json TEXT,
@@ -134,5 +135,11 @@ export function initializeSchema(sqlite: Database) {
       ON source_evaluations(check_id, source_extraction_id);
   `);
 
+  ensureColumn(
+    sqlite,
+    "checks",
+    "discovery_strategy",
+    "discovery_strategy TEXT NOT NULL DEFAULT 'llm_web'",
+  );
   ensureColumn(sqlite, "source_extractions", "discovery_snippet", "discovery_snippet TEXT");
 }

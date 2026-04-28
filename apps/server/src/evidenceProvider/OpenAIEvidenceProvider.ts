@@ -7,20 +7,15 @@ import { providerError } from "./openaiErrors";
 import {
   assessmentResponseSchema,
   claimAnalysisResponseSchema,
-  discoveryResponseSchema,
   resultCopyResponseSchema,
   type AssessmentResponse,
   type ClaimAnalysisResponse,
-  type DiscoveryResponse,
   type ResultCopyResponse,
 } from "./openaiSchemas";
-import { dedupeSources, extractSourcesFromResponse } from "./responseSources";
 import {
   EvidenceProviderError,
   type ClaimAnalysisInput,
   type ClaimAnalysisResult,
-  type DiscoveredSource,
-  type DiscoveryInput,
   type EvidenceProvider,
   type EvidenceProviderMetadata,
   type ResultCopy,
@@ -46,7 +41,6 @@ export class OpenAIEvidenceProvider implements EvidenceProvider {
     this.reasoningEffort = options.reasoningEffort;
     this.metadata = {
       provider: "openai",
-      discoveryProvider: "openai:web_search",
       model: options.model,
     };
   }
@@ -86,47 +80,6 @@ export class OpenAIEvidenceProvider implements EvidenceProvider {
       return normalizeClaimAnalysis(parsed, input.input.content);
     } catch (error) {
       throw providerError(error, "CLAIM_ANALYSIS_FAILED", "OpenAI claim analysis failed.");
-    }
-  }
-
-  async discoverSources(input: DiscoveryInput, maxCandidates: number): Promise<DiscoveredSource[]> {
-    const client = this.requireClient();
-
-    try {
-      const response = await client.responses.parse({
-        model: this.metadata.model,
-        reasoning: { effort: this.reasoningEffort },
-        tools: [{ type: "web_search", search_context_size: "medium" }],
-        tool_choice: "required",
-        include: ["web_search_call.action.sources"],
-        max_output_tokens: 1_600,
-        text: {
-          format: zodTextFormat(discoveryResponseSchema, "trusttrace_source_discovery"),
-        },
-        instructions:
-          "You discover candidate source URLs for evidence checking. Use web search. Return only URLs that may help verify, challenge, or contextualize the submitted main claim. Prefer original, official, primary, academic, or source-rich pages. Do not decide whether the claim is true.",
-        input: JSON.stringify(
-          {
-            originalInputType: input.originalInput.type,
-            mainClaim: input.claimAnalysis.mainClaim,
-            claimType: input.claimAnalysis.claimType,
-            domain: input.claimAnalysis.domain,
-            temporalScope: input.claimAnalysis.temporalScope,
-            geographicScope: input.claimAnalysis.geographicScope,
-            queryPlan: input.claimAnalysis.queryPlan,
-            maxCandidates,
-          },
-          null,
-          2,
-        ),
-      });
-
-      return dedupeSources([
-        ...((response.output_parsed as DiscoveryResponse | null)?.candidates ?? []),
-        ...extractSourcesFromResponse(response),
-      ]).slice(0, maxCandidates);
-    } catch (error) {
-      throw providerError(error, "SOURCE_DISCOVERY_FAILED", "OpenAI source discovery failed.");
     }
   }
 
@@ -218,7 +171,7 @@ export class OpenAIEvidenceProvider implements EvidenceProvider {
     if (!this.client) {
       throw new EvidenceProviderError(
         "PROVIDER_CONFIGURATION_ERROR",
-        "OPENAI_API_KEY is required to run evidence discovery checks.",
+        "OPENAI_API_KEY is required to analyze claims and assess verified evidence.",
       );
     }
     return this.client;
