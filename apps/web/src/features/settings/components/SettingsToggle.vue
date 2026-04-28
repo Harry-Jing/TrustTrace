@@ -30,7 +30,8 @@ function toggle() {
     @click="toggle"
   >
     <span
-      class="pointer-events-none block size-[18px] rounded-full bg-white shadow-[0_1px_2px_rgba(0,0,0,0.25),0_0_0_0.5px_rgba(0,0,0,0.06)] transition-transform duration-200 ease-snappy"
+      class="pointer-events-none block size-[18px] rounded-full shadow-[0_1px_2px_rgba(0,0,0,0.28),0_0_0_1px_rgba(0,0,0,0.08)] transition-transform duration-200 ease-snappy"
+      :class="modelValue ? 'bg-surface' : 'bg-white'"
       :style="{ transform: modelValue ? 'translateX(20px)' : 'translateX(0)' }"
       aria-hidden="true"
     />
