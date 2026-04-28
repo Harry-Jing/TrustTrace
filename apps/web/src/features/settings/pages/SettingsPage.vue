@@ -101,25 +101,26 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="mx-auto max-w-280 px-6 pt-14 pb-15">
+  <div class="mx-auto max-w-220 px-6 pt-14 pb-15">
     <!-- Header -->
-    <div class="max-w-200 stagger-1">
+    <div class="max-w-180 stagger-1">
       <span class="font-mono text-[11px] font-medium tracking-[0.16em] text-accent uppercase">
         settings &middot; trusttrace
       </span>
       <h1
-        class="mt-4 mb-5 stagger-2 font-serif text-[clamp(32px,5vw,46px)] leading-[1.1] tracking-tight"
+        class="mt-4 mb-5 stagger-2 font-serif text-[clamp(30px,4.4vw,42px)] leading-[1.1] tracking-tight"
       >
         Tune how TrustTrace looks for evidence.
       </h1>
-      <p class="stagger-3 text-[15px] leading-[1.7] text-ink-2">
+      <p class="max-w-150 stagger-3 text-[15px] leading-[1.7] text-ink-2">
         Defaults work for most claims. Open a section to adjust how sources are discovered and what
         the trace shows you.
       </p>
     </div>
 
-    <!-- Two-column layout -->
-    <div class="mt-12 grid gap-10 lg:grid-cols-[180px_1fr] lg:gap-16">
+    <!-- Two-column layout: sidebar at fixed 160px, content capped at 36rem so
+         label/control rows feel balanced. minmax(0,...) prevents grid blowout. -->
+    <div class="mt-12 grid gap-8 lg:grid-cols-[160px_minmax(0,36rem)] lg:gap-12">
       <SettingsSidebar :sections="sections" :active-id="activeId" @select="scrollToSection" />
 
       <div class="min-w-0">
