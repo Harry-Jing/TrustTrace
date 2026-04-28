@@ -213,6 +213,17 @@
   }
 }
 
+@keyframes tooltip-leave {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
 @keyframes page-forward-enter-kf {
   from {
     opacity: 0;
@@ -473,7 +484,7 @@
 
 @utility anim-tooltip-out {
   transform-origin: bottom center;
-  animation: tooltip-enter 0.2s ease reverse both;
+  animation: tooltip-leave 0.2s ease both;
 }
 
 @utility anim-celeb-pop {

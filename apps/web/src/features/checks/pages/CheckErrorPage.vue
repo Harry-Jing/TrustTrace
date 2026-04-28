@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 
 import BaseButton from "@/components/BaseButton.vue";
 import BasePageFooter from "@/components/BasePageFooter.vue";
@@ -13,7 +13,6 @@ import type { CheckApiError } from "@/features/checks/types";
 import { useAsyncData } from "@/shared/composables/useAsyncData";
 
 const route = useRoute();
-const router = useRouter();
 const showDetail = ref(false);
 const checks = useChecksStore();
 const { createCheck, isSubmitting, submitError } = useCreateCheck();
@@ -95,7 +94,7 @@ async function retryCheck() {
         >
           {{ isSubmitting ? "Retrying…" : "Retry check" }}
         </BaseButton>
-        <BaseButton variant="secondary" size="lg" @click="router.push({ name: 'landing' })">
+        <BaseButton variant="secondary" size="lg" :to="{ name: 'landing' }">
           Edit claim
         </BaseButton>
       </div>

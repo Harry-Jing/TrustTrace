@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useRouter } from "vue-router";
-
 import BaseButton from "@/components/BaseButton.vue";
 
 defineProps<{
@@ -10,8 +8,6 @@ defineProps<{
 const emit = defineEmits<{
   copy: [];
 }>();
-
-const router = useRouter();
 </script>
 
 <template>
@@ -35,9 +31,7 @@ const router = useRouter();
         {{ copied ? "Copied to clipboard" : "Copy summary" }}
       </BaseButton>
       <span class="flex-1" />
-      <BaseButton variant="subtle" @click="router.push({ name: 'landing' })">
-        New check
-      </BaseButton>
+      <BaseButton variant="subtle" :to="{ name: 'landing' }"> New check </BaseButton>
     </div>
   </div>
 </template>

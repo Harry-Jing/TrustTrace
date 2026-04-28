@@ -1,22 +1,27 @@
-import { mount } from "@vue/test-utils";
+import { mount, RouterLinkStub } from "@vue/test-utils";
 import { createPinia } from "pinia";
 import { nextTick } from "vue";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { CheckRecord } from "@/features/checks/types";
 import type * as Vue from "vue";
+import type * as VueRouter from "vue-router";
 import CheckErrorPage from "./CheckErrorPage.vue";
 
 const pushMock = vi.hoisted(() => vi.fn<(location: unknown) => void>());
 const getCheckMock = vi.hoisted(() => vi.fn<() => Promise<CheckRecord>>());
 const createCheckMock = vi.hoisted(() => vi.fn<(input: unknown) => Promise<unknown>>());
 
-vi.mock("vue-router", () => ({
-  useRoute: () => ({ params: { checkId: "check-1" } }),
-  useRouter: () => ({
-    push: pushMock,
-  }),
-}));
+vi.mock("vue-router", async (importOriginal) => {
+  const actual = await importOriginal<typeof VueRouter>();
+  return {
+    ...actual,
+    useRoute: () => ({ params: { checkId: "check-1" } }),
+    useRouter: () => ({
+      push: pushMock,
+    }),
+  };
+});
 
 vi.mock("@/features/checks/api/checksApi", () => ({
   getCheck: getCheckMock,
@@ -84,6 +89,7 @@ describe("CheckErrorPage", () => {
     const wrapper = mount(CheckErrorPage, {
       global: {
         plugins: [createPinia()],
+        stubs: { RouterLink: RouterLinkStub },
       },
     });
 

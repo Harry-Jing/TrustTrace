@@ -1,5 +1,7 @@
 <script setup lang="ts">
-const props = defineProps<{
+import { SwitchRoot, SwitchThumb } from "reka-ui";
+
+defineProps<{
   modelValue: boolean;
   label: string;
   disabled?: boolean;
@@ -8,31 +10,18 @@ const props = defineProps<{
 const emit = defineEmits<{
   "update:modelValue": [value: boolean];
 }>();
-
-function toggle() {
-  if (props.disabled) return;
-  emit("update:modelValue", !props.modelValue);
-}
 </script>
 
 <template>
-  <button
-    type="button"
-    role="switch"
-    :aria-checked="modelValue"
-    :aria-label="label"
+  <SwitchRoot
+    :model-value="modelValue"
     :disabled="disabled"
-    class="inline-flex h-6 w-11 shrink-0 items-center rounded-full border p-[2px] transition-colors duration-200"
-    :class="[
-      modelValue ? 'border-ink bg-ink' : 'border-line-strong bg-surface-alt',
-      disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
-    ]"
-    @click="toggle"
+    :aria-label="label"
+    class="inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border p-[2px] transition-colors duration-200 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-60 data-[state=checked]:border-ink data-[state=checked]:bg-ink data-[state=unchecked]:border-line-strong data-[state=unchecked]:bg-surface-alt"
+    @update:model-value="(v: boolean) => emit('update:modelValue', v)"
   >
-    <span
-      class="pointer-events-none block size-[18px] rounded-full bg-card shadow-[0_1px_2px_rgba(0,0,0,0.28),0_0_0_1px_rgba(0,0,0,0.08)] transition-transform duration-200 ease-snappy"
-      :style="{ transform: modelValue ? 'translateX(20px)' : 'translateX(0)' }"
-      aria-hidden="true"
+    <SwitchThumb
+      class="pointer-events-none block size-[18px] rounded-full bg-card shadow-[0_1px_2px_rgba(0,0,0,0.28),0_0_0_1px_rgba(0,0,0,0.08)] transition-transform duration-200 ease-snappy data-[state=checked]:translate-x-[20px] data-[state=unchecked]:translate-x-0"
     />
-  </button>
+  </SwitchRoot>
 </template>

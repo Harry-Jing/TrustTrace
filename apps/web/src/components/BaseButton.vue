@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { RouterLink, type RouteLocationRaw } from "vue-router";
 
 type ButtonVariant = "primary" | "accent" | "secondary" | "subtle";
 type ButtonSize = "sm" | "md" | "lg";
@@ -10,12 +11,14 @@ const props = withDefaults(
     size?: ButtonSize;
     type?: "button" | "submit" | "reset";
     disabled?: boolean;
+    to?: RouteLocationRaw | null;
   }>(),
   {
     variant: "primary",
     size: "md",
     type: "button",
     disabled: false,
+    to: null,
   },
 );
 
@@ -37,10 +40,20 @@ const SIZE_CLASSES: Record<ButtonSize, string> = {
 
 const variantClass = computed(() => VARIANT_CLASSES[props.variant]);
 const sizeClass = computed(() => SIZE_CLASSES[props.size]);
+const renderAsLink = computed(() => props.to !== null && !props.disabled);
 </script>
 
 <template>
+  <RouterLink
+    v-if="renderAsLink"
+    :to="to!"
+    class="tt-btn inline-flex items-center justify-center gap-1.5 transition-colors duration-200"
+    :class="[variantClass, sizeClass]"
+  >
+    <slot />
+  </RouterLink>
   <button
+    v-else
     :type="type"
     :disabled="disabled"
     class="tt-btn inline-flex items-center justify-center gap-1.5 transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-60"

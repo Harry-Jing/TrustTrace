@@ -1,4 +1,5 @@
 <script setup lang="ts" generic="T extends string">
+import { ToggleGroupItem, ToggleGroupRoot } from "reka-ui";
 import { computed } from "vue";
 
 const props = defineProps<{
@@ -16,21 +17,23 @@ const activeIndex = computed(() =>
   props.options.findIndex((option) => option.value === props.modelValue),
 );
 
-function select(value: T) {
-  if (props.disabled) return;
-  if (value !== props.modelValue) {
-    emit("update:modelValue", value);
+function handleUpdate(value: unknown) {
+  if (typeof value !== "string") return;
+  const match = props.options.find((option) => option.value === value);
+  if (match && match.value !== props.modelValue) {
+    emit("update:modelValue", match.value);
   }
 }
 </script>
 
 <template>
-  <div
-    class="relative isolate inline-flex overflow-hidden rounded-full bg-surface-alt p-0.75 ring-1 ring-line-strong transition-opacity duration-200 ring-inset"
-    :class="{ 'opacity-60': disabled }"
-    role="group"
+  <ToggleGroupRoot
+    type="single"
+    :model-value="modelValue"
+    :disabled="disabled"
     :aria-label="label"
-    :data-disabled="disabled || undefined"
+    class="relative isolate inline-flex overflow-hidden rounded-full bg-surface-alt p-0.75 ring-1 ring-line-strong transition-opacity duration-200 ring-inset data-[disabled]:opacity-60"
+    @update:model-value="handleUpdate"
   >
     <div
       v-if="activeIndex >= 0"
@@ -39,21 +42,16 @@ function select(value: T) {
         left: `calc(${activeIndex * (100 / options.length)}% + 3px)`,
         width: `calc(${100 / options.length}% - 6px)`,
       }"
+      aria-hidden="true"
     />
-    <button
+    <ToggleGroupItem
       v-for="option in options"
       :key="option.value"
-      type="button"
-      class="relative z-10 min-w-16 rounded-full border-none bg-transparent px-4 py-2 text-[12px] font-medium tracking-tight transition-colors duration-200 aria-pressed:text-surface"
-      :class="[
-        modelValue === option.value ? 'text-surface' : 'text-muted',
-        disabled ? 'cursor-not-allowed' : 'cursor-pointer',
-      ]"
-      :aria-pressed="modelValue === option.value"
+      :value="option.value"
       :disabled="disabled"
-      @click="select(option.value)"
+      class="relative z-10 min-w-16 cursor-pointer rounded-full border-none bg-transparent px-4 py-2 text-[12px] font-medium tracking-tight text-muted transition-colors duration-200 data-[disabled]:cursor-not-allowed data-[state=on]:text-surface"
     >
       {{ option.label }}
-    </button>
-  </div>
+    </ToggleGroupItem>
+  </ToggleGroupRoot>
 </template>

@@ -10,6 +10,7 @@ import {
   APP_VERSION,
 } from "@/features/settings/constants/meta";
 import SettingsRadioCard from "@/features/settings/components/SettingsRadioCard.vue";
+import SettingsRadioCardGroup from "@/features/settings/components/SettingsRadioCardGroup.vue";
 import SettingsRangeSlider from "@/features/settings/components/SettingsRangeSlider.vue";
 import SettingsRow from "@/features/settings/components/SettingsRow.vue";
 import SettingsSection from "@/features/settings/components/SettingsSection.vue";
@@ -137,28 +138,26 @@ onBeforeUnmount(() => {
             helper="Pick the engine that gathers candidate sources."
             layout="stack"
           >
-            <div class="grid gap-3 sm:grid-cols-2">
+            <SettingsRadioCardGroup
+              name="discovery-strategy"
+              :model-value="preferences.discoveryStrategy"
+              @update:model-value="setStrategy"
+            >
               <SettingsRadioCard
-                name="discovery-strategy"
                 code="search_api"
                 value="search_api"
-                :model-value="preferences.discoveryStrategy"
                 headline="Index-backed, deterministic."
                 description="Queries a search provider and reads the top results. Fast, cheap, well-lit citation paths."
                 :badge="{ tone: 'accent', label: 'recommended' }"
-                @update:model-value="setStrategy"
               />
               <SettingsRadioCard
-                name="discovery-strategy"
                 code="llm_web"
                 value="llm_web"
-                :model-value="preferences.discoveryStrategy"
                 headline="Model-driven exploration."
                 description="An LLM plans queries, follows leads, and re-plans on dead ends. Better for fuzzy claims; slower."
                 :badge="{ tone: 'warn', label: 'experimental' }"
-                @update:model-value="setStrategy"
               />
-            </div>
+            </SettingsRadioCardGroup>
           </SettingsRow>
 
           <SettingsRow

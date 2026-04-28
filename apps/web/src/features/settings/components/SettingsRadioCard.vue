@@ -1,60 +1,33 @@
 <script setup lang="ts" generic="T extends string">
+import { RadioGroupIndicator, RadioGroupItem } from "reka-ui";
+
 import { badgeToneClasses } from "@/components/badgeTone";
 import type { BadgeTone } from "@/types/ui";
 
-const props = defineProps<{
+defineProps<{
   value: T;
-  modelValue: T;
-  name: string;
   code: string;
   headline: string;
   description: string;
   badge?: { tone: BadgeTone; label: string };
   disabled?: boolean;
 }>();
-
-const emit = defineEmits<{
-  "update:modelValue": [value: T];
-}>();
-
-function select() {
-  if (props.disabled) return;
-  if (props.modelValue !== props.value) {
-    emit("update:modelValue", props.value);
-  }
-}
 </script>
 
 <template>
-  <label
-    class="relative flex flex-1 flex-col gap-3 rounded-md border bg-card p-5 transition-[border-color,background-color,box-shadow,opacity] duration-200"
-    :class="[
-      modelValue === value
-        ? 'border-ink shadow-input-rest'
-        : 'border-line hover:border-line-strong',
-      disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
-    ]"
-    :data-selected="modelValue === value"
+  <RadioGroupItem
+    :value="value"
+    :disabled="disabled"
+    class="group relative flex flex-1 cursor-pointer flex-col gap-3 rounded-md border border-line bg-card p-5 text-left transition-[border-color,background-color,box-shadow,opacity] duration-200 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-60 data-[state=checked]:border-ink data-[state=checked]:shadow-input-rest enabled:data-[state=unchecked]:hover:border-line-strong"
   >
-    <input
-      type="radio"
-      class="sr-only"
-      :name="name"
-      :value="value"
-      :checked="modelValue === value"
-      :disabled="disabled"
-      @change="select"
-    />
     <div class="flex items-center justify-between gap-3">
       <span class="flex items-center gap-2.5">
         <span
-          class="flex size-4 items-center justify-center rounded-full border-[1.5px] transition-colors duration-200"
-          :class="modelValue === value ? 'border-ink' : 'border-line-strong'"
+          class="flex size-4 items-center justify-center rounded-full border-[1.5px] border-line-strong transition-colors duration-200 group-data-[state=checked]:border-ink"
           aria-hidden="true"
         >
-          <span
-            v-if="modelValue === value"
-            class="size-2 rounded-full bg-ink transition-transform duration-200"
+          <RadioGroupIndicator
+            class="block size-2 rounded-full bg-ink transition-transform duration-200"
           />
         </span>
         <span class="font-mono text-[13px] tracking-tight text-ink">{{ code }}</span>
@@ -73,5 +46,5 @@ function select() {
     <p class="text-[13px] leading-[1.6] text-ink-2">
       {{ description }}
     </p>
-  </label>
+  </RadioGroupItem>
 </template>
