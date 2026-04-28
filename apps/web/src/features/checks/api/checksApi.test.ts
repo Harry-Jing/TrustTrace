@@ -13,7 +13,7 @@ describe("checksApi backend-shaped mock", () => {
   });
 
   it("creates a running check and returns the created record by id", async () => {
-    const response = await createCheck({ mode: "text", value: "A claim to check" });
+    const response = await createCheck({ mode: "text", value: "A claim to check" }, "search_api");
 
     expect(response.checkId).toMatch(/^mock-check-/);
     expect(response.status).toBe("running");
@@ -37,7 +37,7 @@ describe("checksApi backend-shaped mock", () => {
 
   it("streams mock progress events through completion", async () => {
     vi.useFakeTimers();
-    const response = await createCheck({ mode: "text", value: "A claim to stream" });
+    const response = await createCheck({ mode: "text", value: "A claim to stream" }, "search_api");
     const events: string[] = [];
     const onClose = vi.fn<() => void>();
 
@@ -72,7 +72,7 @@ describe("checksApi backend-shaped mock", () => {
 
   it("stops streaming when the subscription is closed", async () => {
     vi.useFakeTimers();
-    const response = await createCheck({ mode: "text", value: "A claim to cancel" });
+    const response = await createCheck({ mode: "text", value: "A claim to cancel" }, "search_api");
     const events: string[] = [];
 
     const subscription = subscribeCheckEvents(response.checkId, {

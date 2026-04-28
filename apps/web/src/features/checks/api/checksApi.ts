@@ -11,11 +11,15 @@ import type {
   CheckRecord,
   CreateCheckResponse,
 } from "@/features/checks/types";
+import type { DiscoveryStrategy } from "@/features/checks/types/progress";
 
 const client = isMockApiMode ? mockClient : backendClient;
 
-export function createCheck(input: CheckInputDraft): Promise<CreateCheckResponse> {
-  return client.createCheck(input);
+export function createCheck(
+  input: CheckInputDraft,
+  discoveryStrategy: DiscoveryStrategy,
+): Promise<CreateCheckResponse> {
+  return client.createCheck(input, discoveryStrategy);
 }
 
 export function getCheck(checkId: string): Promise<CheckRecord> {

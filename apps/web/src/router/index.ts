@@ -62,6 +62,12 @@ export const router = createRouter({
           meta: { depth: 1, title: "History" },
           component: () => import("@/features/checks/pages/CheckHistoryPage.vue"),
         },
+        {
+          path: "settings",
+          name: "settings",
+          meta: { depth: 1, title: "Settings" },
+          component: () => import("@/features/settings/pages/SettingsPage.vue"),
+        },
       ],
     },
     {

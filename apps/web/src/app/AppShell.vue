@@ -15,6 +15,7 @@ const transitionName = ref("page-same");
 const renderError = ref<Error | null>(null);
 
 preferences.applyTheme();
+preferences.initSystemThemeListener();
 
 onErrorCaptured((err) => {
   renderError.value = err instanceof Error ? err : new Error(String(err));

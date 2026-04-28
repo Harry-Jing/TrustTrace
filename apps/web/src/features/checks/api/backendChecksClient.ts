@@ -16,6 +16,7 @@ import type {
   CheckRecord,
   CreateCheckResponse,
 } from "@/features/checks/types";
+import type { DiscoveryStrategy } from "@/features/checks/types/progress";
 
 const STREAM_RECONNECT_DELAYS_MS = [500, 1000, 2000] as const;
 
@@ -104,7 +105,10 @@ function toCheckRecord(value: unknown): CheckRecord {
   return parseBackendPayload(checkRecordSchema, value, "check record");
 }
 
-export async function createCheck(input: CheckInputDraft): Promise<CreateCheckResponse> {
+export async function createCheck(
+  input: CheckInputDraft,
+  discoveryStrategy: DiscoveryStrategy,
+): Promise<CreateCheckResponse> {
   const body = await requestJson("/checks", {
     method: "POST",
     body: JSON.stringify({
@@ -112,6 +116,7 @@ export async function createCheck(input: CheckInputDraft): Promise<CreateCheckRe
         type: input.mode,
         content: input.value,
       },
+      discoveryStrategy,
     }),
   });
 

@@ -3,11 +3,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useCreateCheck } from "@/features/checks/composables/useCreateCheck";
 import { useChecksStore } from "@/features/checks/stores/checks.store";
+import { usePreferencesStore } from "@/stores/preferences.store";
 import type { CreateCheckResponse } from "@/features/checks/types";
 
 const pushMock = vi.hoisted(() => vi.fn<(location: unknown) => Promise<void>>());
 const createCheckRequestMock = vi.hoisted(() =>
-  vi.fn<(input: unknown) => Promise<CreateCheckResponse>>(),
+  vi.fn<(input: unknown, strategy: unknown) => Promise<CreateCheckResponse>>(),
 );
 
 vi.mock("vue-router", () => ({
@@ -65,6 +66,19 @@ describe("useCreateCheck", () => {
     });
     expect(isSubmitting.value).toBe(false);
     expect(submitError.value).toBeNull();
+  });
+
+  it("forwards the discoveryStrategy from preferences to the API", async () => {
+    const response = makeCreateResponse();
+    createCheckRequestMock.mockResolvedValue(response);
+    const preferences = usePreferencesStore();
+    preferences.setDiscoveryStrategy("llm_web");
+    const { createCheck } = useCreateCheck();
+
+    const input = { mode: "text", value: "A claim about LLM web" } as const;
+    await createCheck(input);
+
+    expect(createCheckRequestMock).toHaveBeenCalledWith(input, "llm_web");
   });
 
   it("records submit errors and does not navigate when create fails", async () => {

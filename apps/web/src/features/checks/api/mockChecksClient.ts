@@ -15,6 +15,7 @@ import type {
   CreateCheckResponse,
   ProgressEvent,
 } from "@/features/checks/types";
+import type { DiscoveryStrategy } from "@/features/checks/types/progress";
 
 /**
  * MOCK ONLY — In-memory API client used for local demo/debug flows.
@@ -283,7 +284,10 @@ function applyProgress(checkId: string, progress: CheckProgress) {
   rememberMockRecord(checkId, nextRecord);
 }
 
-export function createCheck(input: CheckInputDraft): Promise<CreateCheckResponse> {
+export function createCheck(
+  input: CheckInputDraft,
+  discoveryStrategy: DiscoveryStrategy,
+): Promise<CreateCheckResponse> {
   const checkId = makeCheckId();
   const createdAt = nowIso();
   const initialProgress = makeProgress(
@@ -301,7 +305,7 @@ export function createCheck(input: CheckInputDraft): Promise<CreateCheckResponse
   rememberMockRecord(checkId, {
     checkId,
     status: "running",
-    discoveryStrategy: "search_api",
+    discoveryStrategy,
     input,
     progress: initialProgress,
     result: null,
@@ -314,7 +318,7 @@ export function createCheck(input: CheckInputDraft): Promise<CreateCheckResponse
   return resolveMock({
     checkId,
     status: "running",
-    discoveryStrategy: "search_api",
+    discoveryStrategy,
     progress: initialProgress,
     eventsUrl: `/v1/checks/${checkId}/events`,
     createdAt,

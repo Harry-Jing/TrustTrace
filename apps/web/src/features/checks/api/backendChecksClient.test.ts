@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
+  createCheck,
   getCheck,
   listChecks,
   subscribeCheckEvents,
@@ -312,6 +313,41 @@ describe("backendChecksClient response contracts", () => {
     fetchMock.mockResolvedValue(jsonResponse(makeBody()));
 
     await expect(getCheck("check-1")).rejects.toThrow(/Backend contract/);
+  });
+
+  it("sends the discoveryStrategy in the create-check request body", async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse({
+        checkId: "check-2",
+        status: "running",
+        discoveryStrategy: "llm_web",
+        progress: {
+          checkId: "check-2",
+          status: "running",
+          phase: "understanding",
+          percent: 8,
+          message: "Reading the input.",
+          eventSeq: 1,
+          updatedAt: "2026-04-23T12:00:00.000Z",
+        },
+        eventsUrl: "/v1/checks/check-2/events",
+        createdAt: "2026-04-23T12:00:00.000Z",
+      }),
+    );
+
+    await createCheck({ mode: "text", value: "A claim to send" }, "llm_web");
+
+    expect(fetchMock).toHaveBeenCalledOnce();
+    const init = fetchMock.mock.calls[0]?.[1];
+    expect(init?.method).toBe("POST");
+    const body = JSON.parse(init?.body as string) as {
+      input: { type: string; content: string };
+      discoveryStrategy: string;
+    };
+    expect(body).toEqual({
+      input: { type: "text", content: "A claim to send" },
+      discoveryStrategy: "llm_web",
+    });
   });
 
   it("rejects list items with invalid badge tones", async () => {
