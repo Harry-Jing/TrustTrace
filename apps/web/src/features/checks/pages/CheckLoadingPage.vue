@@ -2,7 +2,9 @@
 import { computed, onBeforeUnmount, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
+import BaseButton from "@/components/BaseButton.vue";
 import BasePageFooter from "@/components/BasePageFooter.vue";
+import BaseWarnRingIllustration from "@/components/BaseWarnRingIllustration.vue";
 import DevLoadingControls from "@/app/DevLoadingControls.vue";
 import { showDevTools } from "@/app/env";
 import ProgressStepper from "@/features/checks/components/ProgressStepper.vue";
@@ -99,7 +101,7 @@ onBeforeUnmount(clearRedirectTimer);
 </script>
 
 <template>
-  <div class="mx-auto max-w-230 px-6 pt-12 pb-20">
+  <div class="mx-auto max-w-focus px-6 pt-12 pb-20">
     <!-- Celebration state -->
     <div v-if="showCelebration" class="anim-up py-30 text-center">
       <div
@@ -129,47 +131,13 @@ onBeforeUnmount(clearRedirectTimer);
          like the same product family. Smaller scale (56 vs 72) since this is
          an inline transient error, not a terminal error page. -->
     <div v-else-if="progressError" class="anim-up py-24 text-center" role="alert">
-      <svg
-        width="56"
-        height="56"
-        viewBox="0 0 72 72"
-        fill="none"
-        class="mx-auto mb-5 block"
-        aria-hidden="true"
-      >
-        <circle
-          cx="36"
-          cy="36"
-          r="30"
-          class="stroke-line-strong"
-          stroke-width="2"
-          stroke-dasharray="8 6"
-          opacity=".6"
-        />
-        <circle
-          cx="36"
-          cy="36"
-          r="30"
-          class="stroke-warn"
-          stroke-width="2.5"
-          stroke-dasharray="40 200"
-          stroke-linecap="round"
-        />
-        <path d="M36 24v16" class="stroke-warn" stroke-width="2.5" stroke-linecap="round" />
-        <circle cx="36" cy="46" r="1.5" class="fill-warn" />
-      </svg>
+      <BaseWarnRingIllustration :size="56" />
       <h1 class="mb-2.5 font-serif text-[28px] tracking-tight">Could not load progress</h1>
       <p class="mx-auto mb-6 max-w-105 text-sm leading-[1.75] text-muted">
         The check was created, but the live progress stream could not be loaded. You can retry the
         connection without starting over.
       </p>
-      <button
-        type="button"
-        class="tt-btn rounded-md border-none bg-ink px-7 py-2.75 text-sm font-semibold text-surface"
-        @click="retryProgress"
-      >
-        Retry progress
-      </button>
+      <BaseButton variant="primary" size="lg" @click="retryProgress">Retry progress</BaseButton>
     </div>
 
     <!-- Loading state -->

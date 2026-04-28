@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
+import BaseButton from "@/components/BaseButton.vue";
 import BasePageFooter from "@/components/BasePageFooter.vue";
 import AtAGlanceStats from "@/features/checks/components/AtAGlanceStats.vue";
 import CredibilityCueList from "@/features/checks/components/CredibilityCueList.vue";
@@ -34,7 +35,7 @@ function handleCopy() {
 </script>
 
 <template>
-  <div class="mx-auto max-w-280 px-6 pt-12 pb-20">
+  <div class="mx-auto max-w-page px-6 pt-12 pb-20">
     <div
       v-if="isLoading || checkStatus === 'queued' || checkStatus === 'running'"
       class="py-20 text-center text-muted"
@@ -44,13 +45,7 @@ function handleCopy() {
     </div>
     <div v-else-if="isError || !result" class="py-20 text-center">
       <p class="mb-4 text-muted">Could not load the result.</p>
-      <button
-        type="button"
-        class="tt-btn rounded-md border border-line px-4 py-2.5 text-sm text-ink"
-        @click="reload"
-      >
-        Retry
-      </button>
+      <BaseButton variant="subtle" @click="reload">Retry</BaseButton>
     </div>
     <template v-else>
       <ResultHeader :result="result" />

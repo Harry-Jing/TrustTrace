@@ -1,4 +1,5 @@
 <script setup lang="ts" generic="T extends string">
+import { badgeToneClasses } from "@/components/badgeTone";
 import type { BadgeTone } from "@/types/ui";
 
 const props = defineProps<{
@@ -26,12 +27,12 @@ function select() {
 
 <template>
   <label
-    class="relative flex flex-1 flex-col gap-3 rounded-md border bg-card p-5 transition-[border-color,background-color,box-shadow] duration-200"
+    class="relative flex flex-1 flex-col gap-3 rounded-md border bg-card p-5 transition-[border-color,background-color,box-shadow,opacity] duration-200"
     :class="[
       modelValue === value
         ? 'border-ink shadow-input-rest'
         : 'border-line hover:border-line-strong',
-      disabled ? 'cursor-not-allowed' : 'cursor-pointer',
+      disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
     ]"
     :data-selected="modelValue === value"
   >
@@ -60,14 +61,8 @@ function select() {
       </span>
       <span
         v-if="badge"
-        class="inline-flex items-center rounded-full px-2 py-0.5 font-mono text-[10px] font-medium tracking-[0.06em] uppercase"
-        :class="{
-          'border border-line bg-surface-alt text-ink-2': badge.tone === 'default',
-          'border border-accent-light bg-accent-light text-accent': badge.tone === 'accent',
-          'border border-warn-light bg-warn-light text-warn': badge.tone === 'warn',
-          'border border-good-light bg-good-light text-good': badge.tone === 'good',
-          'border border-ink bg-ink text-surface': badge.tone === 'dark',
-        }"
+        class="inline-flex items-center rounded-full px-2 py-0.5 font-mono text-eyebrow font-medium uppercase"
+        :class="badgeToneClasses(badge.tone)"
       >
         {{ badge.label }}
       </span>

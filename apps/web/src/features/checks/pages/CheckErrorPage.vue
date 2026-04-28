@@ -2,8 +2,10 @@
 import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
+import BaseButton from "@/components/BaseButton.vue";
 import BasePageFooter from "@/components/BasePageFooter.vue";
 import BaseTagBadge from "@/components/BaseTagBadge.vue";
+import BaseWarnRingIllustration from "@/components/BaseWarnRingIllustration.vue";
 import { getCheck } from "@/features/checks/api/checksApi";
 import { useCreateCheck } from "@/features/checks/composables/useCreateCheck";
 import { useChecksStore } from "@/features/checks/stores/checks.store";
@@ -69,38 +71,9 @@ async function retryCheck() {
 </script>
 
 <template>
-  <div class="mx-auto max-w-130 px-6 pt-25 pb-20 text-center">
+  <div class="mx-auto max-w-alert px-6 pt-25 pb-20 text-center">
     <div class="anim-up">
-      <!-- SVG illustration -->
-      <svg
-        width="72"
-        height="72"
-        viewBox="0 0 72 72"
-        fill="none"
-        class="mx-auto mb-5 block"
-        aria-hidden="true"
-      >
-        <circle
-          cx="36"
-          cy="36"
-          r="30"
-          class="stroke-line-strong"
-          stroke-width="2"
-          stroke-dasharray="8 6"
-          opacity=".6"
-        />
-        <circle
-          cx="36"
-          cy="36"
-          r="30"
-          class="stroke-warn"
-          stroke-width="2.5"
-          stroke-dasharray="40 200"
-          stroke-linecap="round"
-        />
-        <path d="M36 24v16" class="stroke-warn" stroke-width="2.5" stroke-linecap="round" />
-        <circle cx="36" cy="46" r="1.5" class="fill-warn" />
-      </svg>
+      <BaseWarnRingIllustration />
 
       <BaseTagBadge tone="warn">{{ errorCategory }}</BaseTagBadge>
 
@@ -113,22 +86,18 @@ async function retryCheck() {
       </p>
 
       <div class="flex justify-center gap-2.5">
-        <button
+        <BaseButton
           v-if="canRetry"
-          type="button"
-          class="tt-btn rounded-md border-none bg-ink px-7 py-2.75 text-sm font-semibold text-surface"
+          variant="primary"
+          size="lg"
           :disabled="isSubmitting"
           @click="retryCheck"
         >
           {{ isSubmitting ? "Retrying…" : "Retry check" }}
-        </button>
-        <button
-          type="button"
-          class="tt-btn rounded-md border border-line-strong bg-transparent px-5 py-2.75 text-sm text-ink-2"
-          @click="router.push({ name: 'landing' })"
-        >
+        </BaseButton>
+        <BaseButton variant="secondary" size="lg" @click="router.push({ name: 'landing' })">
           Edit claim
-        </button>
+        </BaseButton>
       </div>
 
       <p v-if="retryErrorMessage" class="mt-5 text-xs leading-relaxed text-warn" role="alert">
@@ -166,7 +135,7 @@ async function retryCheck() {
           <div class="expand-panel-inner">
             <div
               :id="detailId"
-              class="text-body-sm mt-2.5 rounded-lg border border-line bg-surface-alt p-3.5 text-left leading-[1.7] text-ink-2"
+              class="mt-2.5 rounded-lg border border-line bg-surface-alt p-3.5 text-left text-body-sm leading-[1.7] text-ink-2"
             >
               <p class="mb-2">
                 <strong>{{ errorCode }}</strong> — {{ errorExplanation }}

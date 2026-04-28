@@ -53,7 +53,7 @@ function isCurrent(index: number, currentIndex: number) {
         :class="[
           {
             'border-good bg-good text-card': isDone(index, currentIndex),
-            'anim-pulse-ring border-warn bg-warn text-white': isCurrent(index, currentIndex),
+            'anim-pulse-ring border-warn bg-warn text-card': isCurrent(index, currentIndex),
             'border-line bg-surface text-muted':
               !isDone(index, currentIndex) && !isCurrent(index, currentIndex),
           },

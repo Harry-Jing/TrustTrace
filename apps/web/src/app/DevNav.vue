@@ -50,7 +50,7 @@ function navigateTo(path: string) {
           class="rounded-md border-none px-3 py-1.5 text-left font-mono text-[11px] tracking-wide transition-colors duration-150"
           :class="
             currentPage === page.name
-              ? 'bg-accent font-semibold text-white'
+              ? 'bg-accent font-semibold text-card'
               : 'bg-transparent text-surface/70 hover:bg-surface/10 hover:text-surface'
           "
           @click="navigateTo(page.path)"

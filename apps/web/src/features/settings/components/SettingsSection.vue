@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import BaseComingSoonPill from "@/components/BaseComingSoonPill.vue";
+
 defineProps<{
   id: string;
   eyebrow: string;
@@ -20,22 +22,17 @@ defineProps<{
     <header class="mb-7">
       <div class="flex items-center gap-3">
         <span
-          class="font-mono text-[11px] font-medium tracking-[0.16em] text-muted uppercase"
+          class="font-mono text-meta font-medium tracking-[0.16em] text-muted uppercase"
           aria-hidden="true"
         >
           {{ eyebrow }}
         </span>
-        <span
-          v-if="comingSoon"
-          class="inline-flex items-center rounded-full border border-line bg-surface-alt px-2 py-0.5 font-mono text-[10px] font-medium tracking-[0.06em] text-muted uppercase"
-        >
-          coming soon
-        </span>
+        <BaseComingSoonPill v-if="comingSoon" />
       </div>
       <h2 class="mt-3 font-serif text-[clamp(24px,3vw,30px)] leading-tight tracking-tight text-ink">
         {{ title }}
       </h2>
-      <p v-if="description" class="mt-3 max-w-160 text-[15px] leading-[1.6] text-ink-2">
+      <p v-if="description" class="mt-3 max-w-readable text-[15px] leading-[1.6] text-ink-2">
         {{ description }}
       </p>
     </header>

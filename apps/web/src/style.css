@@ -71,8 +71,53 @@
   --shadow-input-focus: 0 0 0 3px var(--tt-accent-fade), 0 8px 24px rgba(0, 0, 0, 0.05);
   --shadow-card-hover: 0 8px 24px rgba(0, 0, 0, 0.07);
 
-  --font-size-body-sm: 13px;
-  --font-size-body-sm--line-height: 1.7;
+  /* ── Typography scale (Tailwind v4 canonical --text-* namespace).
+     Bundles line-height + tracking + font-weight per the v4 docs:
+     https://tailwindcss.com/docs/font-size
+
+     Use these named roles instead of arbitrary text-[Npx] literals:
+       text-eyebrow → 10px mono uppercase eyebrow labels (the most reused recipe)
+       text-meta    → 11px mono small meta / chip text
+       text-tag     → 12px mono tag-like text
+       text-body-sm → 13px body, 1.7 leading
+       text-stat    → 26px serif large stat numerals (AtAGlance) */
+  --text-eyebrow: 10px;
+  --text-eyebrow--line-height: 1.4;
+  --text-eyebrow--letter-spacing: 0.12em;
+  --text-eyebrow--font-weight: 500;
+
+  --text-meta: 11px;
+  --text-meta--line-height: 1.4;
+  --text-meta--letter-spacing: 0.04em;
+
+  --text-tag: 12px;
+  --text-tag--line-height: 1.4;
+  --text-tag--letter-spacing: 0.04em;
+
+  --text-body-sm: 13px;
+  --text-body-sm--line-height: 1.7;
+
+  --text-stat: 26px;
+  --text-stat--line-height: 1;
+  --text-stat--letter-spacing: -0.01em;
+
+  /* ── Letter spacing tokens.
+     Keep "tight" / "wide" / "widest" as Tailwind defaults; add semantic ones
+     for the two repeated mono-uppercase recipes. */
+  --tracking-eyebrow: 0.12em;
+  --tracking-tag: 0.04em;
+
+  /* ── Page container widths.
+     Tailwind v4 --container-* drives both max-w-* utilities and @container
+     query variants. Use semantic names so page authors pick by intent
+     (e.g., max-w-page) rather than memorising px math (max-w-280). */
+  --container-page: 1120px; /* default app pages: home / result / history */
+  --container-focus: 920px; /* concentrated read pages: loading */
+  --container-form: 880px; /* form-heavy pages: settings */
+  --container-alert: 520px; /* terse alert pages: error */
+  /* `readable` (not `prose`) — Tailwind v4 reserves `max-w-prose` for 65ch
+     and that built-in alias wins over a custom --container-prose token. */
+  --container-readable: 640px; /* descriptive paragraph constraint */
 
   --ease-snappy: cubic-bezier(0.4, 0, 0.2, 1);
 }

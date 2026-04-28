@@ -5,6 +5,7 @@ import { useRoute, useRouter } from "vue-router";
 import AppNav from "@/app/AppNav.vue";
 import DevNav from "@/app/DevNav.vue";
 import { showDevTools } from "@/app/env";
+import BaseButton from "@/components/BaseButton.vue";
 import { usePreferencesStore } from "@/stores/preferences.store";
 
 const router = useRouter();
@@ -53,15 +54,9 @@ watch(
 
     <!-- Page content with transition -->
     <main id="main-content" ref="mainEl" tabindex="-1">
-      <div v-if="renderError" class="mx-auto max-w-120 px-6 py-20 text-center">
+      <div v-if="renderError" class="mx-auto max-w-alert px-6 py-20 text-center">
         <p class="mb-4 text-muted">Something went wrong.</p>
-        <button
-          type="button"
-          class="tt-btn rounded-md border border-line px-5 py-2.5 text-sm text-ink"
-          @click="renderError = null"
-        >
-          Try again
-        </button>
+        <BaseButton variant="subtle" @click="renderError = null">Try again</BaseButton>
       </div>
       <RouterView v-else v-slot="{ Component }">
         <Transition :name="transitionName" mode="out-in">

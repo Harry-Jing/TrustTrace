@@ -101,7 +101,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="mx-auto max-w-220 px-6 pt-14 pb-15">
+  <div class="mx-auto max-w-form px-6 pt-14 pb-15">
     <!-- Header -->
     <div class="max-w-180 stagger-1">
       <span class="font-mono text-[11px] font-medium tracking-[0.16em] text-accent uppercase">

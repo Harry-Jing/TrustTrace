@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 
+import BaseButton from "@/components/BaseButton.vue";
 import type { CheckInputDraft, CheckInputMode } from "@/features/checks/types";
 
 const props = defineProps<{
@@ -81,7 +82,7 @@ function submit() {
           v-for="modeOption in ['text', 'url'] as const"
           :key="modeOption"
           type="button"
-          class="text-body-sm relative z-10 min-w-16 rounded-full border-none bg-transparent px-5 py-2.5 font-mono font-medium tracking-[0.04em] text-muted uppercase transition-colors duration-200 aria-[pressed=true]:text-surface"
+          class="relative z-10 min-w-16 rounded-full border-none bg-transparent px-5 py-2.5 font-mono text-body-sm font-medium tracking-[0.04em] text-muted uppercase transition-colors duration-200 aria-[pressed=true]:text-surface"
           :aria-pressed="mode === modeOption"
           :disabled="isDisabled"
           @click="switchMode(modeOption)"
@@ -129,18 +130,9 @@ function submit() {
       <span class="font-mono text-[11px] tracking-[0.03em] text-muted">
         {{ mode === "url" ? "paste a full http(s) URL" : "min 3 characters" }}
       </span>
-      <button
-        type="submit"
-        class="tt-btn rounded-md border-none px-7 py-2.5 text-sm font-semibold transition-all duration-250"
-        :class="
-          isValid && !isDisabled
-            ? 'cursor-pointer bg-accent text-white'
-            : 'cursor-default bg-surface-alt text-muted'
-        "
-        :disabled="!isValid || isDisabled"
-      >
+      <BaseButton type="submit" variant="accent" size="lg" :disabled="!isValid || isDisabled">
         {{ submitting ? "Starting…" : "Run credibility check" }}
-      </button>
+      </BaseButton>
     </div>
   </form>
 </template>

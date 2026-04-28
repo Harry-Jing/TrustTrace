@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import BaseComingSoonPill from "@/components/BaseComingSoonPill.vue";
+
 withDefaults(
   defineProps<{
     label?: string;
@@ -21,14 +23,9 @@ withDefaults(
         <div class="flex items-center gap-2">
           <span v-if="label" class="text-sm font-medium text-ink">{{ label }}</span>
           <slot name="label" />
-          <span
-            v-if="comingSoon"
-            class="inline-flex items-center rounded-full border border-line bg-surface-alt px-2 py-0.5 font-mono text-[10px] font-medium tracking-[0.06em] text-muted uppercase"
-          >
-            coming soon
-          </span>
+          <BaseComingSoonPill v-if="comingSoon" />
         </div>
-        <p v-if="helper" class="mt-1 text-[13px] leading-relaxed text-muted">{{ helper }}</p>
+        <p v-if="helper" class="mt-1 text-body-sm text-muted">{{ helper }}</p>
         <slot name="helper" />
       </div>
       <div class="md:flex-shrink-0">
@@ -41,14 +38,9 @@ withDefaults(
         <div class="flex items-center gap-2">
           <span v-if="label" class="text-sm font-medium text-ink">{{ label }}</span>
           <slot name="label" />
-          <span
-            v-if="comingSoon"
-            class="inline-flex items-center rounded-full border border-line bg-surface-alt px-2 py-0.5 font-mono text-[10px] font-medium tracking-[0.06em] text-muted uppercase"
-          >
-            coming soon
-          </span>
+          <BaseComingSoonPill v-if="comingSoon" />
         </div>
-        <p v-if="helper" class="mt-1 text-[13px] leading-relaxed text-muted">{{ helper }}</p>
+        <p v-if="helper" class="mt-1 text-body-sm text-muted">{{ helper }}</p>
         <slot name="helper" />
       </div>
       <slot />

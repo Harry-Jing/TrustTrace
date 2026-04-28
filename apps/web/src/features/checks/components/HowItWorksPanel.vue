@@ -27,7 +27,7 @@ const howSteps = [
   <div class="mt-7 stagger-5 text-left">
     <button
       type="button"
-      class="text-body-sm flex w-full items-center gap-2 rounded-lg border border-line bg-card px-4 py-3 font-medium text-ink transition-colors duration-150 hover:bg-surface-alt"
+      class="flex w-full items-center gap-2 rounded-lg border border-line bg-card px-4 py-3 text-body-sm font-medium text-ink transition-colors duration-150 hover:bg-surface-alt"
       :aria-controls="panelId"
       :aria-expanded="showHow"
       @click="showHow = !showHow"
@@ -69,11 +69,11 @@ const howSteps = [
         >
           <div v-for="(step, i) in howSteps" :key="i">
             <div
-              class="mb-2 flex size-7 items-center justify-center rounded-full bg-accent font-mono text-xs font-semibold text-white"
+              class="mb-2 flex size-7 items-center justify-center rounded-full bg-accent font-mono text-xs font-semibold text-card"
             >
               {{ i + 1 }}
             </div>
-            <div class="text-body-sm mb-1 font-semibold">{{ step.title }}</div>
+            <div class="mb-1 text-body-sm font-semibold">{{ step.title }}</div>
             <div class="text-xs leading-relaxed text-muted">{{ step.description }}</div>
           </div>
         </div>

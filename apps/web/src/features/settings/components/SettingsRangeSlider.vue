@@ -86,7 +86,7 @@ withDefaults(
 }
 .tt-settings-range[data-disabled],
 .tt-settings-range:disabled {
-  filter: grayscale(0.8);
-  opacity: 0.7;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 </style>

@@ -26,7 +26,8 @@ function select(value: T) {
 
 <template>
   <div
-    class="relative isolate inline-flex overflow-hidden rounded-full bg-surface-alt p-0.75 ring-1 ring-line-strong ring-inset"
+    class="relative isolate inline-flex overflow-hidden rounded-full bg-surface-alt p-0.75 ring-1 ring-line-strong transition-opacity duration-200 ring-inset"
+    :class="{ 'opacity-60': disabled }"
     role="group"
     :aria-label="label"
     :data-disabled="disabled || undefined"

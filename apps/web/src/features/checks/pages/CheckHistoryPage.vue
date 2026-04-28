@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 
+import BaseButton from "@/components/BaseButton.vue";
 import BasePageFooter from "@/components/BasePageFooter.vue";
 import HistoryGrid from "@/features/checks/components/HistoryGrid.vue";
 import HistoryToolbar from "@/features/checks/components/HistoryToolbar.vue";
@@ -16,10 +17,14 @@ function selectHistoryItem(historyItem: CheckListItem) {
 </script>
 
 <template>
-  <div class="mx-auto max-w-280 px-6 pt-12 pb-20">
+  <div class="mx-auto max-w-page px-6 pt-12 pb-20">
     <div class="mb-6 flex stagger-1 flex-col gap-4 md:flex-row md:items-end md:justify-between">
       <div>
-        <h1 class="mt-2.5 mb-1.5 font-serif text-4xl tracking-tight">Your checks</h1>
+        <h1
+          class="mt-2.5 mb-1.5 font-serif text-[clamp(28px,4.2vw,40px)] leading-[1.15] tracking-tight"
+        >
+          Your checks
+        </h1>
         <p class="text-sm leading-[1.7] text-muted">
           Your recent credibility checks. Select one to revisit the evidence and cues.
         </p>
@@ -32,13 +37,7 @@ function selectHistoryItem(historyItem: CheckListItem) {
     </div>
     <div v-else-if="isError" class="py-10 text-center">
       <p class="mb-4 text-muted">Could not load history.</p>
-      <button
-        type="button"
-        class="tt-btn rounded-md border border-line px-4 py-2.5 text-sm text-ink"
-        @click="reload"
-      >
-        Retry
-      </button>
+      <BaseButton variant="subtle" @click="reload">Retry</BaseButton>
     </div>
     <HistoryGrid v-else :items="items" :search="search" @select="selectHistoryItem" />
 
