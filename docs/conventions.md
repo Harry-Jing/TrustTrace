@@ -63,6 +63,15 @@ The frontend in `apps/web` follows the `create-vue` tooling baseline. Project-sp
 | Formatting     | `prettier`                     | Owns code formatting. ESLint formatting rules are disabled.    |
 | Unit tests     | `vitest` + `@vue/test-utils`   | Vue component tests using the same Vite transform pipeline.    |
 
+### Lean frontend testing policy
+
+Frontend tests should protect the boundaries and workflows that are expensive or easy to miss by manual inspection. Do not aim for “one test per component” or a coverage percentage while the product surface is still moving.
+
+- Keep tests for API/runtime contract validation, unsafe URL handling, create-check requests, SSE/progress fallback, refresh-safe persisted input, settings persistence, and other core flows that can silently break.
+- Prefer user-observable behavior and explicit boundary effects over implementation details. Avoid assertions on Tailwind class strings, design-token class names, copy-only page details, mock fixture contents, or DOM structure unless they guard a known regression.
+- Purely presentational components, layout pages, and visual polish are usually verified by manual review or a small future browser smoke suite, not granular Vitest files.
+- Mock at the boundary being tested. If a page test requires deep mocking of router, environment, composables, and mock result data, consider whether a smaller composable/API test or a future end-to-end smoke test would provide clearer confidence.
+
 ### TrustTrace differences from create-vue
 
 - Bun workspaces: root scripts delegate into `apps/web`, `apps/server`, and `packages/contracts` with `bun run --cwd ...`.

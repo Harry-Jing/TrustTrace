@@ -26,17 +26,17 @@ The frontend runs on backend-shaped mocks: API contract, async `useCreateCheck`,
 | 18  | Frontend runtime validation for backend responses                                                           | `backendChecksClient.ts`, `backendCheckSchemas.ts`                                   |
 | 19  | Persisted check input for refresh-safe loading/error pages                                                  | `types/api.ts`, `CheckLoadingPage.vue`, `CheckErrorPage.vue`                         |
 | 20  | Route document titles and render-error reset on navigation                                                  | `router/index.ts`, `AppShell.vue`                                                    |
-| 21  | Result page/component regression tests                                                                      | `CheckResultPage.test.ts`, result component tests                                    |
+| 21  | Result/API boundary regression coverage                                                                     | Backend response validation, unsafe evidence links, and result mapping safety tests  |
 | 22  | Settings page: theme (light/dark/auto), discovery strategy default, save-history toggle, about; gear in nav | `features/settings/`, `stores/preferences.store.ts`, `AppNav.vue`, `router/index.ts` |
 | 23  | Wire `discoveryStrategy` into create-check requests from preferences                                        | `useCreateCheck.ts`, `backendChecksClient.ts`, `mockChecksClient.ts`, `checksApi.ts` |
 
 ### Open
 
-| #   | Improvement              | Notes                                                                                                         | Primary files                                |
-| --- | ------------------------ | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
-| 12  | Decide history strategy  | Local-only, server-backed, or hybrid — affects the `listChecks` contract.                                     | `useCheckHistory.ts`, `CheckHistoryPage.vue` |
-| 13  | Fill remaining test gaps | History page and deeper accessibility states; input / create / progress / loading / result / api are covered. | composables, pages                           |
-| 18  | Accessibility polish     | Tooltip IDs, loading semantics, icon labels, reduced-motion.                                                  | shared UI                                    |
+| #   | Improvement                        | Notes                                                                                  | Primary files                                      |
+| --- | ---------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| 12  | Decide history strategy            | Local-only, server-backed, or hybrid — affects the `listChecks` contract.              | `useCheckHistory.ts`, `CheckHistoryPage.vue`       |
+| 13  | Add minimal browser smoke coverage | Prefer 1-3 Playwright/Vitest Browser smoke flows over granular page/mock-detail tests. | submit → loading → result/error, settings strategy |
+| 18  | Accessibility polish               | Tooltip IDs, loading semantics, icon labels, reduced-motion.                           | shared UI                                          |
 
 ### Acceptance before wiring the backend
 

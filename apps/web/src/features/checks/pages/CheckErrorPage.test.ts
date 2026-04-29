@@ -107,33 +107,4 @@ describe("CheckErrorPage", () => {
       value: "A persisted failed claim",
     });
   });
-
-  it("does not suggest changing the claim for provider configuration errors", async () => {
-    getCheckMock.mockResolvedValue({
-      ...makeFailedRecord(),
-      error: {
-        code: "PROVIDER_CONFIGURATION_ERROR",
-        category: "provider configuration",
-        message: "OpenAI credentials are missing on the server.",
-        retryable: false,
-        traceId: null,
-        occurredAt: "2026-04-23T12:00:00.000Z",
-      },
-    });
-
-    const wrapper = mount(CheckErrorPage, {
-      global: {
-        plugins: [createPinia()],
-        stubs: { RouterLink: RouterLinkStub },
-      },
-    });
-
-    await flushAsync();
-
-    expect(wrapper.text()).toContain("server configuration issue");
-    expect(wrapper.text()).not.toContain("different claim");
-    expect(wrapper.findAll("button").some((button) => button.text().includes("Retry check"))).toBe(
-      false,
-    );
-  });
 });
