@@ -18,6 +18,50 @@
   --color-warning-muted: var(--warning-muted);
   --color-success: var(--success);
   --color-success-muted: var(--success-muted);
+
+  /* Domain-semantic tokens for the verdict-card surface only. A
+     diverging green → olive → amber → orange ramp matches the field
+     convention (PolitiFact, Ground News, Ad Fontes Media) where
+     color carries trust intuition. Tokens are domain-scoped (not
+     `--success` / `--warning`) so the verdict surface stays visually
+     distinct from generic UI status, and so future palette changes to
+     evidence don't bleed into toasts / settings badges. Each tone
+     ships paired: saturated for borders/text, -muted for badge fills. */
+  --color-evidence-strong: var(--evidence-strong);
+  --color-evidence-strong-muted: var(--evidence-strong-muted);
+  --color-evidence-mixed: var(--evidence-mixed);
+  --color-evidence-mixed-muted: var(--evidence-mixed-muted);
+  --color-evidence-weak: var(--evidence-weak);
+  --color-evidence-weak-muted: var(--evidence-weak-muted);
+  --color-evidence-thin: var(--evidence-thin);
+  --color-evidence-thin-muted: var(--evidence-thin-muted);
+
+  /* Domain-semantic tokens for the per-source polarity surface
+     (supports / contradicts / neutral). Equal-chroma cool/warm pair
+     (teal affirm / maroon oppose) so neither side reads as reward
+     or alarm — a source contradicting a false claim is precisely
+     what TrustTrace wants to surface, not a "warning". Hues are
+     deliberately picked outside the verdict-card ramp (forest
+     green / rose-red) so the two domain palettes don't bleed. */
+  --color-evidence-relation-affirm: var(--evidence-relation-affirm);
+  --color-evidence-relation-affirm-muted: var(--evidence-relation-affirm-muted);
+  --color-evidence-relation-affirm-border: var(--evidence-relation-affirm-border);
+  --color-evidence-relation-oppose: var(--evidence-relation-oppose);
+  --color-evidence-relation-oppose-muted: var(--evidence-relation-oppose-muted);
+  --color-evidence-relation-oppose-border: var(--evidence-relation-oppose-border);
+
+  /* Domain-semantic tokens for the evidence ladder weight surface
+     (tier 1 strongest → tier 4 weakest). Single low-chroma slate
+     hue, lightness ramping monotonically — sequential encoding for
+     ordinal data, per Munzner / Bertin / ColorBrewer. Avoids the
+     prior nominal-hue palette where tier-4 reused --warning and
+     read as "snippet sources are dangerous" rather than "lower
+     weight". */
+  --color-evidence-tier-1: var(--evidence-tier-1);
+  --color-evidence-tier-2: var(--evidence-tier-2);
+  --color-evidence-tier-3: var(--evidence-tier-3);
+  --color-evidence-tier-4: var(--evidence-tier-4);
+
   --color-card: var(--card);
   --color-nav: var(--nav);
 
@@ -98,6 +142,46 @@
   --success: #3d6630; /* AA: on bg 6.05:1, on white 6.36:1 */
   --success-muted: #ecf2e0;
   --success-fade: rgba(61, 102, 48, 0.08);
+  /* Evidence ordinal — equal-lightness OKLCH ramp (Refactoring UI
+     "sequential-categorical" recipe: hue carries category, chroma
+     carries severity, lightness stays constant so each stop reads
+     as the same visual weight). Hues 150° → 75° → 39° → 25° skip
+     the olive zone (~110°) that made the previous palette read
+     muddy, and chroma rises from 0.13 → 0.21 so thin's red feels
+     more alarming without breaking harmony. All four text/-muted
+     pairs clear WCAG AA on both paper bg and -muted bg. */
+  --evidence-strong: #2f7a52;
+  --evidence-strong-muted: #eaf1ec;
+  --evidence-mixed: #8a6a1f;
+  --evidence-mixed-muted: #f2ebd8;
+  --evidence-weak: #a85a24;
+  --evidence-weak-muted: #f1e2d2;
+  --evidence-thin: #b0464e;
+  --evidence-thin-muted: #f2dddc;
+  /* Polarity pair — equal-chroma cool/warm so neither side reads
+     as reward or alarm. Deep teal sits outside the verdict ramp's
+     forest-green band; maroon sits outside both the rose-red of
+     evidence-thin and the orange of warning. -muted stops sit one
+     LCH step deeper than a Polaris/Stripe-on-white recipe would
+     pick because the page bg is warm cream paper (#faf9f6, L≈0.95)
+     rather than near-white — keeps chip-vs-page delta-L ~0.20 so
+     the chip still pops on tinted paper. */
+  --evidence-relation-affirm: #3a6b73;
+  --evidence-relation-affirm-muted: #cfe1e3;
+  --evidence-relation-affirm-border: #a8c5c8;
+  --evidence-relation-oppose: #8c4054;
+  --evidence-relation-oppose-muted: #e9c9d3;
+  --evidence-relation-oppose-border: #d3a3b3;
+  /* Tier weight ramp — single low-chroma slate, lightness only.
+     tier-1 is dark enough that text-card on its fill clears AA;
+     tier-3/-4 are light enough that the number circle switches to
+     outline-only with foreground text (the ColorBrewer crossover
+     pattern). Each stop differs from --border so the scope-bar
+     fill stays visible. */
+  --evidence-tier-1: #2e3848;
+  --evidence-tier-2: #5e6878;
+  --evidence-tier-3: #9094a0;
+  --evidence-tier-4: #b8bbc2;
   --card: #ffffff;
   --nav: rgba(250, 249, 246, 0.92);
   --nav-scrolled-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
@@ -120,6 +204,43 @@
   --success: #7eb55f;
   --success-muted: #1d2618;
   --success-fade: rgba(126, 181, 95, 0.12);
+  /* Evidence ordinal — same equal-lightness OKLCH recipe mirrored
+     for dark mode: lightness lifted to ~L77 so each stop reads as a
+     bright accent against the near-black background, hues 150° →
+     75° → 39° → 25° preserved, chroma rising left-to-right. -muted
+     variants drop to ~L20 with low chroma so the chips read as
+     softly tinted rather than glaring. */
+  --evidence-strong: #62c088;
+  --evidence-strong-muted: #0f1f17;
+  --evidence-mixed: #e0b05c;
+  --evidence-mixed-muted: #231a0c;
+  --evidence-weak: #e89866;
+  --evidence-weak-muted: #221408;
+  --evidence-thin: #ee7b7e;
+  --evidence-thin-muted: #22120f;
+  /* Polarity pair, dark — same recipe as light, lifted to read as
+     bright accents on near-black with -muted dropped to deep
+     low-chroma tints so chips stay softly tinted, not glaring. */
+  --evidence-relation-affirm: #75bcc3;
+  --evidence-relation-affirm-muted: #0e2123;
+  /* Dark mode keeps the chip's perimeter quiet: saturated text on a
+     deep muted bg already pops against near-black, so the border
+     token resolves to the same value as the muted bg (no visible
+     stroke). The token still exists so the light-mode lift can
+     re-use the same class map. */
+  --evidence-relation-affirm-border: #0e2123;
+  --evidence-relation-oppose: #dd8298;
+  --evidence-relation-oppose-muted: #22151a;
+  --evidence-relation-oppose-border: #22151a;
+  /* Tier weight ramp, dark — same single-hue lightness ramp,
+     inverted so tier-1 is the brightest stop (heaviest visual
+     weight against a near-black background) and tier-4 the
+     quietest. Each stop differs from --border so the scope-bar
+     fill stays visible against the dark surface. */
+  --evidence-tier-1: #e2e2d8;
+  --evidence-tier-2: #a8a89e;
+  --evidence-tier-3: #73736c;
+  --evidence-tier-4: #52524b;
   --card: #1c1c1a;
   --nav: rgba(17, 17, 16, 0.92);
   /* Dark nav-scrolled shadow combines a faint highlight (visible on the
@@ -311,10 +432,10 @@
 @keyframes pulse-ring {
   0%,
   100% {
-    box-shadow: 0 0 0 4px var(--warning-fade);
+    box-shadow: 0 0 0 4px var(--accent-fade);
   }
   50% {
-    box-shadow: 0 0 0 8px var(--warning-fade);
+    box-shadow: 0 0 0 8px var(--accent-fade);
   }
 }
 
@@ -338,7 +459,7 @@
 }
 
 @utility anim-connector-shimmer {
-  background: linear-gradient(90deg, transparent 0%, var(--warning) 50%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, var(--accent) 50%, transparent 100%);
   animation: connector-shimmer 1.8s linear infinite;
 }
 

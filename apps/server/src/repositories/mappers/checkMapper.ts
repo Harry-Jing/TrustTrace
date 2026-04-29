@@ -42,7 +42,6 @@ export function rowToListItem(row: CheckRow): CheckListItemDto {
     createdAt: row.createdAt,
     cue: listCue(row),
     verdictBand: listVerdictBand(row),
-    tone: listTone(row),
   };
 }
 
@@ -71,12 +70,6 @@ function listVerdictBand(row: CheckRow): VerdictBandDto | null {
   if (row.status === "completed") return row.resultJson?.verdictBand ?? "needs_context";
   if (row.status === "failed") return "system_failed";
   return null;
-}
-
-function listTone(row: CheckRow): CheckListItemDto["tone"] {
-  if (row.status === "completed") return "accent";
-  if (row.status === "failed") return "warn";
-  return "default";
 }
 
 function truncate(value: string, maxLength: number): string {

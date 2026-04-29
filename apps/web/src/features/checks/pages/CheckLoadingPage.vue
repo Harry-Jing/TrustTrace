@@ -187,9 +187,9 @@ onBeforeUnmount(clearRedirectTimer);
         <Transition name="phase-header" mode="out-in">
           <div :key="phaseDefinition.key">
             <div
-              class="mb-2 flex items-center gap-2 font-mono text-label tracking-widest text-warning uppercase"
+              class="mb-2 flex items-center gap-2 font-mono text-label tracking-widest text-accent uppercase"
             >
-              <span class="size-1.5 animate-pulse-dot rounded-full bg-warning" aria-hidden="true" />
+              <span class="size-1.5 animate-pulse-dot rounded-full bg-accent" aria-hidden="true" />
               <span>now &middot; {{ phaseDefinition.nowLabel }}</span>
             </div>
             <h2 class="mb-2 font-serif text-[clamp(24px,3.4vw,32px)] tracking-tight">

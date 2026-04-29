@@ -350,7 +350,7 @@ describe("backendChecksClient response contracts", () => {
     });
   });
 
-  it("rejects list items with invalid badge tones", async () => {
+  it("rejects list items with invalid verdict bands", async () => {
     fetchMock.mockResolvedValue(
       jsonResponse({
         items: [
@@ -360,7 +360,7 @@ describe("backendChecksClient response contracts", () => {
             snippet: "A short snippet",
             createdAt: "2026-04-23T12:00:00.000Z",
             cue: "evidence strong",
-            tone: "neon",
+            verdictBand: "neon",
           },
         ],
       }),

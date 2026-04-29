@@ -1,24 +1,16 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import BaseTagBadge from "@/components/BaseTagBadge.vue";
+import EvidenceBadge from "@/features/checks/components/EvidenceBadge.vue";
+import { evidenceToneFor } from "@/features/checks/constants/evidenceTone";
 import { readVerdictCopy } from "@/features/checks/constants/resultFallbacks";
-import type { BadgeTone } from "@/types/ui";
-import type { CheckResultViewModel, VerdictBand } from "@/features/checks/types";
+import type { CheckResultViewModel } from "@/features/checks/types";
 
 const props = defineProps<{
   result: CheckResultViewModel;
 }>();
 
-const verdictTone: Record<VerdictBand, BadgeTone> = {
-  evidence_strong: "good",
-  evidence_mixed: "accent",
-  evidence_weak: "warn",
-  evidence_thin: "warn",
-  needs_context: "default",
-  system_failed: "warn",
-};
-
+const verdictTone = computed(() => evidenceToneFor(props.result.verdictBand));
 const verdictLabel = computed(() =>
   readVerdictCopy(props.result.verdictBand, "label", props.result.verdictLabel),
 );
@@ -46,7 +38,7 @@ const description = computed(() =>
 
   <!-- Verdict band tag -->
   <div class="mb-3 animate-up [animation-delay:50ms]">
-    <BaseTagBadge :tone="verdictTone[result.verdictBand]">{{ verdictLabel }}</BaseTagBadge>
+    <EvidenceBadge :tone="verdictTone">{{ verdictLabel }}</EvidenceBadge>
   </div>
 
   <!-- Headline + description -->

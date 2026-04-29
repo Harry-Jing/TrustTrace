@@ -27,9 +27,9 @@ function isCurrent(index: number, currentIndex: number) {
       :aria-current="isCurrent(index, currentIndex) ? 'step' : undefined"
     >
       <!-- Connector: grey base + green fill that grows from the left when done.
-           When this segment sits between the current and next step it carries a
-           shimmer (a warn-colored bar travelling left → right) so the page
-           never feels frozen between phase events. -->
+           When this segment sits between the current and next step it carries
+           an accent-colored shimmer travelling left → right so the page never
+           feels frozen between phase events. -->
       <div
         v-if="index < steps.length - 1"
         class="absolute top-4.5 left-1/2 -z-0 h-px w-full overflow-hidden bg-border"
@@ -54,10 +54,7 @@ function isCurrent(index: number, currentIndex: number) {
         :class="[
           {
             'border-success bg-success text-card': isDone(index, currentIndex),
-            'animate-pulse-ring border-warning bg-warning text-card': isCurrent(
-              index,
-              currentIndex,
-            ),
+            'animate-pulse-ring border-accent bg-accent text-card': isCurrent(index, currentIndex),
             'border-border bg-background text-foreground-subtle':
               !isDone(index, currentIndex) && !isCurrent(index, currentIndex),
           },

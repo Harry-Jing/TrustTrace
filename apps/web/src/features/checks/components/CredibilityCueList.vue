@@ -25,7 +25,7 @@ defineProps<{
             v-for="d in 5"
             :key="d"
             class="size-1.25 rounded-full transition-colors duration-300"
-            :class="d <= cue.strength ? 'bg-warning' : 'bg-border'"
+            :class="d <= cue.strength ? 'bg-accent' : 'bg-border'"
           />
         </div>
       </div>

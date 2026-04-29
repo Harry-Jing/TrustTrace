@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import BaseTagBadge from "@/components/BaseTagBadge.vue";
+import EvidenceBadge from "@/features/checks/components/EvidenceBadge.vue";
+import { evidenceToneFor } from "@/features/checks/constants/evidenceTone";
 import type { CheckListItem } from "@/features/checks/types";
 
 defineProps<{
@@ -37,9 +38,9 @@ function formatRelativeTime(iso: string) {
     >
       <div class="flex items-center justify-between md:contents">
         <div class="shrink-0 md:w-32">
-          <BaseTagBadge :tone="recentCheck.tone" class="text-micro">{{
+          <EvidenceBadge :tone="evidenceToneFor(recentCheck.verdictBand)" class="text-micro">{{
             recentCheck.cue
-          }}</BaseTagBadge>
+          }}</EvidenceBadge>
         </div>
         <span class="shrink-0 font-mono text-[10px] text-foreground-subtle md:order-last">{{
           formatRelativeTime(recentCheck.createdAt)

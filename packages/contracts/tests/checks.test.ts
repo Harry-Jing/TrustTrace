@@ -45,6 +45,26 @@ describe("checks API contracts", () => {
     expect(() => checkListResponseSchema.parse([])).toThrow();
   });
 
+  it("strips presentation tokens from list items so the wire stays data-only", () => {
+    // `tone` was a presentation token that briefly lived on the wire and
+    // is now derived client-side from `verdictBand`. The contract must
+    // not silently re-admit it: any extra keys are dropped during parse.
+    const parsed = checkListResponseSchema.parse({
+      items: [
+        {
+          checkId: "check-1",
+          claim: "A claim",
+          snippet: "A short snippet",
+          createdAt: "2026-04-27T20:00:00.000Z",
+          cue: "evidence strong",
+          verdictBand: "evidence_strong",
+          tone: "accent",
+        },
+      ],
+    });
+    expect(parsed.items[0]).not.toHaveProperty("tone");
+  });
+
   it("keeps verdict-band sort order aligned with the verdict-band schema source", () => {
     expect(VERDICT_BAND_ORDER).toEqual(VERDICT_BANDS);
   });

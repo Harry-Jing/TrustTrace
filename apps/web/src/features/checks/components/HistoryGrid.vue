@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import BaseTagBadge from "@/components/BaseTagBadge.vue";
+import EvidenceBadge from "@/features/checks/components/EvidenceBadge.vue";
+import { evidenceToneBorderTop, evidenceToneFor } from "@/features/checks/constants/evidenceTone";
 import type { CheckListItem } from "@/features/checks/types";
 
 defineProps<{
@@ -17,13 +18,6 @@ function formatDate(iso: string) {
     day: "numeric",
     year: "numeric",
   });
-}
-
-function toneBorderClass(tone: CheckListItem["tone"]) {
-  if (tone === "accent") return "border-t-accent";
-  if (tone === "warn") return "border-t-warning";
-  if (tone === "dark") return "border-t-foreground";
-  return "border-t-border-strong";
 }
 
 function onBeforeEnter(el: Element) {
@@ -60,7 +54,7 @@ function onBeforeEnter(el: Element) {
       :data-index="index"
       type="button"
       class="group cursor-pointer overflow-hidden rounded-lg border border-t-[3px] border-border bg-card p-0 text-left text-foreground transition-[transform,box-shadow,border-color,background-color,color] duration-300 hover:-translate-y-0.75 hover:border-x-border-strong hover:border-b-border-strong hover:shadow-card-hover"
-      :class="toneBorderClass(historyItem.tone)"
+      :class="evidenceToneBorderTop(evidenceToneFor(historyItem.verdictBand))"
       @click="emit('select', historyItem)"
     >
       <div class="p-5">
@@ -74,9 +68,9 @@ function onBeforeEnter(el: Element) {
           {{ historyItem.snippet }}
         </div>
         <div class="flex items-center justify-between">
-          <BaseTagBadge :tone="historyItem.tone" class="text-[10px]">{{
+          <EvidenceBadge :tone="evidenceToneFor(historyItem.verdictBand)" class="text-[10px]">{{
             historyItem.cue
-          }}</BaseTagBadge>
+          }}</EvidenceBadge>
         </div>
       </div>
     </button>

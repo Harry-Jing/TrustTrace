@@ -211,9 +211,10 @@ export const checkListItemSchema = z.object({
   /**
    * Stable enum used for sort order and conditional UI. Null while the
    * check is still queued/running and no band has been chosen yet.
+   * Visual treatment is derived client-side from this field; the wire
+   * does not carry presentation tokens.
    */
   verdictBand: verdictBandSchema.nullable(),
-  tone: z.enum(["default", "accent", "warn", "good", "dark"]),
 });
 
 export const checkListResponseSchema = z.object({

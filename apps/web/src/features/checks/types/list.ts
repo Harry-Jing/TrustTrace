@@ -1,4 +1,3 @@
-import type { BadgeTone } from "@/types/ui";
 import type { VerdictBand } from "@/features/checks/types/resultViewModel";
 
 export type CheckListSort = "date" | "cue";
@@ -14,9 +13,9 @@ export interface CheckListItem {
    */
   cue: string;
   /**
-   * Stable enum used for sort order. Null while the check is queued
-   * or running (no band has been chosen yet).
+   * Stable enum used for sort order and visual treatment. Null while
+   * the check is queued or running (no band has been chosen yet).
+   * Tone is derived from this client-side via `evidenceToneFor`.
    */
   verdictBand: VerdictBand | null;
-  tone: BadgeTone;
 }

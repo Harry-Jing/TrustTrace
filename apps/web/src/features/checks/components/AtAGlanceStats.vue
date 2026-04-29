@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import type { ResultAtAGlance, UncertaintyLevel } from "@/features/checks/types";
+import { UNCERTAINTY_LEVEL_TEXT_CLASSES } from "@/features/checks/constants/uncertaintyLevelClasses";
+import type { ResultAtAGlance } from "@/features/checks/types";
 
 const props = defineProps<{
   glance: ResultAtAGlance;
@@ -12,12 +13,6 @@ interface GlanceStat {
   label: string;
   toneClass: string;
 }
-
-const uncertaintyTone: Record<UncertaintyLevel, string> = {
-  low: "text-success",
-  med: "text-warning",
-  high: "text-warning",
-};
 
 const stats = computed<readonly GlanceStat[]>(() => [
   {
@@ -33,7 +28,7 @@ const stats = computed<readonly GlanceStat[]>(() => [
   {
     value: String(props.glance.fullText),
     label: "full-text",
-    toneClass: "text-success",
+    toneClass: "text-accent",
   },
   {
     value: String(props.glance.primary),
@@ -48,7 +43,7 @@ const stats = computed<readonly GlanceStat[]>(() => [
   {
     value: props.glance.uncertainty,
     label: "uncertainty",
-    toneClass: uncertaintyTone[props.glance.uncertainty],
+    toneClass: UNCERTAINTY_LEVEL_TEXT_CLASSES[props.glance.uncertainty],
   },
 ]);
 </script>

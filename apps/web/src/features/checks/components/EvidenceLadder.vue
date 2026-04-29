@@ -1,9 +1,15 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import BaseTagBadge from "@/components/BaseTagBadge.vue";
-import type { BadgeTone } from "@/types/ui";
-import type { EvidenceItem, EvidenceRelation, EvidenceTier } from "@/features/checks/types";
+import EvidenceRelationBadge from "@/features/checks/components/EvidenceRelationBadge.vue";
+import { evidenceRelationToneFor } from "@/features/checks/constants/evidenceRelationTone";
+import {
+  evidenceTierToneBarClasses,
+  evidenceTierToneBorderLeftClasses,
+  evidenceTierToneFor,
+  evidenceTierToneNumberClasses,
+} from "@/features/checks/constants/evidenceTierTone";
+import type { EvidenceItem, EvidenceTier } from "@/features/checks/types";
 import { isSafeHttpUrl } from "@/features/checks/utils";
 
 const props = defineProps<{
@@ -19,46 +25,40 @@ interface TierConfig {
   barClass: string;
 }
 
-const TIERS: readonly TierConfig[] = [
-  {
-    tier: 1,
-    label: "Primary, full-text, independent",
-    description: "Original sources, complete article body, no shared origin. Strongest weight.",
-    numberClass: "border-success bg-success text-card",
-    borderClass: "border-l-[3px] border-l-success",
-    barClass: "bg-success",
-  },
-  {
-    tier: 2,
-    label: "Secondary, full-text, independent",
-    description: "Trusted agency or aggregator coverage with full body extracted.",
-    numberClass: "border-accent bg-accent text-card",
-    borderClass: "border-l-[3px] border-l-accent",
-    barClass: "bg-accent",
-  },
-  {
-    tier: 3,
-    label: "Same-origin or limited",
-    description: "Useful context but weighted lower — shares origin with a stronger source.",
-    numberClass: "border-border-strong bg-surface text-foreground-muted",
-    borderClass: "border-l-[3px] border-l-border-strong",
-    barClass: "bg-foreground-subtle",
-  },
-  {
-    tier: 4,
-    label: "Snippet-only",
-    description: "Suggestive, not load-bearing. Cannot independently support a strong claim.",
-    numberClass: "border-warning bg-warning text-card",
-    borderClass: "border-l-[3px] border-l-warning",
-    barClass: "bg-warning",
-  },
-];
+function tierConfigFor(tier: EvidenceTier, label: string, description: string): TierConfig {
+  const tone = evidenceTierToneFor(tier);
+  return {
+    tier,
+    label,
+    description,
+    numberClass: evidenceTierToneNumberClasses(tone),
+    borderClass: evidenceTierToneBorderLeftClasses(tone),
+    barClass: evidenceTierToneBarClasses(tone),
+  };
+}
 
-const relationConfig: Record<EvidenceRelation, { label: string; tone: BadgeTone }> = {
-  supports: { label: "supports", tone: "good" },
-  contradicts: { label: "contradicts", tone: "warn" },
-  neutral: { label: "neutral", tone: "default" },
-};
+const TIERS: readonly TierConfig[] = [
+  tierConfigFor(
+    1,
+    "Primary, full-text, independent",
+    "Original sources, complete article body, no shared origin. Strongest weight.",
+  ),
+  tierConfigFor(
+    2,
+    "Secondary, full-text, independent",
+    "Trusted agency or aggregator coverage with full body extracted.",
+  ),
+  tierConfigFor(
+    3,
+    "Same-origin or limited",
+    "Useful context but weighted lower — shares origin with a stronger source.",
+  ),
+  tierConfigFor(
+    4,
+    "Snippet-only",
+    "Suggestive, not load-bearing. Cannot independently support a strong claim.",
+  ),
+];
 
 const groupedEvidence = computed(() =>
   TIERS.map((tierConfig) => ({
@@ -113,13 +113,13 @@ function evidenceHref(item: EvidenceItem) {
           :class="group.config.borderClass"
         >
           <div class="mb-1.5 flex flex-wrap items-center gap-2">
-            <span class="font-mono text-label font-medium text-warning">
+            <span class="font-mono text-label font-medium text-accent">
               {{ item.domain }}
             </span>
             <span class="font-mono text-label text-foreground-subtle">{{ item.date }}</span>
-            <BaseTagBadge :tone="relationConfig[item.relation].tone" class="text-micro">
-              {{ relationConfig[item.relation].label }}
-            </BaseTagBadge>
+            <EvidenceRelationBadge :tone="evidenceRelationToneFor(item.relation)">
+              {{ item.relation }}
+            </EvidenceRelationBadge>
             <span
               v-if="item.clusterId"
               class="rounded-full border border-border bg-surface px-2 py-0.5 font-mono text-micro tracking-[0.04em] text-foreground-subtle"
@@ -145,7 +145,7 @@ function evidenceHref(item: EvidenceItem) {
               target="_blank"
               rel="noopener noreferrer"
               :aria-label="`Open ${item.title}`"
-              class="ml-auto font-mono text-label font-medium text-warning"
+              class="ml-auto font-mono text-label font-medium text-accent"
             >
               open ↗
             </a>
