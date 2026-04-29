@@ -9,6 +9,8 @@ import { toCreateCheckResponse } from "./repositories/mappers/checkMapper";
 import { ChecksRepository } from "./repositories/repositoryFacade";
 import type { CheckStatus, ProgressEventDto } from "./types/checks";
 
+const SSE_HEARTBEAT_INTERVAL_MS = 8_000;
+
 export interface AppServices {
   repository: ChecksRepository;
   events: ProgressEventBus;
@@ -119,10 +121,15 @@ function streamProgressEvents(
       let lastSentSeq = afterSeq;
       let isClosed = false;
       let unsubscribe: (() => void) | null = null;
+      let heartbeatTimer: ReturnType<typeof setInterval> | null = null;
 
       const finish = () => {
         if (isClosed) return;
         isClosed = true;
+        if (heartbeatTimer) {
+          clearInterval(heartbeatTimer);
+          heartbeatTimer = null;
+        }
         unsubscribe?.();
         try {
           controller.close();
@@ -138,6 +145,15 @@ function streamProgressEvents(
         if (isFinalStatus(event.status)) finish();
       };
 
+      heartbeatTimer = setInterval(() => {
+        if (isClosed) return;
+
+        try {
+          controller.enqueue(encoder.encode(": keep-alive\n\n"));
+        } catch {
+          finish();
+        }
+      }, SSE_HEARTBEAT_INTERVAL_MS);
       unsubscribe = services.events.subscribe(checkId, sendEvent);
       cleanup = finish;
       signal.addEventListener("abort", finish, { once: true });

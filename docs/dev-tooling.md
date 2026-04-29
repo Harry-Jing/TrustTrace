@@ -86,7 +86,9 @@ For "what does this loading phase look like in isolation", use the per-phase but
 `apps/web/src/features/checks/api/checksApi.ts` is the public frontend API boundary. It delegates to:
 
 - `mockChecksClient.ts` — scenario-driven in-memory client. Reads the active scenario via `dev/scenarioState.ts` (Pinia-free) at the moment of `createCheck`, `devResetCheckProgress`, or `subscribeCheckEvents`.
-- `backendChecksClient.ts` — fetch/EventSource client for the TypeScript backend.
+- `backendChecksClient.ts` — fetch/EventSource client for the TypeScript backend. Backend
+  progress uses SSE with server heartbeats; if the stream is lost after retries, the loading
+  composable falls back to polling `GET /v1/checks/:checkId` until the check completes or fails.
 - `backendCheckSchemas.ts` — frontend-local Zod contract schemas for backend responses.
 
 Mock-only helpers exported from `checksApi.ts`:

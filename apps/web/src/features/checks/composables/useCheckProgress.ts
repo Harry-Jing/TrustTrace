@@ -16,11 +16,18 @@ import type {
   CheckEventSubscriptionOptions,
   CheckPhase,
   CheckProgress,
+  CheckRecord,
+  CheckStatus,
 } from "@/features/checks/types";
 import { readCheckId } from "@/features/checks/utils";
 import { useAsyncData } from "@/shared/composables/useAsyncData";
 
 const FINAL_ACTIVE_PHASE: ActiveCheckPhase = "verdict";
+const FALLBACK_POLL_INTERVAL_MS = 2_000;
+
+function isActiveStatus(status: CheckStatus): boolean {
+  return status === "queued" || status === "running";
+}
 
 function activePhaseIndexOf(phase: CheckPhase): number {
   if (phase === "failed" || phase === "completed") return ACTIVE_PHASES.length - 1;
@@ -89,6 +96,7 @@ export function useCheckProgress() {
   const progress = ref<CheckProgress | null>(null);
   const eventError = ref<unknown>(null);
   let subscription: CheckEventSubscription | null = null;
+  let fallbackPollTimer: ReturnType<typeof setTimeout> | null = null;
 
   const checkId = computed(() => readCheckId(route.params.checkId));
   const recordState = useAsyncData(
@@ -107,6 +115,12 @@ export function useCheckProgress() {
     subscription = null;
   }
 
+  function clearFallbackPoll() {
+    if (!fallbackPollTimer) return;
+    clearTimeout(fallbackPollTimer);
+    fallbackPollTimer = null;
+  }
+
   function recordProgress(nextProgress: CheckProgress) {
     progress.value = nextProgress;
     checks.recordProgress(nextProgress);
@@ -114,6 +128,7 @@ export function useCheckProgress() {
 
   function subscribe(checkIdToSubscribe: string) {
     closeSubscription();
+    clearFallbackPoll();
     const eventsUrl = checks.eventsUrlByCheckId[checkIdToSubscribe];
     const subscriptionOptions: CheckEventSubscriptionOptions = {
       afterSeq: progress.value?.eventSeq ?? 0,
@@ -134,30 +149,56 @@ export function useCheckProgress() {
             updatedAt: event.createdAt,
           });
         },
-        onError: (error) => {
-          void handleStreamError(checkIdToSubscribe, error);
+        onError: () => {
+          void handleStreamError(checkIdToSubscribe);
         },
       },
       subscriptionOptions,
     );
   }
 
-  async function handleStreamError(checkIdToReload: string, error: unknown) {
+  async function reloadRecordFor(checkIdToReload: string): Promise<CheckRecord | null> {
     const record = await recordState.reload();
 
-    if (!record || checkId.value !== checkIdToReload) return;
+    if (!record || checkId.value !== checkIdToReload) return null;
 
     recordProgress(record.progress);
+    return record;
+  }
 
-    if (record.status === "queued" || record.status === "running") {
-      eventError.value = error;
-    } else {
-      eventError.value = null;
+  function scheduleFallbackPoll(checkIdToReload: string) {
+    clearFallbackPoll();
+    fallbackPollTimer = setTimeout(() => {
+      fallbackPollTimer = null;
+      void pollCheckRecord(checkIdToReload);
+    }, FALLBACK_POLL_INTERVAL_MS);
+  }
+
+  async function pollCheckRecord(checkIdToReload: string) {
+    const record = await reloadRecordFor(checkIdToReload);
+    if (!record) return;
+
+    eventError.value = null;
+
+    if (isActiveStatus(record.status)) {
+      scheduleFallbackPoll(checkIdToReload);
+    }
+  }
+
+  async function handleStreamError(checkIdToReload: string) {
+    const record = await reloadRecordFor(checkIdToReload);
+    if (!record) return;
+
+    eventError.value = null;
+
+    if (isActiveStatus(record.status)) {
+      scheduleFallbackPoll(checkIdToReload);
     }
   }
 
   async function loadCheckRecord(nextCheckId: string | null) {
     closeSubscription();
+    clearFallbackPoll();
     progress.value = null;
     eventError.value = null;
 
@@ -173,7 +214,7 @@ export function useCheckProgress() {
 
     recordProgress(record.progress);
 
-    if (record.status === "queued" || record.status === "running") {
+    if (isActiveStatus(record.status)) {
       subscribe(nextCheckId);
     }
   }
@@ -186,7 +227,10 @@ export function useCheckProgress() {
     { immediate: true },
   );
 
-  onScopeDispose(closeSubscription);
+  onScopeDispose(() => {
+    closeSubscription();
+    clearFallbackPoll();
+  });
 
   const phase = computed<CheckPhase>(
     () => progress.value?.phase ?? recordState.data.value?.progress.phase ?? "understanding",

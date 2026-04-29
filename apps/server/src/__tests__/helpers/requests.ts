@@ -59,7 +59,7 @@ export async function responseText(response: Response): Promise<string> {
 export function parseProgressEvents(text: string): ProgressEventDto[] {
   return text
     .split("\n\n")
-    .filter(Boolean)
+    .filter((block) => block.split("\n").some((line) => line.startsWith("data: ")))
     .map((block) => {
       const dataLine = block.split("\n").find((line) => line.startsWith("data: "));
       if (!dataLine) throw new Error(`Missing SSE data line in block: ${block}`);

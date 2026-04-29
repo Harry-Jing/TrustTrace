@@ -1,6 +1,6 @@
 import { createPinia, setActivePinia } from "pinia";
 import { effectScope, nextTick } from "vue";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useCheckProgress } from "@/features/checks/composables/useCheckProgress";
 import type { CheckEventHandlers, CheckRecord } from "@/features/checks/types";
@@ -71,10 +71,15 @@ async function mountComposable() {
   const scope = effectScope();
   const state = scope.run(() => useCheckProgress());
 
-  await nextTick();
-  await Promise.resolve();
+  await flushAsync();
 
   return { scope, state: state! };
+}
+
+async function flushAsync() {
+  await nextTick();
+  await Promise.resolve();
+  await Promise.resolve();
 }
 
 describe("useCheckProgress", () => {
@@ -86,6 +91,10 @@ describe("useCheckProgress", () => {
     getCheckMock.mockResolvedValue(makeRecord("running"));
     subscribeCheckEventsMock.mockReset();
     subscribeCheckEventsMock.mockReturnValue({ close: vi.fn<() => void>() });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it("exposes the active phase definition for the current phase", async () => {
@@ -110,11 +119,78 @@ describe("useCheckProgress", () => {
     const { scope, state } = await mountComposable();
 
     streamHandlers!.onError?.(new Error("SSE unavailable"));
-    await nextTick();
-    await Promise.resolve();
+    await flushAsync();
 
     expect(state.progress.value?.status).toBe("completed");
     expect(state.eventError.value).toBeNull();
+
+    scope.stop();
+  });
+
+  it("polls the check record while the progress stream is unavailable", async () => {
+    vi.useFakeTimers();
+    getCheckMock
+      .mockResolvedValueOnce(makeRecord("running"))
+      .mockResolvedValueOnce(makeRecord("running"))
+      .mockResolvedValueOnce(makeRecord("completed"));
+    let streamHandlers: CheckEventHandlers | null = null;
+    subscribeCheckEventsMock.mockImplementation((_, handlers) => {
+      streamHandlers = handlers;
+      return { close: vi.fn<() => void>() };
+    });
+    const { scope, state } = await mountComposable();
+
+    streamHandlers!.onError?.(new Error("SSE unavailable"));
+    await flushAsync();
+
+    expect(state.progress.value?.status).toBe("running");
+    expect(state.eventError.value).toBeNull();
+
+    await vi.advanceTimersByTimeAsync(2000);
+    await flushAsync();
+
+    expect(state.progress.value?.status).toBe("completed");
+    expect(state.eventError.value).toBeNull();
+
+    scope.stop();
+  });
+
+  it("clears fallback polling when the composable is disposed", async () => {
+    vi.useFakeTimers();
+    let streamHandlers: CheckEventHandlers | null = null;
+    subscribeCheckEventsMock.mockImplementation((_, handlers) => {
+      streamHandlers = handlers;
+      return { close: vi.fn<() => void>() };
+    });
+    const { scope } = await mountComposable();
+
+    streamHandlers!.onError?.(new Error("SSE unavailable"));
+    await flushAsync();
+    scope.stop();
+
+    await vi.advanceTimersByTimeAsync(2000);
+    await flushAsync();
+
+    expect(getCheckMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("clears fallback polling when progress is retried", async () => {
+    vi.useFakeTimers();
+    let streamHandlers: CheckEventHandlers | null = null;
+    subscribeCheckEventsMock.mockImplementation((_, handlers) => {
+      streamHandlers = handlers;
+      return { close: vi.fn<() => void>() };
+    });
+    const { scope, state } = await mountComposable();
+
+    streamHandlers!.onError?.(new Error("SSE unavailable"));
+    await flushAsync();
+    await state.retry();
+    await flushAsync();
+    await vi.advanceTimersByTimeAsync(2000);
+    await flushAsync();
+
+    expect(getCheckMock).toHaveBeenCalledTimes(3);
 
     scope.stop();
   });

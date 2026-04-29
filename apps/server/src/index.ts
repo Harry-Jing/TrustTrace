@@ -18,7 +18,13 @@ const services = createServices({
 
 Bun.serve({
   port: config.port,
-  fetch: services.app.fetch,
+  fetch(request, server) {
+    if (isProgressEventsRequest(request)) {
+      server.timeout(request, 0);
+    }
+
+    return services.app.fetch(request);
+  },
 });
 
 logger.info(
@@ -31,3 +37,9 @@ logger.info(
   },
   "TrustTrace server listening",
 );
+
+function isProgressEventsRequest(request: Request): boolean {
+  if (request.method !== "GET") return false;
+
+  return /^\/v1\/checks\/[^/]+\/events$/.test(new URL(request.url).pathname);
+}
