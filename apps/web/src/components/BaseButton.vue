@@ -23,13 +23,13 @@ const props = withDefaults(
 );
 
 // `text-card` (not `text-white`) flips with the theme: white in light mode,
-// near-black in dark. Required because dark-mode --tt-accent is amber, where
+// near-black in dark. Required because dark-mode --accent is amber, where
 // pure white fails WCAG AA contrast.
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
-  primary: "border border-ink bg-ink text-surface",
+  primary: "border border-foreground bg-foreground text-background",
   accent: "border border-accent bg-accent text-card",
-  secondary: "border border-line-strong bg-transparent text-ink",
-  subtle: "border border-line bg-transparent text-ink-2",
+  secondary: "border border-border-strong bg-transparent text-foreground",
+  subtle: "border border-border bg-transparent text-foreground-muted",
 };
 
 const SIZE_CLASSES: Record<ButtonSize, string> = {

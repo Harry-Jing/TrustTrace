@@ -1,132 +1,126 @@
 @import "tailwindcss";
 
-/* ── Theme tokens ──
-   Color values were chosen to meet WCAG AA contrast (4.5:1 minimum for body
-   text). See note in mute/warn/good below for the contrast ratios at the
-   smallest text sizes used in the app (mono labels at 10–11px). */
-:root {
-  --tt-bg: #faf9f6;
-  --tt-bg2: #f0efe9;
-  --tt-ink: #1b1f2a;
-  --tt-ink2: #3b3f4a;
-  --tt-mute: #65686f; /* on bg 5.34:1, on card 5.61:1 — AA pass */
-  --tt-line: #e0dfd9;
-  --tt-line2: #d0cfc8;
-  --tt-accent: #475b8a;
-  --tt-accent-light: #e9edf5;
-  --tt-accent-fade: rgba(71, 91, 138, 0.08);
-  --tt-warn: #9c5a26; /* on bg 4.99:1, on warn-light 4.66:1 — AA pass */
-  --tt-warn-light: #fbf1e6;
-  --tt-warn-fade: rgba(156, 90, 38, 0.08);
-  --tt-good: #3d6630; /* on bg 6.05:1, on good-light 5.43:1, on white text 6.36:1 — AA pass */
-  --tt-good-light: #ecf2e0;
-  --tt-good-fade: rgba(61, 102, 48, 0.08);
-  --tt-white: #ffffff;
-  --tt-nav-bg: rgba(250, 249, 246, 0.92);
-}
-
-[data-theme="dark"] {
-  --tt-bg: #111110;
-  --tt-bg2: #1c1c1a;
-  --tt-ink: #eeeee8;
-  --tt-ink2: #c5c5bc;
-  --tt-mute: #898982; /* on bg 5.13:1 — AA pass */
-  --tt-line: #2e2e2a;
-  --tt-line2: #3a3a34;
-  --tt-accent: #e8a230;
-  --tt-accent-light: #2a2418;
-  --tt-accent-fade: rgba(232, 162, 48, 0.1);
-  --tt-warn: #e85d4a;
-  --tt-warn-light: #2a1a16;
-  --tt-warn-fade: rgba(232, 93, 74, 0.1);
-  --tt-good: #7eb55f;
-  --tt-good-light: #1d2618;
-  --tt-good-fade: rgba(126, 181, 95, 0.12);
-  --tt-white: #1c1c1a;
-  --tt-nav-bg: rgba(17, 17, 16, 0.92);
-}
-
-@theme {
+@theme inline {
   --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Newsreader", ui-serif, Georgia, serif;
   --font-mono: ui-monospace, "SFMono-Regular", monospace;
 
-  --color-surface: var(--tt-bg);
-  --color-surface-alt: var(--tt-bg2);
-  --color-ink: var(--tt-ink);
-  --color-ink-2: var(--tt-ink2);
-  --color-muted: var(--tt-mute);
-  --color-line: var(--tt-line);
-  --color-line-strong: var(--tt-line2);
-  --color-accent: var(--tt-accent);
-  --color-accent-light: var(--tt-accent-light);
-  --color-warn: var(--tt-warn);
-  --color-warn-light: var(--tt-warn-light);
-  --color-good: var(--tt-good);
-  --color-good-light: var(--tt-good-light);
-  --color-card: var(--tt-white);
-  --color-nav: var(--tt-nav-bg);
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-foreground: var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-foreground-subtle: var(--foreground-subtle);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-accent: var(--accent);
+  --color-accent-muted: var(--accent-muted);
+  --color-warning: var(--warning);
+  --color-warning-muted: var(--warning-muted);
+  --color-success: var(--success);
+  --color-success-muted: var(--success-muted);
+  --color-card: var(--card);
+  --color-nav: var(--nav);
 
   --shadow-input-rest: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.03);
-  --shadow-input-focus: 0 0 0 3px var(--tt-accent-fade), 0 8px 24px rgba(0, 0, 0, 0.05);
+  --shadow-input-focus: 0 0 0 3px var(--accent-fade), 0 8px 24px rgba(0, 0, 0, 0.05);
   --shadow-card-hover: 0 8px 24px rgba(0, 0, 0, 0.07);
 
-  /* ── Typography scale (Tailwind v4 canonical --text-* namespace).
-     Bundles line-height + tracking + font-weight per the v4 docs:
-     https://tailwindcss.com/docs/font-size
+  --text-micro: 9px;
+  --text-micro--line-height: 1.4;
 
-     Use these named roles instead of arbitrary text-[Npx] literals:
-       text-eyebrow → 10px mono uppercase eyebrow labels (the most reused recipe)
-       text-meta    → 11px mono small meta / chip text
-       text-tag     → 12px mono tag-like text
-       text-body-sm → 13px body, 1.7 leading
-       text-stat    → 26px serif large stat numerals (AtAGlance) */
   --text-eyebrow: 10px;
   --text-eyebrow--line-height: 1.4;
   --text-eyebrow--letter-spacing: 0.12em;
   --text-eyebrow--font-weight: 500;
 
-  --text-meta: 11px;
-  --text-meta--line-height: 1.4;
-  --text-meta--letter-spacing: 0.04em;
-
-  --text-tag: 12px;
-  --text-tag--line-height: 1.4;
-  --text-tag--letter-spacing: 0.04em;
+  --text-label: 11px;
+  --text-label--line-height: 1.4;
+  --text-label--letter-spacing: 0.04em;
 
   --text-body-sm: 13px;
   --text-body-sm--line-height: 1.7;
+
+  --text-body: 15px;
+  --text-body--line-height: 1.7;
 
   --text-stat: 26px;
   --text-stat--line-height: 1;
   --text-stat--letter-spacing: -0.01em;
 
-  /* ── Letter spacing tokens.
-     Keep "tight" / "wide" / "widest" as Tailwind defaults; add semantic ones
-     for the two repeated mono-uppercase recipes. */
-  --tracking-eyebrow: 0.12em;
-  --tracking-tag: 0.04em;
+  --text-display-sm: 28px;
+  --text-display-sm--line-height: 1.15;
+  --text-display-sm--letter-spacing: -0.025em;
+  --text-display-sm--font-weight: 600;
 
-  /* ── Page container widths.
-     Tailwind v4 --container-* drives both max-w-* utilities and @container
-     query variants. Use semantic names so page authors pick by intent
-     (e.g., max-w-page) rather than memorising px math (max-w-280). */
-  --container-page: 1120px; /* default app pages: home / result / history */
-  --container-focus: 920px; /* concentrated read pages: loading */
-  --container-form: 880px; /* form-heavy pages: settings */
-  --container-alert: 520px; /* terse alert pages: error */
-  /* `readable` (not `prose`) — Tailwind v4 reserves `max-w-prose` for 65ch
-     and that built-in alias wins over a custom --container-prose token. */
-  --container-readable: 640px; /* descriptive paragraph constraint */
+  --text-display-md: clamp(28px, 4.2vw, 40px);
+  --text-display-md--line-height: 1.15;
+  --text-display-md--letter-spacing: -0.025em;
+
+  --tracking-narrow: 0.03em;
+
+  --container-page: 1120px;
+  --container-focus: 920px;
+  --container-form: 880px;
+  --container-alert: 520px;
+  /* `readable`, not `prose`: Tailwind reserves max-w-prose for 65ch. */
+  --container-readable: 640px;
 
   --ease-snappy: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --animate-up: fade-up 0.5s ease both;
+  --animate-in-delayed: fade-in 0.4s ease 0.3s both;
+  --animate-celeb-pop: celeb-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  --animate-celeb-glow: celeb-glow 1.2s ease-out 0.3s both;
+  --animate-pulse-dot: pulse-dot 1.5s infinite;
+  --animate-pulse-ring: pulse-ring 1.8s ease-in-out infinite;
 }
 
-/* ── Base ── */
+:root {
+  --background: #faf9f6;
+  --surface: #f0efe9;
+  --foreground: #1b1f2a;
+  --foreground-muted: #3b3f4a;
+  --foreground-subtle: #65686f; /* AA: on bg 5.34:1, on card 5.61:1 */
+  --border: #e0dfd9;
+  --border-strong: #d0cfc8;
+  --accent: #475b8a;
+  --accent-muted: #e9edf5;
+  --accent-fade: rgba(71, 91, 138, 0.08);
+  --warning: #9c5a26; /* AA: on bg 4.99:1, on warning-muted 4.66:1 */
+  --warning-muted: #fbf1e6;
+  --warning-fade: rgba(156, 90, 38, 0.08);
+  --success: #3d6630; /* AA: on bg 6.05:1, on white 6.36:1 */
+  --success-muted: #ecf2e0;
+  --success-fade: rgba(61, 102, 48, 0.08);
+  --card: #ffffff;
+  --nav: rgba(250, 249, 246, 0.92);
+}
+
+[data-theme="dark"] {
+  --background: #111110;
+  --surface: #1c1c1a;
+  --foreground: #eeeee8;
+  --foreground-muted: #c5c5bc;
+  --foreground-subtle: #898982; /* AA: on bg 5.13:1 */
+  --border: #2e2e2a;
+  --border-strong: #3a3a34;
+  --accent: #e8a230;
+  --accent-muted: #2a2418;
+  --accent-fade: rgba(232, 162, 48, 0.1);
+  --warning: #e85d4a;
+  --warning-muted: #2a1a16;
+  --warning-fade: rgba(232, 93, 74, 0.1);
+  --success: #7eb55f;
+  --success-muted: #1d2618;
+  --success-fade: rgba(126, 181, 95, 0.12);
+  --card: #1c1c1a;
+  --nav: rgba(17, 17, 16, 0.92);
+}
+
 @layer base {
   html {
-    background: var(--tt-bg);
-    color: var(--tt-ink);
+    background: var(--background);
+    color: var(--foreground);
   }
 
   body {
@@ -137,8 +131,8 @@
 
   #app {
     min-height: 100vh;
-    background: var(--tt-bg);
-    color: var(--tt-ink);
+    background: var(--background);
+    color: var(--foreground);
     transition:
       background 0.4s,
       color 0.4s,
@@ -163,16 +157,16 @@
 
   input::placeholder,
   textarea::placeholder {
-    color: color-mix(in srgb, var(--tt-mute) 80%, transparent);
+    color: color-mix(in srgb, var(--foreground-subtle) 80%, transparent);
   }
 
   ::selection {
-    background: var(--tt-accent-light);
-    color: var(--tt-ink);
+    background: var(--accent-muted);
+    color: var(--foreground);
   }
 
   :focus-visible {
-    outline: 2px solid var(--tt-accent);
+    outline: 2px solid var(--accent);
     outline-offset: 3px;
   }
 
@@ -181,7 +175,6 @@
   }
 }
 
-/* ── Motion keyframes ── */
 @keyframes fade-up {
   from {
     opacity: 0;
@@ -284,7 +277,7 @@
 
 @keyframes celeb-glow {
   0% {
-    box-shadow: 0 0 0 0 var(--tt-accent-fade);
+    box-shadow: 0 0 0 0 var(--accent-fade);
   }
   70% {
     box-shadow: 0 0 0 40px transparent;
@@ -307,10 +300,10 @@
 @keyframes pulse-ring {
   0%,
   100% {
-    box-shadow: 0 0 0 4px var(--tt-warn-fade);
+    box-shadow: 0 0 0 4px var(--warning-fade);
   }
   50% {
-    box-shadow: 0 0 0 8px var(--tt-warn-fade);
+    box-shadow: 0 0 0 8px var(--warning-fade);
   }
 }
 
@@ -323,7 +316,25 @@
   }
 }
 
-/* ── Components ── */
+@utility anim-tooltip-in {
+  transform-origin: bottom center;
+  animation: tooltip-enter 0.25s ease both;
+}
+
+@utility anim-tooltip-out {
+  transform-origin: bottom center;
+  animation: tooltip-leave 0.2s ease both;
+}
+
+@utility anim-connector-shimmer {
+  background: linear-gradient(90deg, transparent 0%, var(--warning) 50%, transparent 100%);
+  animation: connector-shimmer 1.8s linear infinite;
+}
+
+@utility step-circle-pop {
+  animation: celeb-pop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
 @layer components {
   .tt-btn {
     transition:
@@ -376,10 +387,10 @@
     left: 0.75rem;
     z-index: 50;
     transform: translateY(-150%);
-    border: 1px solid var(--tt-line2);
+    border: 1px solid var(--border-strong);
     border-radius: 999px;
-    background: var(--tt-white);
-    color: var(--tt-ink);
+    background: var(--card);
+    color: var(--foreground);
     padding: 0.5rem 0.75rem;
     font-size: 0.8125rem;
     font-weight: 600;
@@ -410,7 +421,6 @@
     opacity: 1;
   }
 
-  /* TransitionGroup: history cards */
   .card-enter-active {
     animation: fade-up 0.4s ease both;
   }
@@ -424,9 +434,6 @@
     transition: transform 0.3s ease;
   }
 
-  /* Vue Transition: phase header crossfade (out-in mode).
-     Out: fade up & out. In: fade down into place. ~250ms each — feels like a
-     page turn, not a flicker. */
   .phase-header-enter-active {
     transition:
       opacity 0.25s ease,
@@ -446,8 +453,6 @@
     transform: translateY(-6px);
   }
 
-  /* Vue Transition: stepper number ↔ checkmark crossfade. ~180ms keeps it
-     subtle so the eye lands on the connector fill / circle pop instead. */
   .step-mark-enter-active,
   .step-mark-leave-active {
     transition:
@@ -459,81 +464,6 @@
     opacity: 0;
     transform: scale(0.6);
   }
-
-  /* One-shot pop applied when a circle becomes "done". Uses the existing
-     celeb-pop keyframe but scoped + faster so it reads as a check, not a
-     celebration. animation-fill-mode: both so it settles back to scale(1). */
-  .step-circle-pop {
-    animation: celeb-pop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-  }
-}
-
-/* ── Motion utilities ── */
-@utility anim-up {
-  animation: fade-up 0.5s ease both;
-}
-
-@utility anim-in-delayed {
-  animation: fade-in 0.4s ease 0.3s both;
-}
-
-@utility anim-tooltip-in {
-  transform-origin: bottom center;
-  animation: tooltip-enter 0.25s ease both;
-}
-
-@utility anim-tooltip-out {
-  transform-origin: bottom center;
-  animation: tooltip-leave 0.2s ease both;
-}
-
-@utility anim-celeb-pop {
-  animation: celeb-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-}
-
-@utility anim-celeb-glow {
-  animation: celeb-glow 1.2s ease-out 0.3s both;
-}
-
-@utility anim-pulse-dot {
-  animation: pulse-dot 1.5s infinite;
-}
-
-@utility anim-pulse-ring {
-  animation: pulse-ring 1.8s ease-in-out infinite;
-}
-
-@utility anim-connector-shimmer {
-  background: linear-gradient(90deg, transparent 0%, var(--tt-warn) 50%, transparent 100%);
-  animation: connector-shimmer 1.8s linear infinite;
-}
-
-@utility stagger-1 {
-  animation: fade-up 0.5s ease 0.05s both;
-}
-
-@utility stagger-2 {
-  animation: fade-up 0.5s ease 0.1s both;
-}
-
-@utility stagger-3 {
-  animation: fade-up 0.5s ease 0.15s both;
-}
-
-@utility stagger-4 {
-  animation: fade-up 0.5s ease 0.22s both;
-}
-
-@utility stagger-5 {
-  animation: fade-up 0.5s ease 0.3s both;
-}
-
-@utility stagger-6 {
-  animation: fade-up 0.5s ease 0.38s both;
-}
-
-@utility stagger-7 {
-  animation: fade-up 0.5s ease 0.44s both;
 }
 
 @media (prefers-reduced-motion: reduce) {

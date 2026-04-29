@@ -13,15 +13,15 @@ const columns = [
 </script>
 
 <template>
-  <div class="mt-10 grid stagger-7 grid-cols-1 text-left md:grid-cols-3">
+  <div class="mt-10 grid animate-up grid-cols-1 text-left [animation-delay:440ms] md:grid-cols-3">
     <div
       v-for="(column, i) in columns"
       :key="i"
       class="px-6 py-5"
-      :class="i > 0 ? 'md:border-l md:border-line' : ''"
+      :class="i > 0 ? 'md:border-l md:border-border' : ''"
     >
-      <div class="mb-2 font-serif text-[17px] text-ink">{{ column.title }}</div>
-      <div class="text-body-sm leading-[1.75] text-muted">{{ column.description }}</div>
+      <div class="mb-2 font-serif text-[17px] text-foreground">{{ column.title }}</div>
+      <div class="text-body-sm leading-[1.75] text-foreground-muted">{{ column.description }}</div>
     </div>
   </div>
 </template>

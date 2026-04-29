@@ -35,25 +35,27 @@ const description = computed(() =>
        small mono text) so it reads as orienting metadata, not as content
        competing with the verdict h1 below. -->
   <div class="mb-5 flex flex-wrap items-baseline gap-x-3 gap-y-1" aria-label="Checked input">
-    <span class="font-mono text-[10px] tracking-[0.12em] text-muted uppercase">checked</span>
-    <span class="min-w-0 flex-1 truncate font-mono text-[12px] text-ink-2">
+    <span class="font-mono text-eyebrow text-foreground-subtle uppercase">checked</span>
+    <span class="min-w-0 flex-1 truncate font-mono text-xs text-foreground-muted">
       &ldquo;{{ result.inputText }}&rdquo;
     </span>
-    <span class="font-mono text-[11px] tracking-[0.04em] text-muted">
+    <span class="font-mono text-label text-foreground-subtle">
       {{ result.inputTypeLabel }} &middot; {{ result.durationLabel }}
     </span>
   </div>
 
   <!-- Verdict band tag -->
-  <div class="mb-3 stagger-1">
+  <div class="mb-3 animate-up [animation-delay:50ms]">
     <BaseTagBadge :tone="verdictTone[result.verdictBand]">{{ verdictLabel }}</BaseTagBadge>
   </div>
 
   <!-- Headline + description -->
-  <h1 class="mb-3 stagger-2 font-serif text-[clamp(28px,4.2vw,40px)] leading-[1.15] tracking-tight">
+  <h1 class="mb-3 animate-up font-serif text-display-md [animation-delay:100ms]">
     {{ headline }}
   </h1>
-  <p class="mb-2 max-w-160 stagger-2 text-[14px] leading-[1.7] text-ink-2">
+  <p
+    class="mb-2 max-w-160 animate-up text-sm leading-[1.7] text-foreground-muted [animation-delay:100ms]"
+  >
     {{ description }}
   </p>
 </template>

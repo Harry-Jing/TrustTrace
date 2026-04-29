@@ -38,13 +38,13 @@ function handleCopy() {
   <div class="mx-auto max-w-page px-6 pt-12 pb-20">
     <div
       v-if="isLoading || checkStatus === 'queued' || checkStatus === 'running'"
-      class="py-20 text-center text-muted"
+      class="py-20 text-center text-foreground-subtle"
       aria-live="polite"
     >
       Loading result…
     </div>
     <div v-else-if="isError || !result" class="py-20 text-center">
-      <p class="mb-4 text-muted">Could not load the result.</p>
+      <p class="mb-4 text-foreground-subtle">Could not load the result.</p>
       <BaseButton variant="subtle" @click="reload">Retry</BaseButton>
     </div>
     <template v-else>
@@ -56,15 +56,15 @@ function handleCopy() {
 
         <!-- RIGHT: sidebar -->
         <aside class="space-y-7 lg:sticky lg:top-20">
-          <div class="rounded-lg border border-line bg-card p-5">
+          <div class="rounded-lg border border-border bg-card p-5">
             <AtAGlanceStats :glance="result.atAGlance" />
           </div>
 
-          <div class="rounded-lg border border-line bg-card p-5">
+          <div class="rounded-lg border border-border bg-card p-5">
             <CredibilityCueList :cues="result.cues" />
           </div>
 
-          <div class="rounded-lg border border-line bg-card p-5">
+          <div class="rounded-lg border border-border bg-card p-5">
             <UncertaintyPanel :lines="result.uncertaintyLines" />
           </div>
 

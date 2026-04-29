@@ -14,26 +14,26 @@ interface GlanceStat {
 }
 
 const uncertaintyTone: Record<UncertaintyLevel, string> = {
-  low: "text-good",
-  med: "text-warn",
-  high: "text-warn",
+  low: "text-success",
+  med: "text-warning",
+  high: "text-warning",
 };
 
 const stats = computed<readonly GlanceStat[]>(() => [
   {
     value: String(props.glance.evidence),
     label: "evidence",
-    toneClass: "text-ink",
+    toneClass: "text-foreground",
   },
   {
     value: String(props.glance.independent),
     label: "independent",
-    toneClass: "text-ink",
+    toneClass: "text-foreground",
   },
   {
     value: String(props.glance.fullText),
     label: "full-text",
-    toneClass: "text-good",
+    toneClass: "text-success",
   },
   {
     value: String(props.glance.primary),
@@ -43,7 +43,7 @@ const stats = computed<readonly GlanceStat[]>(() => [
   {
     value: String(props.glance.snippet),
     label: "snippet",
-    toneClass: "text-ink-2",
+    toneClass: "text-foreground-muted",
   },
   {
     value: props.glance.uncertainty,
@@ -55,15 +55,15 @@ const stats = computed<readonly GlanceStat[]>(() => [
 
 <template>
   <section>
-    <span class="mb-3 block font-mono text-[10px] tracking-[0.12em] text-muted uppercase">
+    <span class="mb-3 block font-mono text-eyebrow text-foreground-subtle uppercase">
       at a glance
     </span>
     <dl class="grid grid-cols-2 gap-x-5 gap-y-4">
       <div v-for="stat in stats" :key="stat.label">
-        <dt class="font-mono text-[10px] tracking-[0.08em] text-muted uppercase">
+        <dt class="font-mono text-eyebrow text-foreground-subtle uppercase">
           {{ stat.label }}
         </dt>
-        <dd class="mt-1 font-serif text-[26px] leading-none tracking-tight" :class="stat.toneClass">
+        <dd class="mt-1 font-serif text-stat tracking-tight" :class="stat.toneClass">
           {{ stat.value }}
         </dd>
       </div>

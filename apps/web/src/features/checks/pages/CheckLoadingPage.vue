@@ -103,9 +103,9 @@ onBeforeUnmount(clearRedirectTimer);
 <template>
   <div class="mx-auto max-w-focus px-6 pt-12 pb-20">
     <!-- Celebration state -->
-    <div v-if="showCelebration" class="anim-up py-30 text-center">
+    <div v-if="showCelebration" class="animate-up py-30 text-center">
       <div
-        class="mx-auto mb-5 flex size-16 anim-celeb-glow anim-celeb-pop items-center justify-center rounded-full bg-good text-card"
+        class="mx-auto mb-5 flex size-16 animate-celeb-glow animate-celeb-pop items-center justify-center rounded-full bg-success text-card"
       >
         <svg
           class="size-7"
@@ -120,8 +120,8 @@ onBeforeUnmount(clearRedirectTimer);
           <path d="M5 12.5l4.5 4.5L19 7" />
         </svg>
       </div>
-      <div class="mb-2 font-serif text-[28px]">Check complete</div>
-      <span class="anim-in-delayed font-mono text-xs tracking-[0.03em] text-muted"
+      <div class="mb-2 font-serif text-display-sm">Check complete</div>
+      <span class="animate-in-delayed font-mono text-xs tracking-narrow text-foreground-subtle"
         >redirecting to results…</span
       >
     </div>
@@ -130,10 +130,10 @@ onBeforeUnmount(clearRedirectTimer);
          warn-tone badge, h1, retry button) so the two error surfaces feel
          like the same product family. Smaller scale (56 vs 72) since this is
          an inline transient error, not a terminal error page. -->
-    <div v-else-if="progressError" class="anim-up py-24 text-center" role="alert">
+    <div v-else-if="progressError" class="animate-up py-24 text-center" role="alert">
       <BaseWarnRingIllustration :size="56" />
-      <h1 class="mb-2.5 font-serif text-[28px] tracking-tight">Could not load progress</h1>
-      <p class="mx-auto mb-6 max-w-105 text-sm leading-[1.75] text-muted">
+      <h1 class="mb-2.5 font-serif text-display-sm">Could not load progress</h1>
+      <p class="mx-auto mb-6 max-w-105 text-sm leading-[1.75] text-foreground-subtle">
         The check was created, but the live progress stream could not be loaded. You can retry the
         connection without starting over.
       </p>
@@ -143,7 +143,7 @@ onBeforeUnmount(clearRedirectTimer);
     <!-- Loading state -->
     <template v-else>
       <!-- Header: claim being checked -->
-      <div class="mb-2 font-mono text-[11px] tracking-[0.12em] text-muted uppercase">
+      <div class="mb-2 font-mono text-label tracking-[0.12em] text-foreground-subtle uppercase">
         checking claim
       </div>
       <h1
@@ -151,7 +151,7 @@ onBeforeUnmount(clearRedirectTimer);
         aria-live="polite"
       >
         <span v-if="claimText">&ldquo;{{ claimText }}&rdquo;</span>
-        <span v-else class="text-muted italic">Preparing the claim…</span>
+        <span v-else class="text-foreground-subtle italic">Preparing the claim…</span>
       </h1>
 
       <!-- 6-step stepper -->
@@ -163,15 +163,15 @@ onBeforeUnmount(clearRedirectTimer);
         <Transition name="phase-header" mode="out-in">
           <div :key="phaseDefinition.key">
             <div
-              class="mb-2 flex items-center gap-2 font-mono text-[11px] tracking-widest text-warn uppercase"
+              class="mb-2 flex items-center gap-2 font-mono text-label tracking-widest text-warning uppercase"
             >
-              <span class="size-1.5 anim-pulse-dot rounded-full bg-warn" aria-hidden="true" />
+              <span class="size-1.5 animate-pulse-dot rounded-full bg-warning" aria-hidden="true" />
               <span>now &middot; {{ phaseDefinition.nowLabel }}</span>
             </div>
             <h2 class="mb-2 font-serif text-[clamp(24px,3.4vw,32px)] tracking-tight">
               {{ phaseDefinition.title }}
             </h2>
-            <p class="max-w-160 text-[14px] leading-[1.7] text-ink-2">
+            <p class="max-w-160 text-sm leading-[1.7] text-foreground-muted">
               {{ phaseDefinition.description }}
             </p>
           </div>
@@ -179,7 +179,7 @@ onBeforeUnmount(clearRedirectTimer);
       </section>
 
       <!-- Calm trust line (no live status box, no backend message echoed back) -->
-      <p class="mt-6 max-w-160 text-[12px] leading-[1.6] text-muted">
+      <p class="mt-6 max-w-160 text-xs leading-[1.6] text-foreground-subtle">
         Sources are verified for safety and substance before they become evidence.
       </p>
 

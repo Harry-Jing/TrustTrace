@@ -14,18 +14,18 @@ withDefaults(
 </script>
 
 <template>
-  <div class="py-5" :class="{ 'border-b border-line': !isLast }" :data-layout="layout">
+  <div class="py-5" :class="{ 'border-b border-border': !isLast }" :data-layout="layout">
     <div
       v-if="layout === 'split'"
       class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-6"
     >
       <div v-if="label || helper || $slots.label" class="md:flex-1">
         <div class="flex items-center gap-2">
-          <span v-if="label" class="text-sm font-medium text-ink">{{ label }}</span>
+          <span v-if="label" class="text-sm font-medium text-foreground">{{ label }}</span>
           <slot name="label" />
           <BaseComingSoonPill v-if="comingSoon" />
         </div>
-        <p v-if="helper" class="mt-1 text-body-sm text-muted">{{ helper }}</p>
+        <p v-if="helper" class="mt-1 text-body-sm text-foreground-subtle">{{ helper }}</p>
         <slot name="helper" />
       </div>
       <div class="md:flex-shrink-0">
@@ -36,11 +36,11 @@ withDefaults(
     <div v-else class="flex flex-col gap-4">
       <div v-if="label || helper || $slots.label">
         <div class="flex items-center gap-2">
-          <span v-if="label" class="text-sm font-medium text-ink">{{ label }}</span>
+          <span v-if="label" class="text-sm font-medium text-foreground">{{ label }}</span>
           <slot name="label" />
           <BaseComingSoonPill v-if="comingSoon" />
         </div>
-        <p v-if="helper" class="mt-1 text-body-sm text-muted">{{ helper }}</p>
+        <p v-if="helper" class="mt-1 text-body-sm text-foreground-subtle">{{ helper }}</p>
         <slot name="helper" />
       </div>
       <slot />

@@ -1,11 +1,11 @@
 import type { BadgeTone } from "@/types/ui";
 
 export const BADGE_TONE_CLASSES: Record<BadgeTone, string> = {
-  default: "border border-line bg-surface-alt text-ink-2",
-  accent: "border border-accent-light bg-accent-light text-accent",
-  warn: "border border-warn-light bg-warn-light text-warn",
-  good: "border border-good-light bg-good-light text-good",
-  dark: "border border-ink bg-ink text-surface",
+  default: "border border-border bg-surface text-foreground-muted",
+  accent: "border border-accent-muted bg-accent-muted text-accent",
+  warn: "border border-warning-muted bg-warning-muted text-warning",
+  good: "border border-success-muted bg-success-muted text-success",
+  dark: "border border-foreground bg-foreground text-background",
 };
 
 export function badgeToneClasses(tone: BadgeTone): string {

@@ -21,13 +21,13 @@ function navigate(name: string) {
 
 <template>
   <nav
-    class="sticky top-0 z-20 flex h-14 items-center border-b border-line bg-nav px-7 backdrop-blur transition-[background,border-color,box-shadow] duration-400"
+    class="sticky top-0 z-20 flex h-14 items-center border-b border-border bg-nav px-7 backdrop-blur transition-[background,border-color,box-shadow] duration-400"
     :class="{ 'shadow-[0_1px_3px_rgba(0,0,0,0.06)]': isScrolled }"
   >
     <div class="flex flex-1 items-center">
       <button
         type="button"
-        class="cursor-pointer border-none bg-transparent p-0 font-serif text-[22px] tracking-tight text-ink transition-colors duration-400"
+        class="cursor-pointer border-none bg-transparent p-0 font-serif text-[22px] tracking-tight text-foreground transition-colors duration-400"
         @click="navigate('landing')"
       >
         TrustTrace
@@ -61,8 +61,8 @@ function navigate(name: string) {
       <!-- Settings gear -->
       <button
         type="button"
-        class="tt-btn flex size-9 items-center justify-center rounded-full border border-line bg-transparent text-muted transition-colors duration-200"
-        :class="{ 'text-ink': currentPage === 'settings' }"
+        class="tt-btn flex size-9 items-center justify-center rounded-full border border-border bg-transparent text-foreground-subtle transition-colors duration-200"
+        :class="{ 'text-foreground': currentPage === 'settings' }"
         aria-label="Open settings"
         @click="navigate('settings')"
       >
@@ -87,7 +87,7 @@ function navigate(name: string) {
            staying visually proportionate inside the 56px nav. -->
       <button
         type="button"
-        class="tt-btn flex size-9 items-center justify-center rounded-full border border-line bg-transparent text-muted transition-colors duration-200"
+        class="tt-btn flex size-9 items-center justify-center rounded-full border border-border bg-transparent text-foreground-subtle transition-colors duration-200"
         aria-label="Toggle theme"
         @click="preferences.toggleTheme"
       >
@@ -128,7 +128,7 @@ function navigate(name: string) {
       <button
         v-if="currentPage === 'history' || currentPage === 'settings'"
         type="button"
-        class="tt-btn rounded-full border border-line bg-transparent px-4 py-2.5 text-xs font-medium text-muted"
+        class="tt-btn rounded-full border border-border bg-transparent px-4 py-2.5 text-xs font-medium text-foreground-subtle"
         @click="navigate('landing')"
       >
         {{ currentPage === "settings" ? "Done" : "New check" }}
@@ -136,7 +136,7 @@ function navigate(name: string) {
       <button
         v-else
         type="button"
-        class="tt-btn rounded-full border border-line bg-transparent px-4 py-2.5 text-xs font-medium text-muted"
+        class="tt-btn rounded-full border border-border bg-transparent px-4 py-2.5 text-xs font-medium text-foreground-subtle"
         @click="navigate('history')"
       >
         History

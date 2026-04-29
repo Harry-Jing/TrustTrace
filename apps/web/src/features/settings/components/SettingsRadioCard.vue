@@ -18,19 +18,19 @@ defineProps<{
   <RadioGroupItem
     :value="value"
     :disabled="disabled"
-    class="group relative flex flex-1 cursor-pointer flex-col gap-3 rounded-md border border-line bg-card p-5 text-left transition-[border-color,background-color,box-shadow,opacity] duration-200 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-60 data-[state=checked]:border-ink data-[state=checked]:shadow-input-rest enabled:data-[state=unchecked]:hover:border-line-strong"
+    class="group relative flex flex-1 cursor-pointer flex-col gap-3 rounded-md border border-border bg-card p-5 text-left transition-[border-color,background-color,box-shadow,opacity] duration-200 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-60 data-[state=checked]:border-foreground data-[state=checked]:shadow-input-rest enabled:data-[state=unchecked]:hover:border-border-strong"
   >
     <div class="flex items-center justify-between gap-3">
       <span class="flex items-center gap-2.5">
         <span
-          class="flex size-4 items-center justify-center rounded-full border-[1.5px] border-line-strong transition-colors duration-200 group-data-[state=checked]:border-ink"
+          class="flex size-4 items-center justify-center rounded-full border-[1.5px] border-border-strong transition-colors duration-200 group-data-[state=checked]:border-foreground"
           aria-hidden="true"
         >
           <RadioGroupIndicator
-            class="block size-2 rounded-full bg-ink transition-transform duration-200"
+            class="block size-2 rounded-full bg-foreground transition-transform duration-200"
           />
         </span>
-        <span class="font-mono text-[13px] tracking-tight text-ink">{{ code }}</span>
+        <span class="font-mono text-body-sm tracking-tight text-foreground">{{ code }}</span>
       </span>
       <span
         v-if="badge"
@@ -40,10 +40,10 @@ defineProps<{
         {{ badge.label }}
       </span>
     </div>
-    <h3 class="font-serif text-[19px] leading-tight tracking-tight text-ink">
+    <h3 class="font-serif text-[19px] leading-tight tracking-tight text-foreground">
       {{ headline }}
     </h3>
-    <p class="text-[13px] leading-[1.6] text-ink-2">
+    <p class="text-body-sm leading-[1.6] text-foreground-muted">
       {{ description }}
     </p>
   </RadioGroupItem>

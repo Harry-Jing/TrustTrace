@@ -13,12 +13,12 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="flex stagger-2 flex-wrap items-center gap-2.5">
+  <div class="flex animate-up flex-wrap items-center gap-2.5 [animation-delay:100ms]">
     <div
-      class="flex min-w-50 flex-1 items-center gap-2 rounded-lg border border-line bg-card px-3.5 py-2 transition-[border-color] duration-200 focus-within:border-accent"
+      class="flex min-w-50 flex-1 items-center gap-2 rounded-lg border border-border bg-card px-3.5 py-2 transition-[border-color] duration-200 focus-within:border-accent"
     >
       <svg
-        class="size-4 shrink-0 text-muted"
+        class="size-4 shrink-0 text-foreground-subtle"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -35,12 +35,12 @@ const emit = defineEmits<{
         id="history-search"
         :value="search"
         placeholder="Search checks…"
-        class="text-body-sm flex-1 border-none bg-transparent text-ink outline-none"
+        class="flex-1 border-none bg-transparent text-body-sm text-foreground outline-none"
         @input="emit('update:search', ($event.target as HTMLInputElement).value)"
       />
     </div>
     <div class="flex gap-1">
-      <span class="mr-1 self-center font-mono text-[10px] text-muted">Sort:</span>
+      <span class="mr-1 self-center font-mono text-[10px] text-foreground-subtle">Sort:</span>
       <button
         v-for="[k, label] in [
           ['date', 'Date'],
@@ -51,8 +51,8 @@ const emit = defineEmits<{
         class="tt-btn rounded-full px-4 py-2 text-xs font-medium"
         :class="
           sortBy === k
-            ? 'border border-ink bg-ink text-surface'
-            : 'border border-line bg-transparent text-muted'
+            ? 'border border-foreground bg-foreground text-background'
+            : 'border border-border bg-transparent text-foreground-subtle'
         "
         :aria-pressed="sortBy === k"
         @click="emit('update:sortBy', k)"

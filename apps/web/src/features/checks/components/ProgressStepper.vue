@@ -31,11 +31,11 @@ function isCurrent(index: number, currentIndex: number) {
            never feels frozen between phase events. -->
       <div
         v-if="index < steps.length - 1"
-        class="absolute top-4.5 left-1/2 -z-0 h-px w-full overflow-hidden bg-line"
+        class="absolute top-4.5 left-1/2 -z-0 h-px w-full overflow-hidden bg-border"
         aria-hidden="true"
       >
         <div
-          class="h-full w-full origin-left bg-good transition-transform duration-500 ease-(--ease-snappy)"
+          class="h-full w-full origin-left bg-success transition-transform duration-500 ease-(--ease-snappy)"
           :style="{ transform: isDone(index, currentIndex) ? 'scaleX(1)' : 'scaleX(0)' }"
         />
         <div
@@ -49,12 +49,15 @@ function isCurrent(index: number, currentIndex: number) {
            one-shot scale pulse via CSS. The current step gets a continuous,
            breathing halo so the user can see "this is where work is happening". -->
       <div
-        class="relative z-10 flex size-9 items-center justify-center rounded-full border-[1.5px] font-mono text-[13px] leading-none transition-all duration-400"
+        class="relative z-10 flex size-9 items-center justify-center rounded-full border-[1.5px] font-mono text-body-sm leading-none transition-all duration-400"
         :class="[
           {
-            'border-good bg-good text-card': isDone(index, currentIndex),
-            'anim-pulse-ring border-warn bg-warn text-card': isCurrent(index, currentIndex),
-            'border-line bg-surface text-muted':
+            'border-success bg-success text-card': isDone(index, currentIndex),
+            'animate-pulse-ring border-warning bg-warning text-card': isCurrent(
+              index,
+              currentIndex,
+            ),
+            'border-border bg-background text-foreground-subtle':
               !isDone(index, currentIndex) && !isCurrent(index, currentIndex),
           },
           isDone(index, currentIndex) && 'step-circle-pop',
@@ -82,11 +85,11 @@ function isCurrent(index: number, currentIndex: number) {
       <!-- Label (hidden on small screens; the "now · {phase}" header below carries the
            current-step copy, so per-step labels would just crowd narrow viewports) -->
       <div
-        class="mt-3 hidden text-center text-[13px] transition-colors duration-400 sm:block"
+        class="mt-3 hidden text-center text-body-sm transition-colors duration-400 sm:block"
         :class="{
-          'font-semibold text-ink': isCurrent(index, currentIndex),
-          'font-medium text-ink-2': isDone(index, currentIndex),
-          'text-muted': !isDone(index, currentIndex) && !isCurrent(index, currentIndex),
+          'font-semibold text-foreground': isCurrent(index, currentIndex),
+          'font-medium text-foreground-muted': isDone(index, currentIndex),
+          'text-foreground-subtle': !isDone(index, currentIndex) && !isCurrent(index, currentIndex),
         }"
       >
         {{ step.shortLabel }}

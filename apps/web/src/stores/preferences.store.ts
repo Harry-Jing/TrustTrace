@@ -5,12 +5,10 @@ import type { EffectiveTheme, Theme } from "@/types/app";
 
 const THEMES = ["light", "dark", "auto"] as const;
 const DISCOVERY_STRATEGIES: DiscoveryStrategy[] = ["search_api", "llm_web"];
-const BOOLEAN_VALUES = ["true", "false"] as const;
 
 const STORAGE_KEYS = {
   theme: "tt-theme",
   discoveryStrategy: "tt-discovery-strategy",
-  saveHistoryLocally: "tt-save-history-locally",
 } as const;
 
 const DARK_QUERY = "(prefers-color-scheme: dark)";
@@ -23,10 +21,6 @@ function isDiscoveryStrategy(value: string): value is DiscoveryStrategy {
   return (DISCOVERY_STRATEGIES as readonly string[]).includes(value);
 }
 
-function isBooleanString(value: string): value is (typeof BOOLEAN_VALUES)[number] {
-  return (BOOLEAN_VALUES as readonly string[]).includes(value);
-}
-
 function readStoredValue<T extends string>(
   key: string,
   fallback: T,
@@ -36,14 +30,6 @@ function readStoredValue<T extends string>(
 
   const stored = localStorage.getItem(key);
   return stored && isValid(stored) ? stored : fallback;
-}
-
-function readStoredBoolean(key: string, fallback: boolean): boolean {
-  if (typeof localStorage === "undefined") return fallback;
-
-  const stored = localStorage.getItem(key);
-  if (stored === null || !isBooleanString(stored)) return fallback;
-  return stored === "true";
 }
 
 function writeStoredValue(key: string, value: string) {
@@ -74,7 +60,6 @@ export const usePreferencesStore = defineStore("preferences", {
       "search_api",
       isDiscoveryStrategy,
     ),
-    saveHistoryLocally: readStoredBoolean(STORAGE_KEYS.saveHistoryLocally, true),
   }),
   getters: {
     effectiveTheme: (state): EffectiveTheme => resolveEffectiveTheme(state.theme),
@@ -102,10 +87,6 @@ export const usePreferencesStore = defineStore("preferences", {
     setDiscoveryStrategy(strategy: DiscoveryStrategy) {
       this.discoveryStrategy = strategy;
       writeStoredValue(STORAGE_KEYS.discoveryStrategy, strategy);
-    },
-    setSaveHistoryLocally(enabled: boolean) {
-      this.saveHistoryLocally = enabled;
-      writeStoredValue(STORAGE_KEYS.saveHistoryLocally, enabled ? "true" : "false");
     },
     initSystemThemeListener() {
       if (systemThemeListenerAttached) return;

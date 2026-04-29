@@ -16,7 +16,6 @@ import SettingsRow from "@/features/settings/components/SettingsRow.vue";
 import SettingsSection from "@/features/settings/components/SettingsSection.vue";
 import SettingsSegmented from "@/features/settings/components/SettingsSegmented.vue";
 import SettingsSidebar from "@/features/settings/components/SettingsSidebar.vue";
-import SettingsToggle from "@/features/settings/components/SettingsToggle.vue";
 import { usePreferencesStore } from "@/stores/preferences.store";
 import type { DiscoveryStrategy } from "@/features/checks/types/progress";
 import type { Theme } from "@/types/app";
@@ -29,7 +28,6 @@ const sections = [
   { id: "discovery", label: "Discovery" },
   { id: "keys", label: "Keys" },
   { id: "appearance", label: "Appearance" },
-  { id: "privacy", label: "Privacy" },
   { id: "about", label: "About" },
 ] as const;
 
@@ -57,10 +55,6 @@ function setTheme(value: Theme) {
 
 function setStrategy(value: DiscoveryStrategy) {
   preferences.setDiscoveryStrategy(value);
-}
-
-function setSaveHistory(value: boolean) {
-  preferences.setSaveHistoryLocally(value);
 }
 
 function scrollToSection(id: string) {
@@ -104,16 +98,16 @@ onBeforeUnmount(() => {
 <template>
   <div class="mx-auto max-w-form px-6 pt-14 pb-15">
     <!-- Header -->
-    <div class="max-w-180 stagger-1">
-      <span class="font-mono text-[11px] font-medium tracking-[0.16em] text-accent uppercase">
+    <div class="max-w-180 animate-up [animation-delay:50ms]">
+      <span class="font-mono text-label font-medium tracking-[0.16em] text-accent uppercase">
         settings &middot; trusttrace
       </span>
       <h1
-        class="mt-4 mb-5 stagger-2 font-serif text-[clamp(30px,4.4vw,42px)] leading-[1.1] tracking-tight"
+        class="mt-4 mb-5 animate-up font-serif text-[clamp(30px,4.4vw,42px)] leading-[1.1] tracking-tight [animation-delay:100ms]"
       >
         Tune how TrustTrace looks for evidence.
       </h1>
-      <p class="max-w-150 stagger-3 text-[15px] leading-[1.7] text-ink-2">
+      <p class="max-w-150 animate-up text-body text-foreground-muted [animation-delay:150ms]">
         Defaults work for most claims. Open a section to adjust how sources are discovered and what
         the trace shows you.
       </p>
@@ -194,7 +188,7 @@ onBeforeUnmount(() => {
           disabled
         >
           <p
-            class="mb-5 rounded-md border border-dashed border-line bg-surface-alt/60 px-4 py-3 text-[13px] leading-[1.6] text-ink-2"
+            class="mb-5 rounded-md border border-dashed border-border bg-surface/60 px-4 py-3 text-body-sm leading-[1.6] text-foreground-muted"
           >
             Bring-your-own keys aren't wired yet — TrustTrace uses server-side credentials in this
             build.
@@ -207,11 +201,11 @@ onBeforeUnmount(() => {
           >
             <div class="space-y-3">
               <div
-                class="flex items-center justify-between rounded-md border border-line bg-card px-4 py-3 text-sm text-ink-2"
+                class="flex items-center justify-between rounded-md border border-border bg-card px-4 py-3 text-sm text-foreground-muted"
               >
                 <span>Tavily</span>
                 <svg
-                  class="size-4 text-muted"
+                  class="size-4 text-foreground-subtle"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -227,14 +221,14 @@ onBeforeUnmount(() => {
                 type="text"
                 placeholder="tvly-…"
                 disabled
-                class="w-full rounded-md border border-line bg-card px-4 py-3 font-mono text-[13px] text-ink-2 placeholder:text-muted"
+                class="w-full rounded-md border border-border bg-card px-4 py-3 font-mono text-body-sm text-foreground-muted placeholder:text-foreground-subtle"
               />
               <div
-                class="flex items-center justify-between font-mono text-[11px] tracking-[0.04em] text-muted uppercase"
+                class="flex items-center justify-between font-mono text-label text-foreground-subtle uppercase"
               >
                 <span>api key</span>
                 <span class="flex items-center gap-1.5">
-                  <span class="size-1.5 rounded-full bg-line-strong" aria-hidden="true" />
+                  <span class="size-1.5 rounded-full bg-border-strong" aria-hidden="true" />
                   not set
                 </span>
               </div>
@@ -249,11 +243,11 @@ onBeforeUnmount(() => {
           >
             <div class="space-y-3">
               <div
-                class="flex items-center justify-between rounded-md border border-line bg-card px-4 py-3 text-sm text-ink-2"
+                class="flex items-center justify-between rounded-md border border-border bg-card px-4 py-3 text-sm text-foreground-muted"
               >
                 <span>OpenAI</span>
                 <svg
-                  class="size-4 text-muted"
+                  class="size-4 text-foreground-subtle"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -269,14 +263,14 @@ onBeforeUnmount(() => {
                 type="text"
                 placeholder="sk-…"
                 disabled
-                class="w-full rounded-md border border-line bg-card px-4 py-3 font-mono text-[13px] text-ink-2 placeholder:text-muted"
+                class="w-full rounded-md border border-border bg-card px-4 py-3 font-mono text-body-sm text-foreground-muted placeholder:text-foreground-subtle"
               />
               <div
-                class="flex items-center justify-between font-mono text-[11px] tracking-[0.04em] text-muted uppercase"
+                class="flex items-center justify-between font-mono text-label text-foreground-subtle uppercase"
               >
                 <span>api key</span>
                 <span class="flex items-center gap-1.5">
-                  <span class="size-1.5 rounded-full bg-line-strong" aria-hidden="true" />
+                  <span class="size-1.5 rounded-full bg-border-strong" aria-hidden="true" />
                   not set
                 </span>
               </div>
@@ -296,40 +290,22 @@ onBeforeUnmount(() => {
           </SettingsRow>
         </SettingsSection>
 
-        <!-- Privacy -->
-        <SettingsSection
-          id="privacy"
-          eyebrow="privacy"
-          title="What we keep."
-          description="MVP stores history locally in your browser. No accounts yet — nothing leaves this device beyond the live discovery calls."
-        >
-          <SettingsRow
-            label="Save check history locally"
-            helper="Off means each check is forgotten as soon as you leave."
-            is-last
-          >
-            <SettingsToggle
-              :model-value="preferences.saveHistoryLocally"
-              label="Save check history locally"
-              @update:model-value="setSaveHistory"
-            />
-          </SettingsRow>
-        </SettingsSection>
-
         <!-- About -->
         <SettingsSection id="about" eyebrow="about" title="The fine print.">
           <SettingsRow label="Version">
-            <span class="font-mono text-[12px] tracking-tight text-ink-2">
-              {{ APP_VERSION }} <span class="mx-1.5 text-muted">·</span> {{ APP_RELEASE_TAG }}
+            <span class="font-mono text-xs tracking-tight text-foreground-muted">
+              {{ APP_VERSION }} <span class="mx-1.5 text-foreground-subtle">·</span>
+              {{ APP_RELEASE_TAG }}
             </span>
           </SettingsRow>
           <SettingsRow label="Build">
-            <span class="font-mono text-[12px] tracking-tight text-ink-2">
-              {{ APP_BUILD_LABEL }} <span class="mx-1.5 text-muted">·</span> {{ APP_BUILD_DATE }}
+            <span class="font-mono text-xs tracking-tight text-foreground-muted">
+              {{ APP_BUILD_LABEL }} <span class="mx-1.5 text-foreground-subtle">·</span>
+              {{ APP_BUILD_DATE }}
             </span>
           </SettingsRow>
           <SettingsRow label="Tagline" helper="Shown at the foot of every check." is-last>
-            <span class="font-mono text-[12px] tracking-tight text-ink-2">
+            <span class="font-mono text-xs tracking-tight text-foreground-muted">
               {{ APP_TAGLINE }}
             </span>
           </SettingsRow>

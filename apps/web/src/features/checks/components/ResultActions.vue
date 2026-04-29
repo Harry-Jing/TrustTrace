@@ -11,9 +11,9 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="mt-10 stagger-4">
-    <div class="flex flex-wrap items-center gap-3 border-t border-line pt-5">
-      <span class="font-mono text-eyebrow text-muted uppercase">take it with you</span>
+  <div class="mt-10 animate-up [animation-delay:220ms]">
+    <div class="flex flex-wrap items-center gap-3 border-t border-border pt-5">
+      <span class="font-mono text-eyebrow text-foreground-subtle uppercase">take it with you</span>
       <BaseButton variant="primary" @click="emit('copy')">
         <svg
           v-if="copied"

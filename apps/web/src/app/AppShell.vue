@@ -48,14 +48,16 @@ watch(
 </script>
 
 <template>
-  <div class="min-h-screen bg-surface text-ink transition-[background,color] duration-400">
+  <div
+    class="min-h-screen bg-background text-foreground transition-[background,color] duration-400"
+  >
     <a class="skip-link" href="#main-content">Skip to content</a>
     <AppNav />
 
     <!-- Page content with transition -->
     <main id="main-content" ref="mainEl" tabindex="-1">
       <div v-if="renderError" class="mx-auto max-w-alert px-6 py-20 text-center">
-        <p class="mb-4 text-muted">Something went wrong.</p>
+        <p class="mb-4 text-foreground-subtle">Something went wrong.</p>
         <BaseButton variant="subtle" @click="renderError = null">Try again</BaseButton>
       </div>
       <RouterView v-else v-slot="{ Component }">

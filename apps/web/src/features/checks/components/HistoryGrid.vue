@@ -21,9 +21,9 @@ function formatDate(iso: string) {
 
 function toneBorderClass(tone: CheckListItem["tone"]) {
   if (tone === "accent") return "border-t-accent";
-  if (tone === "warn") return "border-t-warn";
-  if (tone === "dark") return "border-t-ink";
-  return "border-t-line-strong";
+  if (tone === "warn") return "border-t-warning";
+  if (tone === "dark") return "border-t-foreground";
+  return "border-t-border-strong";
 }
 
 function onBeforeEnter(el: Element) {
@@ -40,7 +40,11 @@ function onBeforeEnter(el: Element) {
     class="relative grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4"
     @before-enter="onBeforeEnter"
   >
-    <div v-if="items.length === 0" key="empty" class="col-span-full py-10 text-center text-muted">
+    <div
+      v-if="items.length === 0"
+      key="empty"
+      class="col-span-full py-10 text-center text-foreground-subtle"
+    >
       {{
         search
           ? `No checks match "${search}"`
@@ -53,18 +57,20 @@ function onBeforeEnter(el: Element) {
       :key="historyItem.checkId"
       :data-index="index"
       type="button"
-      class="group cursor-pointer overflow-hidden rounded-lg border border-t-[3px] border-line bg-card p-0 text-left text-ink transition-[transform,box-shadow,border-color,background-color,color] duration-300 hover:-translate-y-0.75 hover:border-x-line-strong hover:border-b-line-strong hover:shadow-card-hover"
+      class="group cursor-pointer overflow-hidden rounded-lg border border-t-[3px] border-border bg-card p-0 text-left text-foreground transition-[transform,box-shadow,border-color,background-color,color] duration-300 hover:-translate-y-0.75 hover:border-x-border-strong hover:border-b-border-strong hover:shadow-card-hover"
       :class="toneBorderClass(historyItem.tone)"
       @click="emit('select', historyItem)"
     >
       <div class="p-5">
         <div class="mb-2 flex items-center justify-between">
-          <span class="font-mono text-[10px] text-muted">{{
+          <span class="font-mono text-[10px] text-foreground-subtle">{{
             formatDate(historyItem.createdAt)
           }}</span>
         </div>
-        <div class="mb-1.5 text-[15px] leading-snug font-semibold">{{ historyItem.claim }}</div>
-        <div class="mb-3 text-xs leading-relaxed text-muted">{{ historyItem.snippet }}</div>
+        <div class="mb-1.5 text-body leading-snug font-semibold">{{ historyItem.claim }}</div>
+        <div class="mb-3 text-xs leading-relaxed text-foreground-subtle">
+          {{ historyItem.snippet }}
+        </div>
         <div class="flex items-center justify-between">
           <BaseTagBadge :tone="historyItem.tone" class="text-[10px]">{{
             historyItem.cue

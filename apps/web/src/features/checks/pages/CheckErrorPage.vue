@@ -71,16 +71,16 @@ async function retryCheck() {
 
 <template>
   <div class="mx-auto max-w-alert px-6 pt-25 pb-20 text-center">
-    <div class="anim-up">
+    <div class="animate-up">
       <BaseWarnRingIllustration />
 
       <BaseTagBadge tone="warn">{{ errorCategory }}</BaseTagBadge>
 
-      <h1 class="mx-auto mt-5 mb-2.5 font-serif text-[28px] tracking-tight">
+      <h1 class="mx-auto mt-5 mb-2.5 font-serif text-display-sm">
         {{ errorMessage }}
       </h1>
 
-      <p class="mx-auto mb-7 max-w-100 text-sm leading-[1.75] text-muted">
+      <p class="mx-auto mb-7 max-w-100 text-sm leading-[1.75] text-foreground-subtle">
         {{ retryHelp }}
       </p>
 
@@ -99,21 +99,19 @@ async function retryCheck() {
         </BaseButton>
       </div>
 
-      <p v-if="retryErrorMessage" class="mt-5 text-xs leading-relaxed text-warn" role="alert">
+      <p v-if="retryErrorMessage" class="mt-5 text-xs leading-relaxed text-warning" role="alert">
         {{ retryErrorMessage }}
       </p>
 
       <div v-if="traceId" class="mt-7">
-        <span class="font-mono text-[10px] tracking-[0.06em] text-muted"
-          >trace · {{ traceId }}</span
-        >
+        <span class="font-mono text-eyebrow text-foreground-subtle">trace · {{ traceId }}</span>
       </div>
 
       <!-- Expandable explanation -->
       <div class="mx-auto mt-6 max-w-100 text-left">
         <button
           type="button"
-          class="flex items-center gap-1.5 border-none bg-transparent p-0 font-mono text-xs text-muted"
+          class="flex items-center gap-1.5 border-none bg-transparent p-0 font-mono text-xs text-foreground-subtle"
           :aria-controls="detailId"
           :aria-expanded="showDetail"
           @click="showDetail = !showDetail"
@@ -134,12 +132,12 @@ async function retryCheck() {
           <div class="expand-panel-inner">
             <div
               :id="detailId"
-              class="mt-2.5 rounded-lg border border-line bg-surface-alt p-3.5 text-left text-body-sm leading-[1.7] text-ink-2"
+              class="mt-2.5 rounded-lg border border-border bg-surface p-3.5 text-left text-body-sm text-foreground-muted"
             >
               <p class="mb-2">
                 <strong>{{ errorCode }}</strong> — {{ errorExplanation }}
               </p>
-              <p class="m-0 text-muted">
+              <p class="m-0 text-foreground-subtle">
                 {{
                   isRetryable
                     ? "Wait a moment and retry. If this keeps happening, the provider may be experiencing an outage."

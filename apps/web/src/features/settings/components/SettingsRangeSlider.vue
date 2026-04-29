@@ -18,11 +18,11 @@ withDefaults(
 
 <template>
   <div class="w-full" :data-disabled="disabled || undefined">
-    <div class="flex items-baseline justify-between font-mono text-[12px] tracking-tight">
-      <span class="text-ink">
-        {{ value }}<span v-if="unit" class="ml-1.5 text-muted">{{ unit }}</span>
+    <div class="flex items-baseline justify-between font-mono text-xs tracking-tight">
+      <span class="text-foreground">
+        {{ value }}<span v-if="unit" class="ml-1.5 text-foreground-subtle">{{ unit }}</span>
       </span>
-      <span class="text-muted">{{ min }} – {{ max }}</span>
+      <span class="text-foreground-subtle">{{ min }} – {{ max }}</span>
     </div>
 
     <input
@@ -41,7 +41,7 @@ withDefaults(
       <span
         v-for="(bar, index) in histogramSeed"
         :key="index"
-        class="block w-[6px] rounded-[1px] bg-good/55"
+        class="block w-[6px] rounded-[1px] bg-success/55"
         :style="{ height: `${(bar / 8) * 100}%` }"
       />
     </div>
@@ -57,12 +57,12 @@ withDefaults(
 }
 .tt-settings-range::-webkit-slider-runnable-track {
   height: 1px;
-  background: var(--tt-line2);
+  background: var(--border-strong);
   border-radius: 999px;
 }
 .tt-settings-range::-moz-range-track {
   height: 1px;
-  background: var(--tt-line2);
+  background: var(--border-strong);
   border-radius: 999px;
 }
 .tt-settings-range::-webkit-slider-thumb {
@@ -71,8 +71,8 @@ withDefaults(
   width: 14px;
   height: 14px;
   border-radius: 999px;
-  background: var(--tt-ink);
-  border: 2px solid var(--tt-bg);
+  background: var(--foreground);
+  border: 2px solid var(--background);
   margin-top: -7px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
 }
@@ -80,8 +80,8 @@ withDefaults(
   width: 14px;
   height: 14px;
   border-radius: 999px;
-  background: var(--tt-ink);
-  border: 2px solid var(--tt-bg);
+  background: var(--foreground);
+  border: 2px solid var(--background);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
 }
 .tt-settings-range[data-disabled],

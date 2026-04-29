@@ -58,9 +58,9 @@ function submit() {
 
 <template>
   <form
-    class="stagger-4 rounded-lg border-[1.5px] bg-card p-5 text-left transition-[border-color,box-shadow,background-color] duration-200 sm:p-6"
+    class="animate-up rounded-lg border-[1.5px] bg-card p-5 text-left transition-[border-color,box-shadow,background-color] duration-200 [animation-delay:220ms] sm:p-6"
     :class="
-      inputFocused ? 'border-accent shadow-input-focus' : 'border-line-strong shadow-input-rest'
+      inputFocused ? 'border-accent shadow-input-focus' : 'border-border-strong shadow-input-rest'
     "
     @focusin="inputFocused = true"
     @focusout="inputFocused = false"
@@ -69,20 +69,20 @@ function submit() {
     <!-- Mode toggle + char count -->
     <div class="mb-3.5 flex items-center gap-3">
       <div
-        class="relative isolate inline-flex overflow-hidden rounded-full bg-surface-alt p-0.75"
+        class="relative isolate inline-flex overflow-hidden rounded-full bg-surface p-0.75"
         role="group"
         aria-label="Claim input type"
       >
         <!-- Sliding indicator -->
         <div
-          class="pointer-events-none absolute top-0.75 z-0 h-[calc(100%-6px)] w-[calc(50%-3px)] rounded-full bg-ink transition-[left] duration-250 ease-snappy"
+          class="pointer-events-none absolute top-0.75 z-0 h-[calc(100%-6px)] w-[calc(50%-3px)] rounded-full bg-foreground transition-[left] duration-250 ease-snappy"
           :class="mode === 'text' ? 'left-0.75' : 'left-1/2'"
         />
         <button
           v-for="modeOption in ['text', 'url'] as const"
           :key="modeOption"
           type="button"
-          class="relative z-10 min-w-16 rounded-full border-none bg-transparent px-5 py-2.5 font-mono text-body-sm font-medium tracking-[0.04em] text-muted uppercase transition-colors duration-200 aria-[pressed=true]:text-surface"
+          class="relative z-10 min-w-16 rounded-full border-none bg-transparent px-5 py-2.5 font-mono text-body-sm font-medium tracking-[0.04em] text-foreground-subtle uppercase transition-colors duration-200 aria-[pressed=true]:text-background"
           :aria-pressed="mode === modeOption"
           :disabled="isDisabled"
           @click="switchMode(modeOption)"
@@ -93,8 +93,8 @@ function submit() {
       <span class="flex-1" />
       <span
         v-if="mode === 'text'"
-        class="font-mono text-[11px] tracking-[0.03em]"
-        :class="charCount > 10000 ? 'text-warn' : 'text-muted'"
+        class="font-mono text-label tracking-narrow"
+        :class="charCount > 10000 ? 'text-warning' : 'text-foreground-subtle'"
       >
         {{ charCount.toLocaleString() }} / 10,000
       </span>
@@ -108,7 +108,7 @@ function submit() {
       v-model="value"
       type="text"
       placeholder="https://example.com/article-to-check"
-      class="w-full border-none bg-transparent py-2.5 text-base leading-relaxed text-ink outline-none"
+      class="w-full border-none bg-transparent py-2.5 text-base leading-relaxed text-foreground outline-none"
       :disabled="isDisabled"
     />
     <textarea
@@ -117,17 +117,17 @@ function submit() {
       v-model="value"
       placeholder="Paste the claim or excerpt you want to double-check…"
       :rows="3"
-      class="max-h-50 min-h-20 w-full resize-y border-none bg-transparent text-[15px] leading-[1.7] text-ink outline-none"
+      class="max-h-50 min-h-20 w-full resize-y border-none bg-transparent text-body leading-[1.7] text-foreground outline-none"
       :disabled="isDisabled"
     />
 
-    <p v-if="errorMessage" class="mt-3 text-xs leading-relaxed text-warn" role="alert">
+    <p v-if="errorMessage" class="mt-3 text-xs leading-relaxed text-warning" role="alert">
       {{ errorMessage }}
     </p>
 
     <!-- Submit row -->
-    <div class="mt-3.5 flex items-center justify-between border-t border-line pt-3.5">
-      <span class="font-mono text-[11px] tracking-[0.03em] text-muted">
+    <div class="mt-3.5 flex items-center justify-between border-t border-border pt-3.5">
+      <span class="font-mono text-label tracking-narrow text-foreground-subtle">
         {{ mode === "url" ? "paste a full http(s) URL" : "min 3 characters" }}
       </span>
       <BaseButton type="submit" variant="accent" size="lg" :disabled="!isValid || isDisabled">

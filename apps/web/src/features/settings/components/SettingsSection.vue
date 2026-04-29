@@ -16,23 +16,28 @@ defineProps<{
   <section
     :id="id"
     class="scroll-mt-24"
-    :class="{ 'mt-12 border-t border-line pt-12': !isFirst, 'mt-0': isFirst }"
+    :class="{ 'mt-12 border-t border-border pt-12': !isFirst, 'mt-0': isFirst }"
     :aria-disabled="disabled || undefined"
   >
     <header class="mb-7">
       <div class="flex items-center gap-3">
         <span
-          class="font-mono text-meta font-medium tracking-[0.16em] text-muted uppercase"
+          class="font-mono text-label font-medium tracking-[0.16em] text-foreground-subtle uppercase"
           aria-hidden="true"
         >
           {{ eyebrow }}
         </span>
         <BaseComingSoonPill v-if="comingSoon" />
       </div>
-      <h2 class="mt-3 font-serif text-[clamp(24px,3vw,30px)] leading-tight tracking-tight text-ink">
+      <h2
+        class="mt-3 font-serif text-[clamp(24px,3vw,30px)] leading-tight tracking-tight text-foreground"
+      >
         {{ title }}
       </h2>
-      <p v-if="description" class="mt-3 max-w-readable text-[15px] leading-[1.6] text-ink-2">
+      <p
+        v-if="description"
+        class="mt-3 max-w-readable text-body leading-[1.6] text-foreground-muted"
+      >
         {{ description }}
       </p>
     </header>

@@ -18,8 +18,10 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="mt-8 border-t border-dashed border-line pt-3">
-    <span class="mb-2 block font-mono text-[9px] tracking-[0.12em] text-muted uppercase">
+  <div class="mt-8 border-t border-dashed border-border pt-3">
+    <span
+      class="mb-2 block font-mono text-micro tracking-[0.12em] text-foreground-subtle uppercase"
+    >
       dev · phase control
     </span>
     <div class="flex flex-wrap gap-1.5">
@@ -30,8 +32,8 @@ const emit = defineEmits<{
         class="tt-btn rounded px-2 py-0.75 font-mono text-[10px]"
         :class="
           phase === phaseOption
-            ? 'border border-ink bg-ink text-surface'
-            : 'border border-line bg-transparent text-muted'
+            ? 'border border-foreground bg-foreground text-background'
+            : 'border border-border bg-transparent text-foreground-subtle'
         "
         :aria-pressed="phase === phaseOption"
         @click="emit('setPhase', phaseOption)"
@@ -40,7 +42,7 @@ const emit = defineEmits<{
       </button>
       <button
         type="button"
-        class="tt-btn inline-flex items-center gap-1 rounded border border-good bg-transparent px-2 py-0.75 font-mono text-[10px] text-good"
+        class="tt-btn inline-flex items-center gap-1 rounded border border-success bg-transparent px-2 py-0.75 font-mono text-[10px] text-success"
         @click="emit('done')"
       >
         <svg

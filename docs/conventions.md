@@ -122,7 +122,7 @@ These are hard rules for production code under `apps/web/src`:
 - Add custom CSS only when utilities or component extraction would be less clear: theme tokens, global base defaults, Vue transition class names, reusable cross-component behavior, and motion helpers.
 - Keep custom CSS in Tailwind-aware layers: `@layer base` for global defaults, `@layer components` for reusable UI, and `@utility` for reusable utility-style helpers.
 - Use lower-kebab-case for custom CSS class names, keyframes, and custom identifiers. Use the `tt-` prefix for app-wide shared classes such as `tt-btn`.
-- Use `--tt-*` lower-kebab-case custom properties for app tokens, and expose user-facing utility names through Tailwind's `@theme` bridge.
+- Use unprefixed semantic role names for design tokens (`--background`, `--foreground`, `--accent`, `--warning`, `--success`, etc.) defined in `:root` and `[data-theme="dark"]`, and bridge them through `@theme inline` as `--color-*` so Tailwind utilities resolve them. Names follow Tailwind v4 + W3C DTCG + shadcn/ui conventions: role-based (`-muted`/`-subtle`), never value-based (`-light`/`-dark`).
 - Do not keep no-op marker classes in templates. A class should either be a Tailwind utility, a Vue transition class, or have a rule in `style.css`.
 - Avoid BEM by default in new code. It is acceptable for complex class-based global selectors, but prefer utilities, state/data/ARIA variants, or component extraction first.
 - Prefer semantic Tailwind tokens/classes in Vue templates. Don't pass raw CSS color strings through fixtures, stores, or API-shaped data.

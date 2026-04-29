@@ -32,12 +32,12 @@ function handleUpdate(value: unknown) {
     :model-value="modelValue"
     :disabled="disabled"
     :aria-label="label"
-    class="relative isolate inline-flex overflow-hidden rounded-full bg-surface-alt p-0.75 ring-1 ring-line-strong transition-opacity duration-200 ring-inset data-[disabled]:opacity-60"
+    class="relative isolate inline-flex overflow-hidden rounded-full bg-surface p-0.75 ring-1 ring-border-strong transition-opacity duration-200 ring-inset data-[disabled]:opacity-60"
     @update:model-value="handleUpdate"
   >
     <div
       v-if="activeIndex >= 0"
-      class="pointer-events-none absolute top-0.75 z-0 h-[calc(100%-6px)] rounded-full bg-ink transition-[left,width] duration-250 ease-snappy"
+      class="pointer-events-none absolute top-0.75 z-0 h-[calc(100%-6px)] rounded-full bg-foreground transition-[left,width] duration-250 ease-snappy"
       :style="{
         left: `calc(${activeIndex * (100 / options.length)}% + 3px)`,
         width: `calc(${100 / options.length}% - 6px)`,
@@ -49,7 +49,7 @@ function handleUpdate(value: unknown) {
       :key="option.value"
       :value="option.value"
       :disabled="disabled"
-      class="relative z-10 min-w-16 cursor-pointer rounded-full border-none bg-transparent px-4 py-2 text-[12px] font-medium tracking-tight text-muted transition-colors duration-200 data-[disabled]:cursor-not-allowed data-[state=on]:text-surface"
+      class="relative z-10 min-w-16 cursor-pointer rounded-full border-none bg-transparent px-4 py-2 text-xs font-medium tracking-tight text-foreground-subtle transition-colors duration-200 data-[disabled]:cursor-not-allowed data-[state=on]:text-background"
     >
       {{ option.label }}
     </ToggleGroupItem>

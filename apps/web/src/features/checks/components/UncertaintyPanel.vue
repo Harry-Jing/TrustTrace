@@ -6,17 +6,15 @@ defineProps<{
 
 <template>
   <section>
-    <span class="mb-3 block font-mono text-[10px] tracking-[0.12em] text-warn uppercase">
-      uncertainty
-    </span>
+    <span class="mb-3 block font-mono text-eyebrow text-warning uppercase"> uncertainty </span>
     <ul class="space-y-2">
       <li
         v-for="(line, i) in lines"
         :key="i"
-        class="flex items-start gap-2 text-[12px] leading-[1.6] text-ink-2"
+        class="flex items-start gap-2 text-xs leading-[1.6] text-foreground-muted"
       >
         <svg
-          class="mt-1 size-2.5 shrink-0 text-warn"
+          class="mt-1 size-2.5 shrink-0 text-warning"
           viewBox="0 0 10 10"
           fill="currentColor"
           aria-hidden="true"

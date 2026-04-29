@@ -18,25 +18,23 @@ function selectHistoryItem(historyItem: CheckListItem) {
 
 <template>
   <div class="mx-auto max-w-page px-6 pt-12 pb-20">
-    <div class="mb-6 flex stagger-1 flex-col gap-4 md:flex-row md:items-end md:justify-between">
+    <div
+      class="mb-6 flex animate-up flex-col gap-4 [animation-delay:50ms] md:flex-row md:items-end md:justify-between"
+    >
       <div>
-        <h1
-          class="mt-2.5 mb-1.5 font-serif text-[clamp(28px,4.2vw,40px)] leading-[1.15] tracking-tight"
-        >
-          Your checks
-        </h1>
-        <p class="text-sm leading-[1.7] text-muted">
+        <h1 class="mt-2.5 mb-1.5 font-serif text-display-md">Your checks</h1>
+        <p class="text-sm leading-[1.7] text-foreground-subtle">
           Your recent credibility checks. Select one to revisit the evidence and cues.
         </p>
       </div>
       <HistoryToolbar v-model:search="search" v-model:sort-by="sortBy" class="shrink-0" />
     </div>
 
-    <div v-if="isLoading" class="py-10 text-center text-muted" aria-live="polite">
+    <div v-if="isLoading" class="py-10 text-center text-foreground-subtle" aria-live="polite">
       Loading history…
     </div>
     <div v-else-if="isError" class="py-10 text-center">
-      <p class="mb-4 text-muted">Could not load history.</p>
+      <p class="mb-4 text-foreground-subtle">Could not load history.</p>
       <BaseButton variant="subtle" @click="reload">Retry</BaseButton>
     </div>
     <HistoryGrid v-else :items="items" :search="search" @select="selectHistoryItem" />

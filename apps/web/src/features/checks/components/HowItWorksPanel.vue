@@ -24,16 +24,16 @@ const howSteps = [
 </script>
 
 <template>
-  <div class="mt-7 stagger-5 text-left">
+  <div class="mt-7 animate-up text-left [animation-delay:300ms]">
     <button
       type="button"
-      class="flex w-full items-center gap-2 rounded-lg border border-line bg-card px-4 py-3 text-body-sm font-medium text-ink transition-colors duration-150 hover:bg-surface-alt"
+      class="flex w-full items-center gap-2 rounded-lg border border-border bg-card px-4 py-3 text-body-sm font-medium text-foreground transition-colors duration-150 hover:bg-surface"
       :aria-controls="panelId"
       :aria-expanded="showHow"
       @click="showHow = !showHow"
     >
       <svg
-        class="size-4 shrink-0 text-muted"
+        class="size-4 shrink-0 text-foreground-subtle"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -48,7 +48,7 @@ const howSteps = [
       </svg>
       <span class="flex-1 text-left">How does TrustTrace work?</span>
       <svg
-        class="size-3.5 shrink-0 text-muted transition-transform duration-200"
+        class="size-3.5 shrink-0 text-foreground-subtle transition-transform duration-200"
         :class="showHow ? 'rotate-180' : ''"
         viewBox="0 0 24 24"
         fill="none"
@@ -65,7 +65,7 @@ const howSteps = [
       <div class="expand-panel-inner">
         <div
           :id="panelId"
-          class="grid grid-cols-1 gap-4 rounded-b-lg border border-t-0 border-line bg-card p-5 min-[481px]:grid-cols-2 md:grid-cols-4"
+          class="grid grid-cols-1 gap-4 rounded-b-lg border border-t-0 border-border bg-card p-5 min-[481px]:grid-cols-2 md:grid-cols-4"
         >
           <div v-for="(step, i) in howSteps" :key="i">
             <div
@@ -74,7 +74,7 @@ const howSteps = [
               {{ i + 1 }}
             </div>
             <div class="mb-1 text-body-sm font-semibold">{{ step.title }}</div>
-            <div class="text-xs leading-relaxed text-muted">{{ step.description }}</div>
+            <div class="text-xs leading-relaxed text-foreground-subtle">{{ step.description }}</div>
           </div>
         </div>
       </div>

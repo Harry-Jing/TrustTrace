@@ -15,7 +15,7 @@ withDefaults(defineProps<{ size?: number }>(), { size: 72 });
       cx="36"
       cy="36"
       r="30"
-      class="stroke-line-strong"
+      class="stroke-border-strong"
       stroke-width="2"
       stroke-dasharray="8 6"
       opacity=".6"
@@ -24,12 +24,12 @@ withDefaults(defineProps<{ size?: number }>(), { size: 72 });
       cx="36"
       cy="36"
       r="30"
-      class="stroke-warn"
+      class="stroke-warning"
       stroke-width="2.5"
       stroke-dasharray="40 200"
       stroke-linecap="round"
     />
-    <path d="M36 24v16" class="stroke-warn" stroke-width="2.5" stroke-linecap="round" />
-    <circle cx="36" cy="46" r="1.5" class="fill-warn" />
+    <path d="M36 24v16" class="stroke-warning" stroke-width="2.5" stroke-linecap="round" />
+    <circle cx="36" cy="46" r="1.5" class="fill-warning" />
   </svg>
 </template>

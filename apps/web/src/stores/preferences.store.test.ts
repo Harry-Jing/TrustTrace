@@ -40,19 +40,16 @@ describe("usePreferencesStore", () => {
 
     expect(store.theme).toBe("light");
     expect(store.discoveryStrategy).toBe("search_api");
-    expect(store.saveHistoryLocally).toBe(true);
   });
 
   it("falls back when storage holds an invalid value", () => {
     localStorage.setItem("tt-theme", "neon");
     localStorage.setItem("tt-discovery-strategy", "rss");
-    localStorage.setItem("tt-save-history-locally", "maybe");
 
     const store = usePreferencesStore();
 
     expect(store.theme).toBe("light");
     expect(store.discoveryStrategy).toBe("search_api");
-    expect(store.saveHistoryLocally).toBe(true);
   });
 
   it("persists theme changes through setTheme and toggles dark mode marker", () => {
@@ -109,18 +106,6 @@ describe("usePreferencesStore", () => {
 
     expect(store.discoveryStrategy).toBe("llm_web");
     expect(localStorage.getItem("tt-discovery-strategy")).toBe("llm_web");
-  });
-
-  it("persists saveHistoryLocally via setter", () => {
-    const store = usePreferencesStore();
-
-    store.setSaveHistoryLocally(false);
-
-    expect(store.saveHistoryLocally).toBe(false);
-    expect(localStorage.getItem("tt-save-history-locally")).toBe("false");
-
-    store.setSaveHistoryLocally(true);
-    expect(localStorage.getItem("tt-save-history-locally")).toBe("true");
   });
 
   it("re-applies theme when the system listener fires while on auto", () => {

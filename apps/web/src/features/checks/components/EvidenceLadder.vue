@@ -24,9 +24,9 @@ const TIERS: readonly TierConfig[] = [
     tier: 1,
     label: "Primary, full-text, independent",
     description: "Original sources, complete article body, no shared origin. Strongest weight.",
-    numberClass: "border-good bg-good text-card",
-    borderClass: "border-l-[3px] border-l-good",
-    barClass: "bg-good",
+    numberClass: "border-success bg-success text-card",
+    borderClass: "border-l-[3px] border-l-success",
+    barClass: "bg-success",
   },
   {
     tier: 2,
@@ -40,17 +40,17 @@ const TIERS: readonly TierConfig[] = [
     tier: 3,
     label: "Same-origin or limited",
     description: "Useful context but weighted lower — shares origin with a stronger source.",
-    numberClass: "border-line-strong bg-surface-alt text-ink-2",
-    borderClass: "border-l-[3px] border-l-line-strong",
-    barClass: "bg-muted",
+    numberClass: "border-border-strong bg-surface text-foreground-muted",
+    borderClass: "border-l-[3px] border-l-border-strong",
+    barClass: "bg-foreground-subtle",
   },
   {
     tier: 4,
     label: "Snippet-only",
     description: "Suggestive, not load-bearing. Cannot independently support a strong claim.",
-    numberClass: "border-warn bg-warn text-card",
-    borderClass: "border-l-[3px] border-l-warn",
-    barClass: "bg-warn",
+    numberClass: "border-warning bg-warning text-card",
+    borderClass: "border-l-[3px] border-l-warning",
+    barClass: "bg-warning",
   },
 ];
 
@@ -68,7 +68,7 @@ const groupedEvidence = computed(() =>
 );
 
 function scopeMatchStyle(scope: number) {
-  return { "--tt-scope": String(Math.max(0, Math.min(1, scope))) };
+  return { "--evidence-scope": String(Math.max(0, Math.min(1, scope))) };
 }
 
 function evidenceHref(item: EvidenceItem) {
@@ -78,30 +78,30 @@ function evidenceHref(item: EvidenceItem) {
 
 <template>
   <div class="space-y-10">
-    <section v-for="group in groupedEvidence" :key="group.config.tier" class="anim-up">
+    <section v-for="group in groupedEvidence" :key="group.config.tier" class="animate-up">
       <header class="mb-4 flex items-start gap-4">
         <div
-          class="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full border-[1.5px] font-mono text-[13px] transition-colors duration-400"
+          class="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full border-[1.5px] font-mono text-body-sm transition-colors duration-400"
           :class="group.config.numberClass"
         >
           {{ group.config.tier }}
         </div>
         <div class="flex-1">
           <div class="flex flex-wrap items-baseline justify-between gap-2">
-            <h2 class="font-serif text-[18px] font-semibold tracking-tight">
+            <h2 class="font-serif text-lg font-semibold tracking-tight">
               {{ group.config.label }}
             </h2>
-            <span class="font-mono text-[11px] tracking-[0.04em] text-muted">
+            <span class="font-mono text-label text-foreground-subtle">
               {{ group.items.length }} {{ group.items.length === 1 ? "source" : "sources" }}
             </span>
           </div>
-          <p class="mt-1 text-[13px] leading-[1.65] text-ink-2">
+          <p class="mt-1 text-body-sm leading-[1.65] text-foreground-muted">
             {{ group.config.description }}
           </p>
         </div>
       </header>
 
-      <p v-if="group.items.length === 0" class="ml-12 text-[12px] text-muted italic">
+      <p v-if="group.items.length === 0" class="ml-12 text-xs text-foreground-subtle italic">
         No source landed at this tier.
       </p>
 
@@ -109,32 +109,30 @@ function evidenceHref(item: EvidenceItem) {
         <article
           v-for="(item, index) in group.items"
           :key="`${group.config.tier}-${index}`"
-          class="overflow-hidden rounded-lg border border-line bg-card py-4 pr-4 pl-4 transition-colors duration-400"
+          class="overflow-hidden rounded-lg border border-border bg-card py-4 pr-4 pl-4 transition-colors duration-400"
           :class="group.config.borderClass"
         >
           <div class="mb-1.5 flex flex-wrap items-center gap-2">
-            <span class="font-mono text-[11px] font-medium tracking-[0.04em] text-warn">
+            <span class="font-mono text-label font-medium text-warning">
               {{ item.domain }}
             </span>
-            <span class="font-mono text-[11px] tracking-[0.04em] text-muted">{{ item.date }}</span>
-            <BaseTagBadge :tone="relationConfig[item.relation].tone" class="text-[9px]">
+            <span class="font-mono text-label text-foreground-subtle">{{ item.date }}</span>
+            <BaseTagBadge :tone="relationConfig[item.relation].tone" class="text-micro">
               {{ relationConfig[item.relation].label }}
             </BaseTagBadge>
             <span
               v-if="item.clusterId"
-              class="rounded-full border border-line bg-surface-alt px-2 py-0.5 font-mono text-[9px] tracking-[0.04em] text-muted"
+              class="rounded-full border border-border bg-surface px-2 py-0.5 font-mono text-micro tracking-[0.04em] text-foreground-subtle"
             >
               {{ item.clusterId }}
             </span>
           </div>
-          <h3 class="mb-1 text-[15px] leading-snug font-semibold">{{ item.title }}</h3>
-          <p class="text-[13px] leading-[1.7] text-ink-2">{{ item.text }}</p>
+          <h3 class="mb-1 text-body leading-snug font-semibold">{{ item.title }}</h3>
+          <p class="text-body-sm text-foreground-muted">{{ item.text }}</p>
 
           <div class="mt-3 flex items-center gap-4">
-            <span class="font-mono text-[10px] tracking-[0.06em] text-muted uppercase"
-              >scope match</span
-            >
-            <div class="flex h-0.75 w-32 overflow-hidden rounded-sm bg-line">
+            <span class="font-mono text-eyebrow text-foreground-subtle uppercase">scope match</span>
+            <div class="flex h-0.75 w-32 overflow-hidden rounded-sm bg-border">
               <div
                 class="ladder-scope-bar h-full origin-left rounded-sm transition-transform duration-600 ease-out"
                 :class="group.config.barClass"
@@ -147,11 +145,11 @@ function evidenceHref(item: EvidenceItem) {
               target="_blank"
               rel="noopener noreferrer"
               :aria-label="`Open ${item.title}`"
-              class="ml-auto font-mono text-[11px] font-medium tracking-[0.04em] text-warn"
+              class="ml-auto font-mono text-label font-medium text-warning"
             >
               open ↗
             </a>
-            <span v-else class="ml-auto font-mono text-[11px] tracking-[0.04em] text-muted">
+            <span v-else class="ml-auto font-mono text-label text-foreground-subtle">
               link unavailable
             </span>
           </div>
@@ -164,6 +162,6 @@ function evidenceHref(item: EvidenceItem) {
 <style scoped>
 .ladder-scope-bar {
   width: 100%;
-  transform: scaleX(var(--tt-scope, 0));
+  transform: scaleX(var(--evidence-scope, 0));
 }
 </style>

@@ -23,25 +23,25 @@ function formatRelativeTime(iso: string) {
 </script>
 
 <template>
-  <div class="mt-6 stagger-6 text-left">
+  <div class="mt-6 animate-up text-left [animation-delay:380ms]">
     <div class="mb-2.5 flex items-center gap-2">
-      <span class="font-mono text-[10px] tracking-widest text-muted uppercase">recent checks</span>
-      <div class="h-px flex-1 bg-line" />
+      <span class="font-mono text-eyebrow text-foreground-subtle uppercase">recent checks</span>
+      <div class="h-px flex-1 bg-border" />
     </div>
     <button
       v-for="recentCheck in items"
       :key="recentCheck.checkId"
       type="button"
-      class="flex w-full flex-col gap-1.5 rounded-md border-none bg-transparent px-3.5 py-2.5 text-left text-ink transition-colors duration-150 hover:bg-surface-alt md:flex-row md:items-center md:gap-3"
+      class="flex w-full flex-col gap-1.5 rounded-md border-none bg-transparent px-3.5 py-2.5 text-left text-foreground transition-colors duration-150 hover:bg-surface md:flex-row md:items-center md:gap-3"
       @click="emit('select', recentCheck)"
     >
       <div class="flex items-center justify-between md:contents">
         <div class="shrink-0 md:w-32">
-          <BaseTagBadge :tone="recentCheck.tone" class="text-[9px]">{{
+          <BaseTagBadge :tone="recentCheck.tone" class="text-micro">{{
             recentCheck.cue
           }}</BaseTagBadge>
         </div>
-        <span class="shrink-0 font-mono text-[10px] text-muted md:order-last">{{
+        <span class="shrink-0 font-mono text-[10px] text-foreground-subtle md:order-last">{{
           formatRelativeTime(recentCheck.createdAt)
         }}</span>
       </div>
