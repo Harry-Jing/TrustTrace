@@ -5,10 +5,20 @@
       "name": "web",
       "runtimeExecutable": "bun",
       "runtimeArgs": ["run", "dev"],
+      "cwd": "apps/web",
       "port": 5173,
+      "autoPort": true,
       "env": {
         "VITE_TRUSTTRACE_API_MODE": "mock"
       }
+    },
+    {
+      "name": "server",
+      "runtimeExecutable": "bun",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "apps/server",
+      "port": 8000,
+      "autoPort": false
     }
   ]
 }
