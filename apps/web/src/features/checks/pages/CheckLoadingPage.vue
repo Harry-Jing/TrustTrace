@@ -5,7 +5,12 @@ import { useRouter } from "vue-router";
 import BaseButton from "@/components/BaseButton.vue";
 import BasePageFooter from "@/components/BasePageFooter.vue";
 import BaseWarnRingIllustration from "@/components/BaseWarnRingIllustration.vue";
-import DevLoadingControls from "@/app/DevLoadingControls.vue";
+import DevLoadingControls from "@/dev/components/DevLoadingControls.vue";
+import {
+  devResetCheckProgress,
+  devSetCheckCompleted,
+  devSetCheckFailed,
+} from "@/features/checks/api/checksApi";
 import { showDevTools } from "@/app/env";
 import ProgressStepper from "@/features/checks/components/ProgressStepper.vue";
 import { ACTIVE_PHASES, PHASE_DEFINITIONS } from "@/features/checks/constants/checkProgress";
@@ -54,21 +59,40 @@ function scheduleResultRedirect(nextCheckId: string) {
   }, 650);
 }
 
-// --- DEV: manual phase control ---
+// --- DEV: scenario + phase control ---
 function handleSetPhase(nextPhase: CheckPhase) {
   setPhase(nextPhase);
   showCelebration.value = false;
 }
 
-function handleDone() {
-  setPhase("completed");
-  // DEV: explicitly trigger the completion redirect that is otherwise
-  // suppressed in dev mode (see the watch below).
+function handleComplete() {
   const currentCheckId = checkId.value;
-  if (showDevTools && currentCheckId) {
-    showCelebration.value = true;
-    scheduleResultRedirect(currentCheckId);
-  }
+  if (!currentCheckId) return;
+  devSetCheckCompleted(currentCheckId);
+  setPhase("completed");
+  showCelebration.value = true;
+  scheduleResultRedirect(currentCheckId);
+}
+
+function handleFail() {
+  const currentCheckId = checkId.value;
+  if (!currentCheckId) return;
+  devSetCheckFailed(currentCheckId);
+  setPhase("failed");
+  showCelebration.value = false;
+  // The error page is the natural destination; jump there now since the
+  // dev-mode auto-redirect is intentionally suppressed.
+  void router.push({ name: "error", params: { checkId: currentCheckId } });
+}
+
+function handleReplay() {
+  const currentCheckId = checkId.value;
+  if (!currentCheckId) return;
+  devResetCheckProgress(currentCheckId);
+  showCelebration.value = false;
+  // Re-running through the composable's reload path picks up the freshly
+  // reset record and re-subscribes to the scenario stream.
+  void retry();
 }
 // --- end DEV ---
 
@@ -183,13 +207,15 @@ onBeforeUnmount(clearRedirectTimer);
         Sources are verified for safety and substance before they become evidence.
       </p>
 
-      <!-- DEV: phase controls -->
+      <!-- DEV: phase + outcome controls -->
       <DevLoadingControls
         v-if="showDevTools"
         :phases="ACTIVE_PHASES"
         :phase="phase"
         @set-phase="handleSetPhase"
-        @done="handleDone"
+        @complete="handleComplete"
+        @fail="handleFail"
+        @replay="handleReplay"
       />
 
       <BasePageFooter>TrustTrace &middot; evidence-first credibility</BasePageFooter>

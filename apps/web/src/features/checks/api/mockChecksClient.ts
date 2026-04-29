@@ -1,3 +1,5 @@
+import { readActiveScenario } from "@/dev/scenarioState";
+import type { DevScenario } from "@/dev/scenarios";
 import { CHECK_RESULT, DEMO_CHECK_IDS, DEMO_CHECKS } from "@/features/checks/fixtures/demoChecks";
 import type {
   CheckApiError,
@@ -19,66 +21,30 @@ import type { DiscoveryStrategy } from "@/features/checks/types/progress";
 
 /**
  * MOCK ONLY — In-memory API client used for local demo/debug flows.
- * Backend API calls live in backendChecksClient.ts and are selected via apiMode.
+ *
+ * Behavior is driven entirely by the active dev scenario (see `@/dev/scenarios`).
+ * The scenario decides which progress steps emit, how fast they emit, and what
+ * terminal outcome (completed vs failed-with-error) is reached. The shape of
+ * the records returned matches the real backend so the rest of the app cannot
+ * tell mock from real.
  */
 
-interface MockProgressStep {
-  phase: CheckPhase;
-  percent: number;
-  message: string;
-  delayMs: number;
-}
-
-const MOCK_PROGRESS_SCRIPT = [
-  {
-    phase: "understanding",
-    percent: 8,
-    message: "Reading the input and parsing it into checkable claims.",
-    delayMs: 0,
-  },
-  {
-    phase: "strategy",
-    percent: 22,
-    message: "Picking source priorities and drafting queries.",
-    delayMs: 180,
-  },
-  {
-    phase: "discovery",
-    percent: 42,
-    message: "Searching trusted sources for this claim.",
-    delayMs: 360,
-  },
-  {
-    phase: "verify_read",
-    percent: 62,
-    message: "Verifying URLs and pulling article bodies.",
-    delayMs: 540,
-  },
-  {
-    phase: "weigh",
-    percent: 80,
-    message: "Sorting and reading each verified source.",
-    delayMs: 720,
-  },
-  {
-    phase: "verdict",
-    percent: 94,
-    message: "Composing the explanation from verified evidence.",
-    delayMs: 900,
-  },
-  {
-    phase: "completed",
-    percent: 100,
-    message: "Check complete.",
-    delayMs: 1080,
-  },
-] as const satisfies readonly MockProgressStep[];
-
 const INITIAL_PHASE: CheckPhase = "understanding";
+const INITIAL_PERCENT = 8;
 const INITIAL_MESSAGE = "Reading the input and parsing it into checkable claims.";
+
+const FALLBACK_FAILURE: CheckApiError = {
+  code: "PROVIDER_TIMEOUT",
+  category: "provider timeout",
+  message: "The provider took too long.",
+  retryable: true,
+  traceId: null,
+  occurredAt: "",
+};
 
 const mockRecords = new Map<string, CheckRecord>();
 const mockInputs = new Map<string, CheckInputDraft>();
+const mockScenarioByCheckId = new Map<string, DevScenario>();
 const knownDemoCheckIds = DEMO_CHECK_IDS;
 const MAX_NON_DEMO_RECORDS = 50;
 let mockIdSequence = 0;
@@ -104,7 +70,7 @@ function makeCheckId() {
 
 function makeProgress(
   checkId: string,
-  step: Pick<MockProgressStep, "phase" | "percent" | "message">,
+  step: { phase: CheckPhase; percent: number; message: string },
   seq: number,
   updatedAt = nowIso(),
 ): CheckProgress {
@@ -143,6 +109,7 @@ function rememberMockRecord(checkId: string, record: CheckRecord) {
     if (!oldestId) return;
     mockRecords.delete(oldestId);
     mockInputs.delete(oldestId);
+    mockScenarioByCheckId.delete(oldestId);
   }
 }
 
@@ -164,12 +131,8 @@ function makeCompletedRecord(checkId: string, input?: CheckInputDraft): CheckRec
   const completedAt = nowIso();
   const progress = makeProgress(
     checkId,
-    {
-      phase: "completed",
-      percent: 100,
-      message: "Check complete.",
-    },
-    MOCK_PROGRESS_SCRIPT.length,
+    { phase: "completed", percent: 100, message: "Check complete." },
+    Number.MAX_SAFE_INTEGER,
     completedAt,
   );
 
@@ -187,22 +150,30 @@ function makeCompletedRecord(checkId: string, input?: CheckInputDraft): CheckRec
   };
 }
 
-function makeFailedRecord(checkId: string): CheckRecord {
+function buildScenarioError(scenario: DevScenario, checkId: string): CheckApiError {
+  if (scenario.outcome.type === "completed") {
+    return { ...FALLBACK_FAILURE, occurredAt: nowIso() };
+  }
+  const occurredAt = nowIso();
+  const seed = scenario.outcome.error.traceIdSeed;
+  return {
+    code: scenario.outcome.error.code,
+    category: scenario.outcome.error.category,
+    message: scenario.outcome.error.message,
+    retryable: scenario.outcome.error.retryable,
+    traceId: `${seed}-${checkId.slice(-6)}`,
+    occurredAt,
+  };
+}
+
+function makeFailedRecord(checkId: string, scenario: DevScenario): CheckRecord {
   const failedAt = nowIso();
   const progress = makeProgress(
     checkId,
     { phase: "failed", percent: 100, message: "Check failed." },
-    1,
+    Number.MAX_SAFE_INTEGER,
     failedAt,
   );
-  const error: CheckApiError = {
-    code: "PROVIDER_TIMEOUT",
-    category: "provider timeout",
-    message: "The provider took too long.",
-    retryable: true,
-    traceId: `${checkId.slice(0, 4)}…${checkId.slice(-4)}`,
-    occurredAt: failedAt,
-  };
 
   return {
     checkId,
@@ -211,7 +182,7 @@ function makeFailedRecord(checkId: string): CheckRecord {
     input: mockInputs.get(checkId) ?? null,
     progress,
     result: null,
-    error,
+    error: buildScenarioError(scenario, checkId),
     createdAt: failedAt,
     updatedAt: failedAt,
     completedAt: null,
@@ -284,19 +255,30 @@ function applyProgress(checkId: string, progress: CheckProgress) {
   rememberMockRecord(checkId, nextRecord);
 }
 
+function ensureScenario(checkId: string): DevScenario {
+  const existing = mockScenarioByCheckId.get(checkId);
+  if (existing) return existing;
+  const scenario = readActiveScenario();
+  mockScenarioByCheckId.set(checkId, scenario);
+  return scenario;
+}
+
+function rememberScenario(checkId: string, scenario: DevScenario) {
+  mockScenarioByCheckId.set(checkId, scenario);
+}
+
 export function createCheck(
   input: CheckInputDraft,
   discoveryStrategy: DiscoveryStrategy,
 ): Promise<CreateCheckResponse> {
   const checkId = makeCheckId();
   const createdAt = nowIso();
+  const scenario = readActiveScenario();
+  rememberScenario(checkId, scenario);
+
   const initialProgress = makeProgress(
     checkId,
-    {
-      phase: INITIAL_PHASE,
-      percent: 8,
-      message: INITIAL_MESSAGE,
-    },
+    { phase: INITIAL_PHASE, percent: INITIAL_PERCENT, message: INITIAL_MESSAGE },
     1,
     createdAt,
   );
@@ -340,14 +322,19 @@ export function getCheck(checkId: string): Promise<CheckRecord> {
 }
 
 /**
- * MOCK ONLY — Reset a mock check record to its initial phase
- * so the loading page can be inspected from the beginning.
+ * MOCK ONLY — Reset a mock check record to the initial phase under the
+ * currently-active scenario so the loading page can be inspected from the
+ * beginning. Re-snapshots the scenario, so a "switch scenario then replay"
+ * flow picks up the new scenario on the next subscribe.
  */
 export function devResetCheckProgress(checkId: string): void {
   const createdAt = nowIso();
+  const scenario = readActiveScenario();
+  rememberScenario(checkId, scenario);
+
   const initialProgress = makeProgress(
     checkId,
-    { phase: INITIAL_PHASE, percent: 8, message: INITIAL_MESSAGE },
+    { phase: INITIAL_PHASE, percent: INITIAL_PERCENT, message: INITIAL_MESSAGE },
     1,
     createdAt,
   );
@@ -366,8 +353,25 @@ export function devResetCheckProgress(checkId: string): void {
   });
 }
 
+/**
+ * MOCK ONLY — Force a mock check into a failed state. Uses the scenario's
+ * error if it has one, otherwise falls back to PROVIDER_TIMEOUT.
+ */
 export function devSetCheckFailed(checkId: string): void {
-  rememberMockRecord(checkId, makeFailedRecord(checkId));
+  const scenario = ensureScenario(checkId);
+  rememberMockRecord(checkId, makeFailedRecord(checkId, scenario));
+}
+
+/** MOCK ONLY — Force a mock check into a completed state with the demo result. */
+export function devSetCheckCompleted(checkId: string): void {
+  const completedAt = nowIso();
+  const progress = makeProgress(
+    checkId,
+    { phase: "completed", percent: 100, message: "Check complete." },
+    Number.MAX_SAFE_INTEGER,
+    completedAt,
+  );
+  applyProgress(checkId, progress);
 }
 
 export function listChecks(params?: CheckListParams): Promise<readonly CheckListItem[]> {
@@ -386,7 +390,7 @@ export function subscribeCheckEvents(
 
   const existing = mockRecords.get(checkId);
 
-  if (existing?.status === "completed" || existing?.status === "failed") {
+  if (existing && (existing.status === "completed" || existing.status === "failed")) {
     const timer = setTimeout(() => {
       if (closed) return;
       handlers.onEvent?.(makeEvent(existing.progress));
@@ -402,25 +406,82 @@ export function subscribeCheckEvents(
     };
   }
 
-  MOCK_PROGRESS_SCRIPT.forEach((step, index) => {
-    const timer = setTimeout(() => {
-      if (closed) return;
+  const scenario = ensureScenario(checkId);
+  const stepDelay = scenario.stepDelayMs;
 
-      try {
-        const progress = makeProgress(checkId, step, index + 1);
+  const playbackSteps =
+    scenario.steps.length > 0
+      ? scenario.steps
+      : ([] as readonly { phase: CheckPhase; percent: number; message: string }[]);
+
+  const timeline: { stepIndex: number; delay: number }[] = playbackSteps.map((_, index) => ({
+    stepIndex: index,
+    delay: index * stepDelay,
+  }));
+
+  // After all scenario steps replay, apply the terminal outcome (the steps
+  // already include `completed` for successful flows; failed scenarios apply
+  // the failure here).
+  const lastStep = playbackSteps[playbackSteps.length - 1];
+  const lastIsTerminal =
+    lastStep !== undefined && (lastStep.phase === "completed" || lastStep.phase === "failed");
+
+  const lastTick = timeline[timeline.length - 1];
+  let finalDelay = lastTick === undefined ? 0 : lastTick.delay + stepDelay;
+
+  if (scenario.outcome.type === "failed" && !lastIsTerminal) {
+    timers.push(
+      setTimeout(() => {
+        if (closed) return;
+        const failedRecord = makeFailedRecord(checkId, scenario);
+        rememberMockRecord(checkId, failedRecord);
+        handlers.onEvent?.(makeEvent(failedRecord.progress));
+        handlers.onClose?.();
+      }, finalDelay),
+    );
+    finalDelay += stepDelay;
+  }
+
+  for (const tick of timeline) {
+    const step = playbackSteps[tick.stepIndex];
+    if (!step) continue;
+    const seq = tick.stepIndex + 1;
+
+    timers.push(
+      setTimeout(() => {
+        if (closed) return;
+        try {
+          const progress = makeProgress(checkId, step, seq);
+          applyProgress(checkId, progress);
+          handlers.onEvent?.(makeEvent(progress));
+          if (progress.status === "completed" || progress.status === "failed") {
+            handlers.onClose?.();
+          }
+        } catch (error) {
+          handlers.onError?.(error);
+        }
+      }, tick.delay),
+    );
+  }
+
+  // Edge: scenario has no steps and outcome is completed (instant happy).
+  if (playbackSteps.length === 0 && scenario.outcome.type === "completed") {
+    timers.push(
+      setTimeout(() => {
+        if (closed) return;
+        const completedAt = nowIso();
+        const progress = makeProgress(
+          checkId,
+          { phase: "completed", percent: 100, message: "Check complete." },
+          1,
+          completedAt,
+        );
         applyProgress(checkId, progress);
         handlers.onEvent?.(makeEvent(progress));
-
-        if (progress.status === "completed" || progress.status === "failed") {
-          handlers.onClose?.();
-        }
-      } catch (error) {
-        handlers.onError?.(error);
-      }
-    }, step.delayMs);
-
-    timers.push(timer);
-  });
+        handlers.onClose?.();
+      }, 0),
+    );
+  }
 
   return {
     close() {

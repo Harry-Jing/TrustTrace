@@ -63,7 +63,7 @@ describe("AppShell", () => {
         plugins: [createPinia()],
         stubs: {
           AppNav: true,
-          DevNav: true,
+          DevPanel: true,
           RouterView: RouterViewStub,
         },
       },

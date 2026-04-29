@@ -1,6 +1,8 @@
 import { computed, onScopeDispose, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
+import { readActiveScenario } from "@/dev/scenarioState";
+import { buildPhaseLookup } from "@/dev/scenarios";
 import { getCheck, subscribeCheckEvents } from "@/features/checks/api/checksApi";
 import {
   ACTIVE_PHASES,
@@ -32,23 +34,50 @@ function activePhase(phase: CheckPhase): ActiveCheckPhase {
   return phase;
 }
 
-/** MOCK DEV ONLY — Build a synthetic progress object for manual phase switching. */
+/**
+ * MOCK DEV ONLY — Build a synthetic progress object for manual phase switching.
+ *
+ * Reads the active scenario so manual jumps see the same percent/message that
+ * the auto-played stream would emit at that phase. Without this, the
+ * "loading" page UI flips between "70%" (manual jump) and "62%" (auto-play)
+ * for the same phase, which is jarring during dev.
+ */
 function makeDevProgress(checkId: string, phase: CheckPhase): CheckProgress {
   const phaseIndex = activePhaseIndexOf(phase);
-  const percent =
-    phase === "failed"
-      ? 100
-      : phase === "completed"
-        ? 100
-        : Math.max(8, Math.round(((phaseIndex + 1) / ACTIVE_PHASES.length) * 100));
   const updatedAt = new Date().toISOString();
+  const scenarioLookup = buildPhaseLookup(readActiveScenario());
 
+  if (phase === "completed") {
+    return {
+      checkId,
+      status: "completed",
+      phase,
+      percent: 100,
+      message: "Check complete.",
+      eventSeq: phaseIndex + 1,
+      updatedAt,
+    };
+  }
+
+  if (phase === "failed") {
+    return {
+      checkId,
+      status: "failed",
+      phase,
+      percent: 100,
+      message: "Check failed.",
+      eventSeq: phaseIndex + 1,
+      updatedAt,
+    };
+  }
+
+  const lookup = scenarioLookup[phase];
   return {
     checkId,
-    status: phase === "failed" ? "failed" : phase === "completed" ? "completed" : "running",
+    status: "running",
     phase,
-    percent,
-    message: phase === "completed" ? "Check complete." : "",
+    percent: lookup.percent,
+    message: lookup.message,
     eventSeq: phaseIndex + 1,
     updatedAt,
   };

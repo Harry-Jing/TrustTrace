@@ -47,3 +47,8 @@ export function devResetCheckProgress(checkId: string): void {
 export function devSetCheckFailed(checkId: string): void {
   mockClient.devSetCheckFailed(checkId);
 }
+
+/** MOCK ONLY — Force a mock check into the completed state with a demo result. */
+export function devSetCheckCompleted(checkId: string): void {
+  mockClient.devSetCheckCompleted(checkId);
+}

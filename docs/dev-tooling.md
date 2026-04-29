@@ -1,50 +1,103 @@
 # Dev Tooling
 
-Dev tooling is available only for local mock/demo flows. The app now separates the build environment from the API data source:
+Dev tooling powers the local mock/demo workflow. The implementation separates three concerns that were previously fused into one floating button:
 
-| Setting                                    | Meaning                                                                                                   |
-| ------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
-| `import.meta.env.DEV`                      | Vite development build. Does not imply mock data by itself.                                               |
-| `VITE_TRUSTTRACE_API_MODE=mock \| backend` | Selects the checks API client. Defaults to `backend`; set `mock` explicitly for fixture-backed demo mode. |
-| `VITE_TRUSTTRACE_API_BASE_URL`             | Base URL for the backend API client. Defaults to same-origin `/v1`.                                       |
+1. **Data source** — backend vs in-memory mocks. Selected at boot via `VITE_TRUSTTRACE_API_MODE`.
+2. **Scenario** — what the mock pipeline does (success vs failure variant). Switchable at runtime; persisted to `localStorage`; shareable via the `?scenario=` URL parameter.
+3. **Page jumps + mock-state actions** — quick navigation between demo pages and explicit verbs to reset/complete/fail the current mock check.
 
-`showDevTools` is true only when the app is running in Vite dev mode **and** `apiMode === 'mock'`. This keeps demo controls and fixture-backed loading evidence out of backend debugging, even when using `bun run dev`.
+The first concern is fixed for a session. The other two live in a single floating dev panel — modeled on TanStack Query Devtools and Pinia Colada Devtools — that is collapsed to a small "MOCK · &lt;scenario&gt;" badge by default and expands into a panel on click (or `Shift+Alt+D`).
+
+## Environment
+
+| Setting                                    | Meaning                                                                                                       |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| `import.meta.env.DEV`                      | Vite development build. Does not imply mock data by itself.                                                   |
+| `VITE_TRUSTTRACE_API_MODE=mock \| backend` | Selects the checks API client. Defaults to `backend`; set `mock` explicitly for fixture-backed demo mode.     |
+| `VITE_TRUSTTRACE_API_BASE_URL`             | Base URL for the backend API client. Defaults to same-origin `/v1`.                                           |
+| `?scenario=<id>` URL parameter             | Seeds the active scenario on first load. Subsequent picks via the panel overwrite the URL and `localStorage`. |
+
+`showDevTools` is true only when the app is running in Vite dev mode **and** `apiMode === 'mock'`. The panel is dynamically imported behind this flag so it is tree-shaken out of production bundles.
+
+## Code layout
+
+All dev-only modules live under `apps/web/src/dev/`:
+
+```
+dev/
+  devConfig.ts                   # Storage keys, query-param names, PRIMARY_DEMO_CHECK_ID re-export
+  scenarios.ts                   # Five named scenarios + per-phase percent/message lookup
+  scenarioState.ts               # Pinia-free URL/localStorage helpers (mock client uses these)
+  stores/
+    dev.store.ts                 # Reactive scenario id + panel open state
+  components/
+    DevPanel.vue                 # Floating badge + expandable panel (mounted from AppShell)
+    DevLoadingControls.vue       # Per-page phase + outcome controls on the loading page
+```
+
+The dev tooling never imports from page or feature code. Page code may import the `Dev*` components, but only inside `v-if="showDevTools"` guards.
 
 ## Components
 
-All dev-only components live in `apps/web/src/app/` and are prefixed with `Dev`:
+| Component            | Purpose                                                                                                                                                                                          |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `DevPanel`           | Bottom-right "MOCK · &lt;scenario&gt;" badge. Click or `Shift+Alt+D` expands a small panel with three sections: Scenario (radios), Jump to (page links), Mock state (reset/complete/fail verbs). |
+| `DevLoadingControls` | Rendered at the bottom of the loading page. Lets you jump to any active phase (with the scenario's percent + message), replay the scenario, force-complete, or force-fail.                       |
 
-| Component                | Purpose                                                                                                                                                                                                                 |
-| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `DevNav.vue`             | Floating action button (FAB) in the bottom-right corner. Opens a menu to jump between the 5 demo pages. Resets demo check progress when navigating to the loading page.                                                 |
-| `DevLoadingControls.vue` | Phase switcher rendered at the bottom of the loading page. Lets you jump between the six pipeline phases (`understanding`, `strategy`, `discovery`, `verify_read`, `weigh`, `verdict`) and trigger the completion flow. |
+`DevPanel` is mounted in `AppShell.vue` behind the `showDevTools` guard via `defineAsyncComponent` + dynamic import, so the production bundle never sees it. `DevLoadingControls` is rendered in `CheckLoadingPage.vue` behind the same guard.
 
-`DevNav` is mounted in `AppShell.vue` behind the `showDevTools` guard. `DevLoadingControls` is rendered in `CheckLoadingPage.vue` behind the same guard.
+## Scenarios
+
+Scenarios are defined in `dev/scenarios.ts` as a flat array of `DevScenario` records. Each scenario describes:
+
+- the progress steps the mock pipeline emits,
+- the per-step delay in ms (`stepDelayMs`; `0` for instant),
+- the terminal outcome (`completed` or `failed` with a typed `CheckApiError`).
+
+The mock client reads the active scenario at the moment a check is created (`createCheck`), reset (`devResetCheckProgress`), or subscribed to (`subscribeCheckEvents`). Manual phase overrides on the loading page also use the scenario's percent + message lookup, so the displayed progress is consistent whether you click through phases by hand or watch the auto-played stream.
+
+Adding a scenario: append to `DEV_SCENARIOS` in `dev/scenarios.ts`. The id must be unique. The scenario shows up in the panel automatically.
+
+Built-in scenarios:
+
+| Id                   | Behavior                                                        |
+| -------------------- | --------------------------------------------------------------- |
+| `success`            | Plays the full pipeline and lands on the result page (default). |
+| `success.instant`    | Skips to a completed result with no delay.                      |
+| `error.timeout`      | Fails at discovery with `PROVIDER_TIMEOUT` (retryable).         |
+| `error.rate_limited` | Fails immediately with `RATE_LIMITED`.                          |
+| `error.validation`   | Fails immediately with `INVALID_INPUT` (non-retryable).         |
+
+For "what does this loading phase look like in isolation", use the per-phase buttons in `DevLoadingControls` rather than adding a new scenario — the buttons read the scenario's percent/message lookup and override the displayed phase without restarting playback.
 
 ## Behavior by API mode
 
-| Area                       | Mock mode with dev tools                                                                                                                                                                                                                     | Backend mode                                                                                                       |
-| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| Loading page auto-redirect | Disabled while controls are visible, so each phase can be inspected.                                                                                                                                                                         | Automatically redirects to result or error when the check completes or fails, including during `bun run dev`.      |
-| Loading page completion    | Must click "done" in the dev controls to trigger the celebration animation and redirect.                                                                                                                                                     | Triggered automatically by check status updates.                                                                   |
-| Loading phase header       | Shows the current phase's `nowLabel`, `title`, and a one-sentence `description` from `PHASE_DEFINITIONS`, followed by the calm trust line. No live status pill, dot, or percent — backend progress messages are not echoed back to the user. | Same — phase comes from backend SSE events; the page never renders a status pill regardless of message or percent. |
-| Demo check reset           | `DevNav` calls `devResetCheckProgress()` before navigating to the loading page.                                                                                                                                                              | Not available; backend API data drives progress.                                                                   |
-| Shorthand routes           | `/loading`, `/result`, `/error` redirect to demo check routes.                                                                                                                                                                               | Not registered. Only `/checks/:checkId/*` routes are available.                                                    |
-| Unknown check IDs          | Known fixture IDs return demo records; unknown IDs return a mock not-found failure.                                                                                                                                                          | Backend API response is surfaced through the backend client.                                                       |
+| Area                       | Mock mode with dev tools                                                                                                                  | Backend mode                                                                                                       |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Loading page auto-redirect | Disabled while controls are visible, so each phase can be inspected.                                                                      | Automatically redirects to result or error when the check completes or fails, including during `bun run dev`.      |
+| Loading page outcome       | The `complete` / `fail` buttons in `DevLoadingControls` apply the terminal state and trigger the redirect.                                | Triggered automatically by check status updates.                                                                   |
+| Replay                     | The `replay` button calls `devResetCheckProgress` and re-subscribes; new scenario picks affect the next replay.                           | Not available; backend API data drives progress.                                                                   |
+| Loading phase header       | Shows the current phase's `nowLabel`, `title`, and a one-sentence `description` from `PHASE_DEFINITIONS`. No live status pill or percent. | Same — phase comes from backend SSE events; the page never renders a status pill regardless of message or percent. |
+| Shorthand routes           | `/loading`, `/result`, `/error` redirect to demo check routes for the primary demo fixture (`PRIMARY_DEMO_CHECK_ID`).                     | Not registered. Only `/checks/:checkId/*` routes are available.                                                    |
+| Unknown check IDs          | Known fixture IDs return demo records; unknown IDs return a mock not-found failure.                                                       | Backend API response is surfaced through the backend client.                                                       |
 
 ## API layer
 
 `apps/web/src/features/checks/api/checksApi.ts` is the public frontend API boundary. It delegates to:
 
-- `mockChecksClient.ts` — mock-only in-memory data and timers for demo/debug flows.
-- `backendChecksClient.ts` — fetch/EventSource client for the TypeScript backend. It uses a check's `eventsUrl` when available, retries transient stream disconnects, and resumes with `afterSeq` from the last accepted progress event.
-- `backendCheckSchemas.ts` — frontend-local Zod contract schemas for backend responses. Invalid payloads fail closed instead of being coerced into view models.
+- `mockChecksClient.ts` — scenario-driven in-memory client. Reads the active scenario via `dev/scenarioState.ts` (Pinia-free) at the moment of `createCheck`, `devResetCheckProgress`, or `subscribeCheckEvents`.
+- `backendChecksClient.ts` — fetch/EventSource client for the TypeScript backend.
+- `backendCheckSchemas.ts` — frontend-local Zod contract schemas for backend responses.
 
-Dev helpers exported from `checksApi.ts` are mock-only and should only be called from UI guarded by `showDevTools`.
+Mock-only helpers exported from `checksApi.ts`:
 
-`CheckRecord` includes `input: { mode, value } | null` so refreshes on loading/error pages can still display and retry the original claim. Backend DTOs send this as `input: { type, content } | null`.
+| Helper                  | Purpose                                                                              |
+| ----------------------- | ------------------------------------------------------------------------------------ |
+| `devResetCheckProgress` | Reset a mock record to its initial phase under the active scenario.                  |
+| `devSetCheckCompleted`  | Force a mock record into the completed state with the demo result view model.        |
+| `devSetCheckFailed`     | Force a mock record into the failed state using the active scenario's error variant. |
 
-The mock client keeps in-memory demo records plus a capped set of recent non-demo records, so long dev sessions do not grow unbounded.
+These should only be called from UI guarded by `showDevTools`.
 
 ## Guard pattern
 

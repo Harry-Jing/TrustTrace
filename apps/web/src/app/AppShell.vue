@@ -1,12 +1,18 @@
 <script setup lang="ts">
-import { nextTick, onErrorCaptured, ref, watch } from "vue";
+import { defineAsyncComponent, nextTick, onErrorCaptured, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import AppNav from "@/app/AppNav.vue";
-import DevNav from "@/app/DevNav.vue";
 import { showDevTools } from "@/app/env";
 import BaseButton from "@/components/BaseButton.vue";
 import { usePreferencesStore } from "@/stores/preferences.store";
+
+// Dynamic import: keeps the dev panel and its scenario registry out of the
+// production bundle (Vite tree-shakes the unreachable branch when
+// `import.meta.env.DEV` is statically false).
+const DevPanel = showDevTools
+  ? defineAsyncComponent(() => import("@/dev/components/DevPanel.vue"))
+  : null;
 
 const router = useRouter();
 const route = useRoute();
@@ -67,6 +73,6 @@ watch(
       </RouterView>
     </main>
 
-    <DevNav v-if="showDevTools" />
+    <component :is="DevPanel" v-if="DevPanel" />
   </div>
 </template>

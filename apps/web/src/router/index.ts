@@ -2,8 +2,9 @@ import { createRouter, createWebHistory } from "vue-router";
 
 import AppShell from "@/app/AppShell.vue";
 import { showDevTools } from "@/app/env";
+import { PRIMARY_DEMO_CHECK_ID } from "@/dev/devConfig";
+import { devResetCheckProgress, devSetCheckFailed } from "@/features/checks/api/checksApi";
 import CheckHomePage from "@/features/checks/pages/CheckHomePage.vue";
-import { DEMO_CHECK_ID } from "@/features/checks/fixtures/demoChecks";
 
 declare module "vue-router" {
   interface RouteMeta {
@@ -29,12 +30,28 @@ export const router = createRouter({
           component: CheckHomePage,
           meta: { depth: 0, title: "New check" },
         },
-        // DEV ONLY — shorthand redirects to demo check pages
+        // DEV ONLY — shorthand redirects to demo check pages, with the side
+        // effects the old DevNav used to perform inline (reset on /loading,
+        // force-fail on /error) so a direct visit shows the expected state.
         ...(showDevTools
           ? [
-              { path: "loading", redirect: `/checks/${DEMO_CHECK_ID}/loading` },
-              { path: "result", redirect: `/checks/${DEMO_CHECK_ID}/result` },
-              { path: "error", redirect: `/checks/${DEMO_CHECK_ID}/error` },
+              {
+                path: "loading",
+                beforeEnter: () => {
+                  devResetCheckProgress(PRIMARY_DEMO_CHECK_ID);
+                  return `/checks/${PRIMARY_DEMO_CHECK_ID}/loading`;
+                },
+                component: CheckHomePage,
+              },
+              { path: "result", redirect: `/checks/${PRIMARY_DEMO_CHECK_ID}/result` },
+              {
+                path: "error",
+                beforeEnter: () => {
+                  devSetCheckFailed(PRIMARY_DEMO_CHECK_ID);
+                  return `/checks/${PRIMARY_DEMO_CHECK_ID}/error`;
+                },
+                component: CheckHomePage,
+              },
             ]
           : []),
 

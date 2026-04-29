@@ -30,6 +30,8 @@ vi.mock("@/app/env", () => ({
   get showDevTools() {
     return loadingState.showDevTools;
   },
+  isMockApiMode: false,
+  isBackendApiMode: true,
 }));
 
 vi.mock("@/features/checks/composables/useCheckProgress", async () => {
