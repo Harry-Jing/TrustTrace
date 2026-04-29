@@ -18,7 +18,10 @@ const { checkStatus, result, isLoading, isError, reload } = useCheckResult();
 function handleCopy() {
   if (!result.value) return;
 
-  void navigator.clipboard
+  const clipboard = (navigator as { clipboard?: Pick<Clipboard, "writeText"> }).clipboard;
+  if (!clipboard) return;
+
+  void clipboard
     .writeText(result.value.summaryText)
     .then(() => {
       copied.value = true;
