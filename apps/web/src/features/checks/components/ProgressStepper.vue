@@ -24,6 +24,7 @@ function isCurrent(index: number, currentIndex: number) {
       v-for="(step, index) in steps"
       :key="step.key"
       class="relative flex flex-1 flex-col items-center"
+      :aria-current="isCurrent(index, currentIndex) ? 'step' : undefined"
     >
       <!-- Connector: grey base + green fill that grows from the left when done.
            When this segment sits between the current and next step it carries a

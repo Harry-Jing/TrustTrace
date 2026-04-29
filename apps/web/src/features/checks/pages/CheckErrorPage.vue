@@ -8,9 +8,13 @@ import BaseTagBadge from "@/components/BaseTagBadge.vue";
 import BaseWarnRingIllustration from "@/components/BaseWarnRingIllustration.vue";
 import { getCheck } from "@/features/checks/api/checksApi";
 import { useCreateCheck } from "@/features/checks/composables/useCreateCheck";
+import { getErrorCodeMeta } from "@/features/checks/constants/errorCopy";
 import { useChecksStore } from "@/features/checks/stores/checks.store";
 import type { CheckApiError } from "@/features/checks/types";
 import { useAsyncData } from "@/shared/composables/useAsyncData";
+
+const FALLBACK_EXPLANATION =
+  "An unexpected error occurred while processing your check. If this keeps happening, the service may be experiencing issues.";
 
 const route = useRoute();
 const showDetail = ref(false);
@@ -29,10 +33,18 @@ const errorMessage = computed(
   () => error.value?.message ?? "Something went wrong. You can retry with the same claim.",
 );
 const traceId = computed(() => error.value?.traceId ?? null);
-const isRetryable = computed(() => error.value?.retryable ?? true);
+
+// `errorCodeMeta` is the web-owned source of truth for per-code user copy.
+// Contracts own the stable error-code enum; the frontend owns retry guidance
+// and other presentation-specific details.
+const errorCodeMeta = computed(() => getErrorCodeMeta(errorCode.value));
+const isRetryable = computed(
+  () => errorCodeMeta.value?.retryable ?? error.value?.retryable ?? true,
+);
 const retryInput = computed(() => record.value?.input ?? checks.currentInput);
 const canRetry = computed(() => isRetryable.value && retryInput.value !== null);
 const retryHelp = computed(() => {
+  if (errorCodeMeta.value?.retryHelp) return errorCodeMeta.value.retryHelp;
   if (canRetry.value) return "You can retry with the same claim.";
   if (isRetryable.value) return "Return to the claim editor to start a new check.";
   return "Please try again with a different claim.";
@@ -43,20 +55,7 @@ const retryErrorMessage = computed(() => {
   return "Could not retry this check. Please edit the claim and try again.";
 });
 
-const ERROR_EXPLANATIONS: Record<string, string> = {
-  PROVIDER_TIMEOUT:
-    "The AI provider (e.g. OpenAI) didn’t respond in time. This usually happens during high traffic. Your claim was received but analysis couldn’t complete.",
-  RATE_LIMITED:
-    "Too many requests were sent in a short period. The provider enforces rate limits to ensure fair usage. Waiting a moment before retrying usually resolves this.",
-  PROVIDER_ERROR:
-    "The AI provider returned an unexpected error. This is typically a temporary issue on their end.",
-};
-
-const errorExplanation = computed(
-  () =>
-    ERROR_EXPLANATIONS[errorCode.value] ??
-    "An unexpected error occurred while processing your check. If this keeps happening, the service may be experiencing issues.",
-);
+const errorExplanation = computed(() => errorCodeMeta.value?.explanation ?? FALLBACK_EXPLANATION);
 
 async function retryCheck() {
   if (!retryInput.value) return;

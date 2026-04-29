@@ -1,9 +1,12 @@
 import { describe, expect, it } from "bun:test";
 
 import {
+  checkApiErrorSchema,
   checkListResponseSchema,
   createCheckRequestSchema,
   progressEventSchema,
+  VERDICT_BAND_ORDER,
+  VERDICT_BANDS,
 } from "../src/checks";
 
 describe("checks API contracts", () => {
@@ -40,6 +43,27 @@ describe("checks API contracts", () => {
   it("keeps the check-list response shape explicit", () => {
     expect(checkListResponseSchema.parse({ items: [] })).toEqual({ items: [] });
     expect(() => checkListResponseSchema.parse([])).toThrow();
+  });
+
+  it("keeps verdict-band sort order aligned with the verdict-band schema source", () => {
+    expect(VERDICT_BAND_ORDER).toEqual(VERDICT_BANDS);
+  });
+
+  it("allowlists persisted check error codes", () => {
+    const baseError = {
+      category: "provider",
+      message: "The provider took too long.",
+      retryable: true,
+      traceId: null,
+      occurredAt: "2026-04-27T20:00:00.000Z",
+    };
+
+    expect(checkApiErrorSchema.parse({ ...baseError, code: "PROVIDER_TIMEOUT" }).code).toBe(
+      "PROVIDER_TIMEOUT",
+    );
+    expect(() =>
+      checkApiErrorSchema.parse({ ...baseError, code: "CLAIM_ANALYSIS_EMPTY" }),
+    ).toThrow();
   });
 
   it("normalizes optional SSE fields to null", () => {

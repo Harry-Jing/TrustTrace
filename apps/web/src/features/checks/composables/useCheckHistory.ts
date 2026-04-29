@@ -1,9 +1,20 @@
 import { computed, ref } from "vue";
 
 import { listChecks } from "@/features/checks/api/checksApi";
-import { CUE_ORDER } from "@/features/checks/constants/history";
-import type { CheckListSort } from "@/features/checks/types";
+import { verdictBandRank } from "@/features/checks/constants/history";
+import type { CheckListItem, CheckListSort } from "@/features/checks/types";
 import { useAsyncData } from "@/shared/composables/useAsyncData";
+
+function compareByVerdictBand(a: CheckListItem, b: CheckListItem): number {
+  const rankDelta = verdictBandRank(a.verdictBand) - verdictBandRank(b.verdictBand);
+  if (rankDelta !== 0) return rankDelta;
+  // Tie-break by recency so checks within the same band stay date-ordered.
+  return b.createdAt.localeCompare(a.createdAt);
+}
+
+function compareByDate(a: CheckListItem, b: CheckListItem): number {
+  return b.createdAt.localeCompare(a.createdAt);
+}
 
 export function useCheckHistory() {
   const search = ref("");
@@ -12,20 +23,15 @@ export function useCheckHistory() {
 
   const items = computed(() => {
     const query = search.value.toLowerCase();
-    let filtered = (state.data.value ?? []).filter(
+    const filtered = (state.data.value ?? []).filter(
       (historyItem) =>
         !query ||
         historyItem.claim.toLowerCase().includes(query) ||
         historyItem.snippet.toLowerCase().includes(query),
     );
 
-    if (sortBy.value === "cue") {
-      filtered = filtered.sort((a, b) => (CUE_ORDER[a.cue] ?? 99) - (CUE_ORDER[b.cue] ?? 99));
-    } else {
-      filtered = filtered.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-    }
-
-    return filtered;
+    const comparator = sortBy.value === "cue" ? compareByVerdictBand : compareByDate;
+    return [...filtered].sort(comparator);
   });
 
   return { search, sortBy, items, ...state };

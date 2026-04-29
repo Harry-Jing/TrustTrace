@@ -1,7 +1,7 @@
-import type { CheckApiErrorDto } from "../types/checks";
+import type { CheckApiErrorDto, CheckErrorCode } from "../types/checks";
 
 export function makeCheckError(input: {
-  code: string;
+  code: CheckErrorCode;
   category: string;
   message: string;
   retryable?: boolean;

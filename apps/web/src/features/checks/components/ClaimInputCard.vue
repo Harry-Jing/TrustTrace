@@ -16,7 +16,6 @@ const emit = defineEmits<{
 
 const mode = ref<CheckInputMode>("text");
 const value = ref("");
-const inputFocused = ref(false);
 const inputId = "claim-input";
 
 const normalizedValue = computed(() => value.value.trim());
@@ -57,13 +56,13 @@ function submit() {
 </script>
 
 <template>
+  <!-- Glow the whole card only when the claim field itself has focus.
+       Using :has() keeps the trigger scoped to <input>/<textarea>; clicking
+       the mode toggle or the submit button no longer lights the border up.
+       Falls back gracefully (border stays rest-state) on browsers without
+       :has() support — no JS focus tracking needed. -->
   <form
-    class="animate-up rounded-lg border-[1.5px] bg-card p-5 text-left transition-[border-color,box-shadow,background-color] duration-200 [animation-delay:220ms] sm:p-6"
-    :class="
-      inputFocused ? 'border-accent shadow-input-focus' : 'border-border-strong shadow-input-rest'
-    "
-    @focusin="inputFocused = true"
-    @focusout="inputFocused = false"
+    class="claim-input-card animate-up rounded-lg border-[1.5px] border-border-strong bg-card p-5 text-left shadow-input-rest transition-[border-color,box-shadow,background-color] duration-200 [animation-delay:220ms] sm:p-6"
     @submit.prevent="submit"
   >
     <!-- Mode toggle + char count -->
@@ -100,7 +99,12 @@ function submit() {
       </span>
     </div>
 
-    <!-- Input field -->
+    <!-- Input field
+         `outline-none` on the input itself is intentional: the parent card
+         absorbs focus styling via `:has(.claim-field:focus-visible)` (see
+         scoped CSS below). The `claim-field` class is the hook that scopes
+         the focus trigger to the actual claim input — clicking the mode
+         toggle or submit button does not glow the card. -->
     <label class="sr-only" :for="inputId">Claim to check</label>
     <input
       v-if="mode === 'url'"
@@ -108,7 +112,7 @@ function submit() {
       v-model="value"
       type="text"
       placeholder="https://example.com/article-to-check"
-      class="w-full border-none bg-transparent py-2.5 text-base leading-relaxed text-foreground outline-none"
+      class="claim-field w-full border-none bg-transparent py-2.5 text-base leading-relaxed text-foreground outline-none"
       :disabled="isDisabled"
     />
     <textarea
@@ -117,7 +121,7 @@ function submit() {
       v-model="value"
       placeholder="Paste the claim or excerpt you want to double-check…"
       :rows="3"
-      class="max-h-50 min-h-20 w-full resize-y border-none bg-transparent text-body leading-[1.7] text-foreground outline-none"
+      class="claim-field max-h-50 min-h-20 w-full resize-y border-none bg-transparent text-body leading-[1.7] text-foreground outline-none"
       :disabled="isDisabled"
     />
 
@@ -136,3 +140,16 @@ function submit() {
     </div>
   </form>
 </template>
+
+<style scoped>
+/* Card glow is scoped to `.claim-field` — the actual input/textarea.
+   Clicks on the mode toggle, character counter, or submit button no
+   longer trigger the card border (the previous @focusin/@focusout JS
+   pattern lit up for any descendant focus, including the mode toggle).
+   Plain :focus is intentional so mouse focus still glows the card,
+   matching the prior interaction model. */
+.claim-input-card:has(.claim-field:focus) {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-input-focus);
+}
+</style>

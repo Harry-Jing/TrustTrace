@@ -24,6 +24,12 @@
   --shadow-input-rest: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.03);
   --shadow-input-focus: 0 0 0 3px var(--accent-fade), 0 8px 24px rgba(0, 0, 0, 0.05);
   --shadow-card-hover: 0 8px 24px rgba(0, 0, 0, 0.07);
+  /* Theme-aware nav scrolled-shadow. Indirection via `--nav-scrolled-shadow`
+     follows the same pattern as the color tokens above: the underlying var
+     is redefined in :root and [data-theme="dark"] so a black-alpha drop
+     reads as a soft separator in light mode, while the dark variant uses
+     a hairline highlight that stays visible on a near-black background. */
+  --shadow-nav-scrolled: var(--nav-scrolled-shadow);
 
   --text-micro: 9px;
   --text-micro--line-height: 1.4;
@@ -94,6 +100,7 @@
   --success-fade: rgba(61, 102, 48, 0.08);
   --card: #ffffff;
   --nav: rgba(250, 249, 246, 0.92);
+  --nav-scrolled-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 [data-theme="dark"] {
@@ -115,6 +122,10 @@
   --success-fade: rgba(126, 181, 95, 0.12);
   --card: #1c1c1a;
   --nav: rgba(17, 17, 16, 0.92);
+  /* Dark nav-scrolled shadow combines a faint highlight (visible on the
+     dark side) and a soft drop (visible against the page surface). A
+     pure black-alpha drop disappears on a near-black background. */
+  --nav-scrolled-shadow: 0 1px 0 rgba(255, 255, 255, 0.04), 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
 @layer base {

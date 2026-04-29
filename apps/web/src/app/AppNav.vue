@@ -22,7 +22,7 @@ function navigate(name: string) {
 <template>
   <nav
     class="sticky top-0 z-20 flex h-14 items-center border-b border-border bg-nav px-7 backdrop-blur transition-[background,border-color,box-shadow] duration-400"
-    :class="{ 'shadow-[0_1px_3px_rgba(0,0,0,0.06)]': isScrolled }"
+    :class="{ 'shadow-nav-scrolled': isScrolled }"
   >
     <div class="flex flex-1 items-center">
       <button

@@ -43,6 +43,8 @@ function onBeforeEnter(el: Element) {
     <div
       v-if="items.length === 0"
       key="empty"
+      role="status"
+      aria-live="polite"
       class="col-span-full py-10 text-center text-foreground-subtle"
     >
       {{

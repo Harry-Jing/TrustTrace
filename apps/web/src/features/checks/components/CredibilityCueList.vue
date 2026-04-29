@@ -29,6 +29,13 @@ defineProps<{
           />
         </div>
       </div>
+      <!-- One-line editorial framing for the cue ("why this matters").
+           Rendered between heading and body so the reader has a takeaway
+           before the longer explanation. Quiet italic so it doesn't compete
+           with the body text or the strength dots. -->
+      <p v-if="cue.note" class="mb-1 text-[11px] leading-[1.5] text-foreground-subtle italic">
+        {{ cue.note }}
+      </p>
       <div class="text-xs leading-[1.6] text-foreground-muted">{{ cue.text }}</div>
     </div>
   </section>

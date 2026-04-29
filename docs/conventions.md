@@ -22,6 +22,7 @@ Bun runtime APIs such as `Bun.serve`, `bun:sqlite`, `Bun.sql`, or `Bun.file` are
 `packages/contracts` is the current `@trusttrace/contracts` package. It owns shared Zod schemas and `z.infer` DTO types for frontend/backend wire contracts.
 
 - Keep contracts limited to HTTP/SSE boundary payloads: request bodies, response DTOs, API error DTOs, progress events, and stable enum-like fields.
+- Stable API enums such as `verdictBand`, `discoveryStrategy`, and persisted `CheckApiError.code` belong in contracts; frontend product copy, retry guidance, and UI-specific error explanations belong in `apps/web`.
 - Do not put backend internals, Drizzle schema, repository types, pipeline state, frontend ViewModels, mock fixtures, or UI component types in contracts.
 - Frontend code must still validate backend JSON with these Zod schemas at the API boundary, then map DTOs into frontend feature/view-model types.
 - Backend code may use the same schemas to validate incoming request bodies and may alias DTO types from contracts when those types describe wire payloads.

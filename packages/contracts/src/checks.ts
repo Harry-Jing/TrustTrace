@@ -14,6 +14,30 @@ export const checkPhaseSchema = z.enum([
   "failed",
 ]);
 
+export const VERDICT_BANDS = [
+  "evidence_strong",
+  "evidence_mixed",
+  "evidence_weak",
+  "evidence_thin",
+  "needs_context",
+  "system_failed",
+] as const;
+
+export const verdictBandSchema = z.enum(VERDICT_BANDS);
+
+export const CHECK_ERROR_CODES = [
+  "INPUT_EXTRACTION_FAILED",
+  "SOURCE_DISCOVERY_FAILED",
+  "SOURCE_EXTRACTION_FAILED",
+  "CLAIM_ANALYSIS_FAILED",
+  "PROVIDER_TIMEOUT",
+  "PROVIDER_ERROR",
+  "PROVIDER_CONFIGURATION_ERROR",
+  "PIPELINE_ERROR",
+] as const;
+
+export const checkErrorCodeSchema = z.enum(CHECK_ERROR_CODES);
+
 export const finiteNumberSchema = z.number().refine(Number.isFinite, "Expected a finite number");
 export const nonNegativeIntegerSchema = z.number().int().min(0);
 export const percentSchema = z.number().int().min(0).max(100);
@@ -76,7 +100,7 @@ export const createCheckRequestSchema = z
   });
 
 export const checkApiErrorSchema = z.object({
-  code: z.string().min(1),
+  code: checkErrorCodeSchema,
   category: z.string().min(1),
   message: z.string().min(1),
   retryable: z.boolean(),
@@ -130,14 +154,7 @@ export const checkResultSchema = z.object({
   inputText: z.string(),
   inputTypeLabel: z.string(),
   durationLabel: z.string(),
-  verdictBand: z.enum([
-    "evidence_strong",
-    "evidence_mixed",
-    "evidence_weak",
-    "evidence_thin",
-    "needs_context",
-    "system_failed",
-  ]),
+  verdictBand: verdictBandSchema,
   verdictLabel: z.string(),
   headline: z.string(),
   description: z.string(),
@@ -186,7 +203,16 @@ export const checkListItemSchema = z.object({
   claim: z.string(),
   snippet: z.string(),
   createdAt: isoStringSchema,
+  /**
+   * Human-readable label for display only (e.g. "evidence strong").
+   * Do not parse this for sorting — use `verdictBand` instead.
+   */
   cue: z.string(),
+  /**
+   * Stable enum used for sort order and conditional UI. Null while the
+   * check is still queued/running and no band has been chosen yet.
+   */
+  verdictBand: verdictBandSchema.nullable(),
   tone: z.enum(["default", "accent", "warn", "good", "dark"]),
 });
 
@@ -213,6 +239,8 @@ export const progressEventSchema = z.object({
 export type CheckStatusDto = z.infer<typeof checkStatusSchema>;
 export type DiscoveryStrategyDto = z.infer<typeof discoveryStrategySchema>;
 export type CheckPhaseDto = z.infer<typeof checkPhaseSchema>;
+export type VerdictBandDto = z.infer<typeof verdictBandSchema>;
+export type CheckErrorCodeDto = z.infer<typeof checkErrorCodeSchema>;
 export type CheckInputDto = z.infer<typeof checkInputSchema>;
 export type CreateCheckRequestDto = z.infer<typeof createCheckRequestSchema>;
 export type CheckApiErrorDto = z.infer<typeof checkApiErrorSchema>;
@@ -234,4 +262,22 @@ function isHttpUrl(value: string): boolean {
   } catch {
     return false;
   }
+}
+
+/**
+ * Stable verdict-band order used for sorting checks by credibility outcome.
+ * Lower index = stronger / more conclusive evidence.
+ *
+ * Defined from the same source tuple as `verdictBandSchema` so adding a new
+ * verdict band cannot forget the list-sort order.
+ */
+export const VERDICT_BAND_ORDER = VERDICT_BANDS;
+
+export type KnownErrorCode = CheckErrorCodeDto;
+export const KNOWN_ERROR_CODES = CHECK_ERROR_CODES;
+
+const CHECK_ERROR_CODE_SET: ReadonlySet<string> = new Set(CHECK_ERROR_CODES);
+
+export function isCheckErrorCode(code: string): code is CheckErrorCodeDto {
+  return CHECK_ERROR_CODE_SET.has(code);
 }

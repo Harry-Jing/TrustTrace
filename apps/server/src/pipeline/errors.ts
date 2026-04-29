@@ -2,11 +2,12 @@ import { EvidenceProviderError } from "../evidenceProvider/types";
 import { ChecksRepository } from "../repositories/repositoryFacade";
 import { SourceFetchError } from "../sourceSafety/types";
 import { makeCheckError } from "../synthesis/errors";
-import type { CheckApiErrorDto } from "../types/checks";
+import type { CheckApiErrorDto, CheckErrorCode } from "../types/checks";
+import { isCheckErrorCode } from "@trusttrace/contracts/checks";
 
 export class PipelineCheckError extends Error {
   constructor(
-    readonly code: string,
+    readonly code: CheckErrorCode,
     readonly category: string,
     message: string,
     readonly retryable = true,
@@ -57,12 +58,12 @@ export function errorToCheckError(error: unknown): CheckApiErrorDto {
   }
 
   if (error instanceof EvidenceProviderError) {
+    const code = providerCheckErrorCode(error);
     return makeCheckError({
-      code: error.code,
-      category:
-        error.code === "PROVIDER_CONFIGURATION_ERROR" ? "provider configuration" : "provider",
+      code,
+      category: code === "PROVIDER_CONFIGURATION_ERROR" ? "provider configuration" : "provider",
       message: error.message,
-      retryable: error.code !== "PROVIDER_CONFIGURATION_ERROR",
+      retryable: code !== "PROVIDER_CONFIGURATION_ERROR",
     });
   }
 
@@ -82,4 +83,8 @@ export function providerAuditErrorCode(error: unknown): string {
 
 export function errorMessage(error: unknown, fallback: string): string {
   return error instanceof Error ? error.message : fallback;
+}
+
+function providerCheckErrorCode(error: EvidenceProviderError): CheckErrorCode {
+  return isCheckErrorCode(error.code) ? error.code : "PROVIDER_ERROR";
 }

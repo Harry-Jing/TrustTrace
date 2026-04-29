@@ -1,5 +1,10 @@
 import { checksTable } from "../../schema/checks";
-import type { CheckListItemDto, CheckRecordDto, CreateCheckResponseDto } from "../../types/checks";
+import type {
+  CheckListItemDto,
+  CheckRecordDto,
+  CreateCheckResponseDto,
+  VerdictBandDto,
+} from "../../types/checks";
 
 type CheckRow = typeof checksTable.$inferSelect;
 
@@ -36,6 +41,7 @@ export function rowToListItem(row: CheckRow): CheckListItemDto {
     snippet: listSnippet(row),
     createdAt: row.createdAt,
     cue: listCue(row),
+    verdictBand: listVerdictBand(row),
     tone: listTone(row),
   };
 }
@@ -54,6 +60,17 @@ function listCue(row: CheckRow): string {
   if (row.status === "completed") return row.resultJson?.verdictLabel || "needs context";
   if (row.status === "failed") return "failed";
   return "checking";
+}
+
+/**
+ * The list item exposes a stable enum so consumers can sort or branch
+ * without parsing the human-readable `cue` string. Failed checks land
+ * in the `system_failed` band; queued/running ones don't have a band yet.
+ */
+function listVerdictBand(row: CheckRow): VerdictBandDto | null {
+  if (row.status === "completed") return row.resultJson?.verdictBand ?? "needs_context";
+  if (row.status === "failed") return "system_failed";
+  return null;
 }
 
 function listTone(row: CheckRow): CheckListItemDto["tone"] {

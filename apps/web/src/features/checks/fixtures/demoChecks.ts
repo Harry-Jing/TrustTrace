@@ -7,6 +7,9 @@ import type {
 
 export const DEMO_CHECK_ID = "demo-seat-belts";
 
+// `cue` strings here mirror the backend's `verdictLabel(verdictBand)` output
+// so mock and real history rows present the same human-readable label.
+// `verdictBand` is the stable sort key (matches `VERDICT_BAND_ORDER`).
 export const DEMO_CHECKS = [
   {
     checkId: DEMO_CHECK_ID,
@@ -14,6 +17,7 @@ export const DEMO_CHECKS = [
     snippet: "Multiple sources confirm 40–55% reduction in fatal injury for belted occupants.",
     createdAt: "2026-04-19T14:32:00.000Z",
     cue: "evidence strong",
+    verdictBand: "evidence_strong",
     tone: "accent",
   },
   {
@@ -21,7 +25,8 @@ export const DEMO_CHECKS = [
     claim: "Vitamin C prevents common colds",
     snippet: "Some evidence for symptom duration, but prevention claims lack strong support.",
     createdAt: "2026-04-18T11:15:00.000Z",
-    cue: "mixed evidence",
+    cue: "evidence mixed",
+    verdictBand: "evidence_mixed",
     tone: "default",
   },
   {
@@ -29,7 +34,8 @@ export const DEMO_CHECKS = [
     claim: "Students retain 65% more info from handwritten notes",
     snippet: "The cited 65% figure traces to one study with limited sample size.",
     createdAt: "2026-04-18T08:40:00.000Z",
-    cue: "weak evidence",
+    cue: "evidence weak",
+    verdictBand: "evidence_weak",
     tone: "warn",
   },
   {
@@ -38,15 +44,17 @@ export const DEMO_CHECKS = [
     snippet:
       "Major cohort studies associate moderate coffee intake with neutral or positive outcomes.",
     createdAt: "2026-04-17T16:20:00.000Z",
-    cue: "contradicted",
-    tone: "warn",
+    cue: "evidence strong",
+    verdictBand: "evidence_strong",
+    tone: "accent",
   },
   {
     checkId: "demo-ev-batteries",
     claim: "EV batteries pollute more than gas cars over lifetime",
     snippet: "Lifecycle analyses vary by region and energy mix; headline claim oversimplifies.",
     createdAt: "2026-04-16T09:55:00.000Z",
-    cue: "mixed evidence",
+    cue: "evidence mixed",
+    verdictBand: "evidence_mixed",
     tone: "default",
   },
   {
@@ -54,8 +62,9 @@ export const DEMO_CHECKS = [
     claim: "Reading in dim light permanently damages eyesight",
     snippet: "Ophthalmology consensus: temporary strain yes, permanent damage no.",
     createdAt: "2026-04-15T13:10:00.000Z",
-    cue: "contradicted",
-    tone: "warn",
+    cue: "evidence strong",
+    verdictBand: "evidence_strong",
+    tone: "accent",
   },
 ] as const satisfies readonly CheckListItem[];
 
