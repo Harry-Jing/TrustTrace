@@ -60,14 +60,15 @@ The frontend runs on backend-shaped mocks: API contract, async `useCreateCheck`,
 - `apps/server` exists as a backend-connectable service: Hono API, SQLite/Drizzle persistence, pino logging, selectable Tavily/OpenAI-backed candidate source discovery, backend URL safety/extraction, deterministic synthesis, and progress SSE.
 - Implemented `/v1/health`, `POST /v1/checks`, `GET /v1/checks/:checkId`, `GET /v1/checks`, and `GET /v1/checks/:checkId/events`.
 - Backend records persist the original input, progress events, and source extraction records so loading/result/error routes can refresh against real server state.
+- P1.5 accepted: create-check requests require allowlisted `discoveryStrategy`; `search_api` uses Tavily, `llm_web` uses OpenAI web search; all discovered URLs still route through the backend evidence gate.
 
 ### Next
 
-Continue hardening P1.5 user-selectable discovery strategies from [claim-checking-pipeline.md](claim-checking-pipeline.md): wire frontend strategy selection, compare Tavily `search_api` against OpenAI `llm_web` in evals, and keep all discovered URLs routed through URL safety, extraction, snippet-only downgrade, ranking/dedupe, source assessment, and deterministic synthesis gates. Do not add auto or parallel discovery modes in P1.5.
+Move on to P2 quality and coverage work when ready. Do not reopen P1.5 or add auto/parallel discovery modes.
 
 ## Backlog
 
-Revisit only after the backend powers the real evidence flow, contracts are settled, and provider-backed tests/evals exist.
+Revisit only after the backend powers the real evidence flow and contracts are settled.
 
 - **i18n/localization** — for a real multilingual launch.
 - **Design system cleanup** — extract shared components after UI patterns settle.

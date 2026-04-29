@@ -7,7 +7,7 @@ Evidence-oriented credibility checking service. Submit a URL or text, query web 
 - **Current:** `apps/web` is the active Vue 3 frontend with mock/backend modes.
 - **Current:** `apps/server` is the Hono backend with SQLite persistence, selectable Tavily/OpenAI-backed source discovery, backend URL safety/extraction, and progress SSE.
 - **Current:** `packages/contracts` provides shared Zod schemas and inferred DTO types for frontend/backend API boundaries.
-- **Current P1.5 backend:** create-check requests require `discoveryStrategy` (`search_api` or `llm_web`); all discovered URLs still pass through the same backend evidence gate.
+- **Current P1.5 accepted:** create-check requests require `discoveryStrategy` (`search_api` or `llm_web`); all discovered URLs still pass through the same backend evidence gate.
 - **Current frontend settings:** `/settings` exposes discovery strategy and theme (light/dark/auto), persisted to `localStorage`. Bring-your-own keys, search depth, and reasoning rigor are visible as disabled "coming soon" placeholders.
 
 ## Tech Stack
