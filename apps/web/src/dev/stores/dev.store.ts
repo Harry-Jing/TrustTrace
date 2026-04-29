@@ -8,7 +8,7 @@
 
 import { defineStore } from "pinia";
 
-import { DEV_STORAGE_KEYS } from "@/dev/devConfig";
+import { PRIMARY_DEMO_CHECK_ID, DEV_STORAGE_KEYS } from "@/dev/devConfig";
 import { DEFAULT_SCENARIO_ID, type DevScenarioId, getScenario } from "@/dev/scenarios";
 import {
   persistScenarioId,
@@ -16,6 +16,7 @@ import {
   readUrlScenarioId,
   syncUrlScenarioId,
 } from "@/dev/scenarioState";
+import { DEMO_CHECK_IDS } from "@/features/checks/fixtures/demoChecks";
 
 function readPanelOpen(): boolean {
   if (typeof localStorage === "undefined") return false;
@@ -27,15 +28,28 @@ function persistPanelOpen(open: boolean) {
   localStorage.setItem(DEV_STORAGE_KEYS.panelOpen, open ? "1" : "0");
 }
 
+function readDemoCheckId(): string {
+  if (typeof localStorage === "undefined") return PRIMARY_DEMO_CHECK_ID;
+  const stored = localStorage.getItem(DEV_STORAGE_KEYS.demoCheckId);
+  return stored && DEMO_CHECK_IDS.has(stored) ? stored : PRIMARY_DEMO_CHECK_ID;
+}
+
+function persistDemoCheckId(id: string) {
+  if (typeof localStorage === "undefined") return;
+  localStorage.setItem(DEV_STORAGE_KEYS.demoCheckId, id);
+}
+
 interface DevState {
   scenarioId: DevScenarioId;
   panelOpen: boolean;
+  demoCheckId: string;
 }
 
 export const useDevStore = defineStore("dev", {
   state: (): DevState => ({
     scenarioId: readUrlScenarioId() ?? readStoredScenarioId() ?? DEFAULT_SCENARIO_ID,
     panelOpen: readPanelOpen(),
+    demoCheckId: readDemoCheckId(),
   }),
   getters: {
     scenario: (state) => getScenario(state.scenarioId),
@@ -45,6 +59,11 @@ export const useDevStore = defineStore("dev", {
       this.scenarioId = id;
       persistScenarioId(id);
       syncUrlScenarioId(id);
+    },
+    setDemoCheckId(id: string) {
+      if (!DEMO_CHECK_IDS.has(id)) return;
+      this.demoCheckId = id;
+      persistDemoCheckId(id);
     },
     openPanel() {
       this.panelOpen = true;

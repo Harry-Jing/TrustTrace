@@ -3,10 +3,12 @@
  * DEV ONLY — Floating dev panel.
  *
  * Bottom-right pill ("MOCK · <scenario>") that expands into a small panel
- * with three concerns:
+ * with four concerns:
  *   1. Pick the active scenario (radio list)
- *   2. Jump between the demo pages (loading / result / error)
- *   3. Quick mock-state actions (reset / fail / complete)
+ *   2. Pick the active demo claim (radio list — drives which result fixture
+ *      / verdict band the page renders)
+ *   3. Jump between the demo pages (loading / result / error)
+ *   4. Quick mock-state actions (reset / fail / complete)
  *
  * Modeled on Pinia Colada Devtools — small floating affordance, in-panel
  * verb buttons, no command palette. The Shift+Alt+D hotkey toggles the
@@ -15,7 +17,6 @@
 import { computed, onBeforeUnmount, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import { PRIMARY_DEMO_CHECK_ID } from "@/dev/devConfig";
 import { DEV_SCENARIOS, type DevScenarioId } from "@/dev/scenarios";
 import { useDevStore } from "@/dev/stores/dev.store";
 import {
@@ -23,6 +24,7 @@ import {
   devSetCheckCompleted,
   devSetCheckFailed,
 } from "@/features/checks/api/checksApi";
+import { DEMO_CHECKS } from "@/features/checks/fixtures/demoChecks";
 
 const dev = useDevStore();
 const router = useRouter();
@@ -65,7 +67,15 @@ const checkIdParam = computed(() => {
   return typeof value === "string" ? value : null;
 });
 
-const activeCheckId = computed(() => checkIdParam.value ?? PRIMARY_DEMO_CHECK_ID);
+// When viewing a specific check, panel actions target that check; otherwise
+// they target the user-selected demo claim. This keeps DevLoadingControls'
+// "fail" button affecting whatever you're looking at while the panel's
+// global actions follow your demo-claim selection.
+const activeCheckId = computed(() => checkIdParam.value ?? dev.demoCheckId);
+
+function pickDemoCheck(id: string) {
+  dev.setDemoCheckId(id);
+}
 
 function go(path: string) {
   void router.push(path);
@@ -167,6 +177,33 @@ function forceFail() {
                 <span class="font-mono text-micro text-foreground-subtle">
                   {{ scenario.description }}
                 </span>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <div class="border-t border-border px-3 pt-3 pb-2">
+          <div class="mb-1.5 font-mono text-eyebrow text-foreground-subtle uppercase">
+            Demo claim
+          </div>
+          <div class="flex flex-col gap-0.5" role="radiogroup" aria-label="Active demo claim">
+            <label
+              v-for="demo in DEMO_CHECKS"
+              :key="demo.checkId"
+              class="flex cursor-pointer items-start gap-2 rounded-md px-2 py-1.5 transition-colors duration-100 hover:bg-surface"
+              :class="dev.demoCheckId === demo.checkId ? 'bg-accent-muted' : ''"
+            >
+              <input
+                type="radio"
+                name="dev-demo-claim"
+                class="mt-0.5 size-3 accent-accent"
+                :value="demo.checkId"
+                :checked="dev.demoCheckId === demo.checkId"
+                @change="pickDemoCheck(demo.checkId)"
+              />
+              <span class="flex min-w-0 flex-col">
+                <span class="truncate text-body-sm leading-tight">{{ demo.claim }}</span>
+                <span class="font-mono text-micro text-foreground-subtle">{{ demo.cue }}</span>
               </span>
             </label>
           </div>

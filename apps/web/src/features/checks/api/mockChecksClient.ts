@@ -1,6 +1,7 @@
 import { readActiveScenario } from "@/dev/scenarioState";
 import type { DevScenario } from "@/dev/scenarios";
-import { CHECK_RESULT, DEMO_CHECK_IDS, DEMO_CHECKS } from "@/features/checks/fixtures/demoChecks";
+import { DEMO_CHECK_IDS, DEMO_CHECKS } from "@/features/checks/fixtures/demoChecks";
+import { FALLBACK_RESULT, RESULT_BY_CHECK_ID } from "@/features/checks/fixtures/demoResults";
 import type {
   CheckApiError,
   CheckEventHandlers,
@@ -114,16 +115,20 @@ function rememberMockRecord(checkId: string, record: CheckRecord) {
 }
 
 function makeResultForCheck(checkId: string, input?: CheckInputDraft): CheckResultViewModel {
+  // Per-claim fixtures cover the verdict-band space (strong / mixed / weak /
+  // contradicted). Unknown ids fall back to the seat-belts fixture so the
+  // result page always renders something sensible.
+  const fixture = RESULT_BY_CHECK_ID[checkId] ?? FALLBACK_RESULT;
   const inputText =
-    input === undefined || input.value.length === 0 ? CHECK_RESULT.inputText : input.value;
-  const inputTypeLabel = input === undefined ? CHECK_RESULT.inputTypeLabel : `${input.mode} input`;
+    input === undefined || input.value.length === 0 ? fixture.inputText : input.value;
+  const inputTypeLabel = input === undefined ? fixture.inputTypeLabel : `${input.mode} input`;
 
   return {
-    ...CHECK_RESULT,
+    ...fixture,
     checkId,
     inputText,
     inputTypeLabel,
-    summaryText: `TrustTrace check: "${inputText}"\n\nVerdict: ${CHECK_RESULT.headline}\nEvidence: ${String(CHECK_RESULT.evidence.length)} sources · ${String(CHECK_RESULT.atAGlance.independent)} independent · ${String(CHECK_RESULT.atAGlance.primary)} primary · ${String(CHECK_RESULT.atAGlance.snippet)} snippet-only\nUncertainty: ${CHECK_RESULT.atAGlance.uncertainty}`,
+    summaryText: `TrustTrace check: "${inputText}"\n\nVerdict: ${fixture.headline}\nEvidence: ${String(fixture.evidence.length)} sources · ${String(fixture.atAGlance.independent)} independent · ${String(fixture.atAGlance.primary)} primary · ${String(fixture.atAGlance.snippet)} snippet-only\nUncertainty: ${fixture.atAGlance.uncertainty}`,
   };
 }
 

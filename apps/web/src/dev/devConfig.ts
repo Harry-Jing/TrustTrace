@@ -11,6 +11,7 @@ export { DEMO_CHECK_ID as PRIMARY_DEMO_CHECK_ID } from "@/features/checks/fixtur
 export const DEV_STORAGE_KEYS = {
   scenario: "tt-dev-scenario",
   panelOpen: "tt-dev-panel-open",
+  demoCheckId: "tt-dev-demo-check-id",
 } as const;
 
 export const DEV_QUERY_PARAMS = {
