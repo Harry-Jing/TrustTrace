@@ -10,6 +10,12 @@ export const DEMO_CHECK_ID = "demo-seat-belts";
 // `cue` strings here mirror the backend's `verdictLabel(verdictBand)` output
 // so mock and real history rows present the same human-readable label.
 // `verdictBand` is the stable sort key (matches `VERDICT_BAND_ORDER`).
+//
+// The four claims cover the four `verdictBand` values that have a per-claim
+// fixture in demoResults.ts (strong / mixed / weak / needs_context). Failure
+// states are reachable through scenarios (`error.timeout`,
+// `error.input_extraction`, `error.provider_config`), so demo claims do not
+// double as "failure claims".
 export const DEMO_CHECKS = [
   {
     checkId: DEMO_CHECK_ID,
@@ -36,14 +42,6 @@ export const DEMO_CHECKS = [
     verdictBand: "evidence_weak",
   },
   {
-    checkId: "demo-eye-exercises",
-    claim: "Eye exercises reverse nearsightedness",
-    snippet: "Few controlled trials exist; the available studies are small and short-duration.",
-    createdAt: "2026-04-17T16:20:00.000Z",
-    cue: "evidence thin",
-    verdictBand: "evidence_thin",
-  },
-  {
     checkId: "demo-ai-dangerous",
     claim: "AI is dangerous",
     snippet:
@@ -51,14 +49,6 @@ export const DEMO_CHECKS = [
     createdAt: "2026-04-16T09:55:00.000Z",
     cue: "needs context",
     verdictBand: "needs_context",
-  },
-  {
-    checkId: "demo-microplastics-blood",
-    claim: "Microplastics have been detected in human blood",
-    snippet: "Provider timeout: source discovery did not return before evidence could be weighed.",
-    createdAt: "2026-04-15T13:10:00.000Z",
-    cue: "failed",
-    verdictBand: "system_failed",
   },
 ] as const satisfies readonly CheckListItem[];
 

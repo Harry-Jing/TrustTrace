@@ -2,13 +2,21 @@
  * DEV ONLY — Pinia store for the dev tooling layer.
  *
  * Holds the active scenario id (persisted to localStorage and seedable from
- * the `?scenario=` URL parameter on first load) plus a "is the panel open"
- * flag, also persisted so the dev's preferred view sticks across reloads.
+ * the `?scenario=` URL parameter on first load), an "is the panel open"
+ * flag, the active demo claim id, and which collapsible sections inside the
+ * panel are collapsed. All four pieces persist so the dev's preferred view
+ * survives reloads.
  */
 
 import { defineStore } from "pinia";
 
-import { PRIMARY_DEMO_CHECK_ID, DEV_STORAGE_KEYS } from "@/dev/devConfig";
+import {
+  DEFAULT_COLLAPSED_SECTIONS,
+  DEV_PANEL_SECTIONS,
+  type DevPanelSection,
+  DEV_STORAGE_KEYS,
+  PRIMARY_DEMO_CHECK_ID,
+} from "@/dev/devConfig";
 import { DEFAULT_SCENARIO_ID, type DevScenarioId, getScenario } from "@/dev/scenarios";
 import {
   persistScenarioId,
@@ -39,10 +47,31 @@ function persistDemoCheckId(id: string) {
   localStorage.setItem(DEV_STORAGE_KEYS.demoCheckId, id);
 }
 
+function isDevPanelSection(value: string): value is DevPanelSection {
+  return (DEV_PANEL_SECTIONS as readonly string[]).includes(value);
+}
+
+function readCollapsedSections(): Set<DevPanelSection> {
+  if (typeof localStorage === "undefined") return new Set(DEFAULT_COLLAPSED_SECTIONS);
+  const stored = localStorage.getItem(DEV_STORAGE_KEYS.collapsedSections);
+  if (stored === null) return new Set(DEFAULT_COLLAPSED_SECTIONS);
+  const parsed = stored
+    .split(",")
+    .map((part) => part.trim())
+    .filter(isDevPanelSection);
+  return new Set(parsed);
+}
+
+function persistCollapsedSections(sections: ReadonlySet<DevPanelSection>) {
+  if (typeof localStorage === "undefined") return;
+  localStorage.setItem(DEV_STORAGE_KEYS.collapsedSections, [...sections].join(","));
+}
+
 interface DevState {
   scenarioId: DevScenarioId;
   panelOpen: boolean;
   demoCheckId: string;
+  collapsedSections: Set<DevPanelSection>;
 }
 
 export const useDevStore = defineStore("dev", {
@@ -50,9 +79,14 @@ export const useDevStore = defineStore("dev", {
     scenarioId: readUrlScenarioId() ?? readStoredScenarioId() ?? DEFAULT_SCENARIO_ID,
     panelOpen: readPanelOpen(),
     demoCheckId: readDemoCheckId(),
+    collapsedSections: readCollapsedSections(),
   }),
   getters: {
     scenario: (state) => getScenario(state.scenarioId),
+    isSectionCollapsed:
+      (state) =>
+      (section: DevPanelSection): boolean =>
+        state.collapsedSections.has(section),
   },
   actions: {
     setScenario(id: DevScenarioId) {
@@ -76,6 +110,13 @@ export const useDevStore = defineStore("dev", {
     togglePanel() {
       this.panelOpen = !this.panelOpen;
       persistPanelOpen(this.panelOpen);
+    },
+    toggleSection(section: DevPanelSection) {
+      const next = new Set(this.collapsedSections);
+      if (next.has(section)) next.delete(section);
+      else next.add(section);
+      this.collapsedSections = next;
+      persistCollapsedSections(next);
     },
   },
 });

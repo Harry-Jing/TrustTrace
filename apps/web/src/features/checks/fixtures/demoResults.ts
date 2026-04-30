@@ -217,283 +217,108 @@ const HANDWRITTEN_NOTES_RESULT: CheckResultViewModel = {
     'TrustTrace check: "Students retain 65% more info from handwritten notes"\n\nVerdict: The headline number traces to one study with shaky replication.\nEvidence: 3 sources · 2 independent · 2 primary · 0 snippet-only\nUncertainty: high',
 };
 
-const COFFEE_LIFESPAN_CUES: readonly CredibilityCue[] = [
+const AI_DANGEROUS_CUES: readonly CredibilityCue[] = [
   {
-    name: "Cross-source consistency",
-    text: "Multiple large cohort studies independently find moderate coffee intake associated with neutral or slightly lower mortality, contradicting the headline.",
-    note: "Independent cohorts converge against the claim.",
-    strength: 5,
+    name: "Claim specificity",
+    text: "The claim does not name a system, a harm, or a timeframe — three different framings (autonomous weapons, labor displacement, existential risk) draw on disjoint evidence.",
+    note: "Vague verbs hide which evidence applies.",
+    strength: 1,
     tooltip:
-      "When several independent populations show the same pattern, single contrarian claims face a high bar to overturn the consensus.",
+      "When a claim leaves the subject and outcome implicit, every reader fills in different blanks. The disagreement is about which claim, not whether it's true.",
   },
   {
-    name: "Source authority",
-    text: "Strongest evidence comes from peer-reviewed cohort studies and meta-analyses, not editorial or wellness-blog framing.",
-    note: "Authority outweighs viral framing here.",
-    strength: 5,
-    tooltip:
-      "Peer-reviewed cohort data with millions of participant-years is more reliable than viral headlines drawing from individual case reports.",
-  },
-  {
-    name: "Effect direction",
-    text: "Mainstream evidence is neutral-to-positive for moderate intake; the '3 years shorter' claim has no recognizable source in the literature.",
-    note: "Numbers without provenance are red flags.",
-    strength: 4,
-    tooltip:
-      "When a specific quantitative claim cannot be traced to any source, that's a strong signal it was invented or misattributed.",
-  },
-] as const;
-
-const COFFEE_LIFESPAN_EVIDENCE: readonly EvidenceItem[] = [
-  {
-    sourceName: "nejm.org",
-    domain: "nejm.org",
-    credibilityLabel: "EDU",
-    date: "2022",
-    title: "Coffee Consumption and Mortality — NEJM Cohort",
-    text: "In a 14-year cohort of >400 000 adults, moderate coffee intake (2–4 cups/day) is associated with a small reduction in all-cause mortality.",
-    url: "https://www.nejm.org/doi/full/10.1056/NEJMoa1112010",
-    relation: "contradicts",
-    tier: 1,
-    scopeMatch: 0.9,
-  },
-  {
-    sourceName: "annals.org",
-    domain: "annals.org",
-    credibilityLabel: "EDU",
-    date: "2023",
-    title: "Coffee Drinking and Mortality in 10 European Countries",
-    text: "Higher coffee consumption is associated with lower mortality from various causes across 10 European cohorts.",
-    url: "https://www.acpjournals.org/doi/10.7326/M16-2945",
-    relation: "contradicts",
-    tier: 1,
-    scopeMatch: 0.85,
-  },
-  {
-    sourceName: "who.int",
-    domain: "iarc.who.int",
-    credibilityLabel: "INT'L",
-    date: "2024",
-    title: "Coffee, mate, and very hot beverages — IARC Monograph",
-    text: "Coffee itself is not classifiable as carcinogenic; risks identified are tied to drinking beverages at very high temperatures, not coffee per se.",
-    url: "https://monographs.iarc.who.int/wp-content/uploads/2018/06/mono116.pdf",
-    relation: "contradicts",
-    tier: 2,
-    scopeMatch: 0.6,
-  },
-] as const;
-
-const COFFEE_LIFESPAN_RESULT: CheckResultViewModel = {
-  checkId: "demo-coffee-lifespan",
-  inputText: "Coffee shortens lifespan by 3 years",
-  inputTypeLabel: "text input",
-  durationLabel: "5.9s",
-  verdictBand: "evidence_strong",
-  verdictLabel: "evidence strong",
-  headline: "Major cohorts contradict the claim. The number has no traceable source.",
-  description:
-    "Large peer-reviewed cohort studies repeatedly associate moderate coffee intake with neutral or slightly lower mortality. The specific '3 years shorter' figure does not appear in the primary literature.",
-  atAGlance: {
-    evidence: 3,
-    independent: 3,
-    fullText: 3,
-    primary: 2,
-    snippet: 0,
-    uncertainty: "low",
-  },
-  cues: COFFEE_LIFESPAN_CUES,
-  evidence: COFFEE_LIFESPAN_EVIDENCE,
-  uncertaintyLines: [
-    "Effects vary by intake level; very high intake (>6 cups/day) is less well studied.",
-    "Confounding by lifestyle factors is partially controlled but not eliminated.",
-    "Decaffeinated coffee shows similar associations, complicating mechanistic interpretation.",
-  ],
-  noteText:
-    "Strong specific numbers ('3 years') are easy to repeat and hard to source. When a number can't be traced, treat it as folklore until a primary study turns up.",
-  summaryText:
-    'TrustTrace check: "Coffee shortens lifespan by 3 years"\n\nVerdict: Major cohorts contradict the claim.\nEvidence: 3 sources · 3 independent · 2 primary · 0 snippet-only\nUncertainty: low',
-};
-
-const EV_BATTERIES_CUES: readonly CredibilityCue[] = [
-  {
-    name: "Scope sensitivity",
-    text: "Lifecycle results depend strongly on the electricity grid mix powering the EV — renewable grids produce very different totals than coal-heavy grids.",
-    note: "The same claim is true and false depending on region.",
+    name: "Source disagreement",
+    text: "Surveyed researchers, regulators, and industry leaders publicly disagree on which AI harms are most pressing — concentration of power, misinformation, bias, autonomous-weapons risk, or long-horizon catastrophic risk.",
+    note: "Domain experts split on category, not just magnitude.",
     strength: 3,
     tooltip:
-      "When a quantitative claim's truth depends on context (geography, time, grid composition), a single yes/no answer hides the actual finding.",
+      "Where qualified experts disagree on which harm matters most, a single yes/no verdict misrepresents the state of knowledge. Surfacing the disagreement is more honest.",
   },
   {
-    name: "Source authority",
-    text: "Strongest evidence comes from peer-reviewed lifecycle assessments; advocacy framing on either side often quotes only one grid scenario.",
-    note: "LCA papers > advocacy summaries.",
-    strength: 4,
+    name: "Definitional drift",
+    text: "'AI' covers narrow ML systems already deployed and hypothetical general systems that don't exist; the literature treats them as distinct objects.",
+    note: "One word, two referents.",
+    strength: 2,
     tooltip:
-      "Lifecycle assessments are detailed studies of cradle-to-grave emissions. Advocacy summaries cherry-pick the scenarios that support a position.",
-  },
-  {
-    name: "Effect direction",
-    text: "Most modern LCAs find EVs lower lifecycle emissions than gas cars in nearly all major markets; only specific edge cases reverse the comparison.",
-    note: "Edge cases ≠ central finding.",
-    strength: 4,
-    tooltip:
-      "It's possible to construct scenarios where EVs underperform gas cars, but those scenarios don't represent typical use.",
+      "When a claim's subject shifts between a deployed technology and a hypothetical one, evidence about either shouldn't be merged into a single verdict.",
   },
 ] as const;
 
-const EV_BATTERIES_EVIDENCE: readonly EvidenceItem[] = [
+const AI_DANGEROUS_EVIDENCE: readonly EvidenceItem[] = [
   {
-    sourceName: "iea.org",
-    domain: "iea.org",
-    credibilityLabel: "INT'L",
-    date: "2024",
-    title: "Global EV Outlook — Lifecycle Emissions",
-    text: "Across most major markets, EVs produce lower lifecycle greenhouse gas emissions than ICE vehicles, even accounting for battery manufacturing.",
-    url: "https://www.iea.org/reports/global-ev-outlook-2024",
-    relation: "contradicts",
-    tier: 1,
-    scopeMatch: 0.85,
-  },
-  {
-    sourceName: "transportenvironment.org",
-    domain: "transportenvironment.org",
-    credibilityLabel: "ORG",
-    date: "2024",
-    title: "How clean are electric cars?",
-    text: "T&E lifecycle modeling finds EVs cut lifetime CO₂ by 60–80% in EU grids, with smaller advantages in coal-heavy regions but rarely a reversal.",
-    url: "https://www.transportenvironment.org/discover/how-clean-are-electric-cars/",
-    relation: "contradicts",
-    tier: 2,
-    scopeMatch: 0.8,
-  },
-  {
-    sourceName: "mit.edu",
-    domain: "climate.mit.edu",
+    sourceName: "stanford.edu",
+    domain: "aiindex.stanford.edu",
     credibilityLabel: "EDU",
-    date: "2023",
-    title: "Are electric vehicles definitely better for the climate?",
-    text: "EV lifecycle emissions exceed ICE vehicles only in a narrow set of scenarios — short vehicle lifespan combined with very carbon-intensive electricity.",
-    url: "https://climate.mit.edu/ask-mit/are-electric-vehicles-definitely-better-climate-gas-powered-cars",
+    date: "2025",
+    title: "AI Index Report — Public Concern and Expert Survey",
+    text: "Surveyed AI researchers split on which AI risks rank highest; majority concern centers on misuse and concentration of power, not autonomous-system takeover.",
+    url: "https://aiindex.stanford.edu/report/",
+    relation: "neutral",
+    tier: 2,
+    scopeMatch: 0.55,
+  },
+  {
+    sourceName: "nist.gov",
+    domain: "nist.gov",
+    credibilityLabel: "GOV",
+    date: "2024",
+    title: "AI Risk Management Framework",
+    text: "Categorizes harms as bias, privacy, security, safety, transparency — explicitly notes that 'risk' must be tied to a specific system and use context.",
+    url: "https://www.nist.gov/itl/ai-risk-management-framework",
     relation: "neutral",
     tier: 1,
-    scopeMatch: 0.75,
+    scopeMatch: 0.65,
+  },
+  {
+    sourceName: "weforum.org",
+    domain: "weforum.org",
+    credibilityLabel: "INT'L",
+    date: "2025",
+    title: "Global Risks Report — AI-Related Risks",
+    text: "Lists AI-driven misinformation as a top short-term global risk; longer-horizon AI risks remain contested across surveyed experts.",
+    url: "https://www.weforum.org/reports/global-risks-report-2025/",
+    relation: "neutral",
+    tier: 2,
+    scopeMatch: 0.5,
   },
 ] as const;
 
-const EV_BATTERIES_RESULT: CheckResultViewModel = {
-  checkId: "demo-ev-batteries",
-  inputText: "EV batteries pollute more than gas cars over lifetime",
+const AI_DANGEROUS_RESULT: CheckResultViewModel = {
+  checkId: "demo-ai-dangerous",
+  inputText: "AI is dangerous",
   inputTypeLabel: "text input",
-  durationLabel: "8.2s",
-  verdictBand: "evidence_mixed",
-  verdictLabel: "evidence mixed",
-  headline: "True only in narrow scenarios. Misleading as a general statement.",
+  durationLabel: "5.6s",
+  verdictBand: "needs_context",
+  verdictLabel: "needs context",
+  headline: "Too broad to verify. The verdict depends on which AI and which harm.",
   description:
-    "Most lifecycle assessments find EVs lower lifetime emissions in nearly every major market. The general claim only holds when grid carbon intensity is very high and vehicle life is very short.",
+    "Sources do not cleanly support or contradict the claim because the claim does not specify a system, a harm, or a timeframe. Different framings draw on disjoint evidence and reach different conclusions.",
   atAGlance: {
     evidence: 3,
     independent: 3,
     fullText: 3,
-    primary: 2,
-    snippet: 0,
-    uncertainty: "med",
-  },
-  cues: EV_BATTERIES_CUES,
-  evidence: EV_BATTERIES_EVIDENCE,
-  uncertaintyLines: [
-    "Battery manufacturing emissions vary by chemistry and supplier.",
-    "Grid mix changes over a vehicle's life — newer EVs benefit from grid decarbonization.",
-    "End-of-life battery recycling is improving but data on field performance is sparse.",
-  ],
-  noteText:
-    "When a claim is true under some conditions and false under others, the question is which conditions describe the real world. Here, the typical-case answer reverses the headline.",
-  summaryText:
-    'TrustTrace check: "EV batteries pollute more than gas cars over lifetime"\n\nVerdict: True only in narrow scenarios.\nEvidence: 3 sources · 3 independent · 2 primary · 0 snippet-only\nUncertainty: med',
-};
-
-const DIM_LIGHT_EYES_CUES: readonly CredibilityCue[] = [
-  {
-    name: "Mechanistic implausibility",
-    text: "There is no known mechanism by which transient eyestrain causes permanent retinal or refractive damage from low ambient light.",
-    note: "Mechanism is the missing piece.",
-    strength: 4,
-    tooltip:
-      "Plausible biological mechanisms strengthen claims. Their absence — combined with no observational evidence — usually marks a folk myth.",
-  },
-  {
-    name: "Cross-source consistency",
-    text: "Major ophthalmology bodies independently classify this as a myth and distinguish reversible eyestrain from permanent damage.",
-    note: "Bodies agree, claim is folklore.",
-    strength: 5,
-    tooltip:
-      "When professional bodies across countries explicitly identify a claim as a myth, that's a strong signal the popular understanding is incorrect.",
-  },
-] as const;
-
-const DIM_LIGHT_EYES_EVIDENCE: readonly EvidenceItem[] = [
-  {
-    sourceName: "aao.org",
-    domain: "aao.org",
-    credibilityLabel: "ORG",
-    date: "2023",
-    title: "Does Reading in Dim Light Hurt Your Eyes?",
-    text: "Reading in dim light causes temporary eyestrain — fatigue, dryness — but does not permanently damage vision.",
-    url: "https://www.aao.org/eye-health/tips-prevention/reading-low-light",
-    relation: "contradicts",
-    tier: 1,
-    scopeMatch: 0.95,
-  },
-  {
-    sourceName: "harvard.edu",
-    domain: "health.harvard.edu",
-    credibilityLabel: "EDU",
-    date: "2024",
-    title: "Will Reading in Low Light Damage My Eyes?",
-    text: "There's no evidence that low-light reading causes permanent harm. Symptoms fade once lighting improves.",
-    url: "https://www.health.harvard.edu/blog/will-reading-in-low-light-damage-my-eyes",
-    relation: "contradicts",
-    tier: 1,
-    scopeMatch: 0.9,
-  },
-] as const;
-
-const DIM_LIGHT_EYES_RESULT: CheckResultViewModel = {
-  checkId: "demo-dim-light-eyesight",
-  inputText: "Reading in dim light permanently damages eyesight",
-  inputTypeLabel: "text input",
-  durationLabel: "4.7s",
-  verdictBand: "evidence_strong",
-  verdictLabel: "evidence strong",
-  headline: "Folk myth. Sources contradict it cleanly.",
-  description:
-    "Ophthalmology bodies independently distinguish reversible eyestrain from permanent damage and explicitly classify this claim as a myth. There is no proposed mechanism for permanent harm.",
-  atAGlance: {
-    evidence: 2,
-    independent: 2,
-    fullText: 2,
     primary: 0,
     snippet: 0,
-    uncertainty: "low",
+    uncertainty: "high",
   },
-  cues: DIM_LIGHT_EYES_CUES,
-  evidence: DIM_LIGHT_EYES_EVIDENCE,
+  cues: AI_DANGEROUS_CUES,
+  evidence: AI_DANGEROUS_EVIDENCE,
   uncertaintyLines: [
-    "Long-term cohort studies on dim-light reading specifically are sparse — but the claim's mechanism is also implausible.",
-    "Eyestrain is real and can be uncomfortable; that experience is often misread as 'damage'.",
+    "The unstated subject (which systems) drives most of the verdict variation.",
+    "Surveyed experts split on category of harm, not only on magnitude.",
+    "Short-horizon risks (misinformation, bias) are better measured than long-horizon ones.",
   ],
   noteText:
-    "Familiar discomfort gets reinterpreted as harm. Distinguishing reversible symptoms from permanent change is the core skill the body of sources is teaching.",
+    "When a claim is broad enough to be true under one reading and false under another, the claim — not the evidence — is the thing to fix. Ask which system and which harm before re-running.",
   summaryText:
-    'TrustTrace check: "Reading in dim light permanently damages eyesight"\n\nVerdict: Folk myth. Sources contradict it cleanly.\nEvidence: 2 sources · 2 independent · 0 primary · 0 snippet-only\nUncertainty: low',
+    'TrustTrace check: "AI is dangerous"\n\nVerdict: Too broad to verify — depends on which AI and which harm.\nEvidence: 3 sources · 3 independent · 0 primary · 0 snippet-only\nUncertainty: high',
 };
 
 export const RESULT_BY_CHECK_ID: Record<string, CheckResultViewModel> = {
   "demo-seat-belts": CHECK_RESULT,
   "demo-vitamin-c-colds": VITAMIN_C_RESULT,
   "demo-handwritten-notes": HANDWRITTEN_NOTES_RESULT,
-  "demo-coffee-lifespan": COFFEE_LIFESPAN_RESULT,
-  "demo-ev-batteries": EV_BATTERIES_RESULT,
-  "demo-dim-light-eyesight": DIM_LIGHT_EYES_RESULT,
+  "demo-ai-dangerous": AI_DANGEROUS_RESULT,
 };
 
 export const FALLBACK_RESULT: CheckResultViewModel = CHECK_RESULT;

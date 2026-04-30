@@ -1,21 +1,23 @@
 # Dev Tooling
 
-Dev tooling powers the local mock/demo workflow. The implementation separates three concerns that were previously fused into one floating button:
+Dev tooling powers the local mock/demo workflow. The implementation separates four concerns that were previously fused into one floating button:
 
 1. **Data source** — backend vs in-memory mocks. Selected at boot via `VITE_TRUSTTRACE_API_MODE`.
 2. **Scenario** — what the mock pipeline does (success vs failure variant). Switchable at runtime; persisted to `localStorage`; shareable via the `?scenario=` URL parameter.
-3. **Page jumps + mock-state actions** — quick navigation between demo pages and explicit verbs to reset/complete/fail the current mock check.
+3. **Demo claim** — which fixture (and thus which `verdictBand`) the result page renders. Picking a claim while on a `/checks/:checkId/*` route swaps the route's `:checkId` in place so the page re-derives.
+4. **Page jumps + mock-state actions** — pure navigation between demo pages, plus explicit verbs to reset / complete / fail the current mock check. Mock-state verbs route to the corresponding page after mutating, so panel buttons and the per-page DevLoadingControls produce the same observable result.
 
-The first concern is fixed for a session. The other two live in a single floating dev panel — modeled on TanStack Query Devtools and Pinia Colada Devtools — that is collapsed to a small "MOCK · &lt;scenario&gt;" badge by default and expands into a panel on click (or `Shift+Alt+D`).
+The first concern is fixed for a session. The other three live in a single floating dev panel that follows the small-OSS-devtools convention (FAB collapsed → fixed-width panel with internal scroll, four collapsible sections, becomes a bottom sheet under 640px). It opens by clicking the FAB; there is no keyboard shortcut, since the app is form-heavy and any unmodified key risks colliding with input focus.
 
 ## Environment
 
-| Setting                                    | Meaning                                                                                                       |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
-| `import.meta.env.DEV`                      | Vite development build. Does not imply mock data by itself.                                                   |
-| `VITE_TRUSTTRACE_API_MODE=mock \| backend` | Selects the checks API client. Defaults to `backend`; set `mock` explicitly for fixture-backed demo mode.     |
-| `VITE_TRUSTTRACE_API_BASE_URL`             | Base URL for the backend API client. Defaults to same-origin `/v1`.                                           |
-| `?scenario=<id>` URL parameter             | Seeds the active scenario on first load. Subsequent picks via the panel overwrite the URL and `localStorage`. |
+| Setting                                    | Meaning                                                                                                                                                                   |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `import.meta.env.DEV`                      | Vite development build. Does not imply mock data by itself.                                                                                                               |
+| `VITE_TRUSTTRACE_API_MODE=mock \| backend` | Selects the checks API client. Defaults to `backend`; set `mock` explicitly for fixture-backed demo mode.                                                                 |
+| `VITE_TRUSTTRACE_API_BASE_URL`             | Base URL for the backend API client. Defaults to same-origin `/v1`.                                                                                                       |
+| `?scenario=<id>` URL parameter             | Seeds the active scenario on first load. Subsequent picks via the panel overwrite the URL and `localStorage`.                                                             |
+| `localStorage` keys                        | `tt-dev-scenario`, `tt-dev-panel-open`, `tt-dev-demo-check-id`, `tt-dev-collapsed-sections` (comma-joined section ids that are collapsed; missing = default open/closed). |
 
 `showDevTools` is true only when the app is running in Vite dev mode **and** `apiMode === 'mock'`. The panel is dynamically imported behind this flag so it is tree-shaken out of production bundles.
 
@@ -25,13 +27,13 @@ All dev-only modules live under `apps/web/src/dev/`:
 
 ```
 dev/
-  devConfig.ts                   # Storage keys, query-param names, PRIMARY_DEMO_CHECK_ID re-export
+  devConfig.ts                   # Storage keys, query-param names, panel-section enum, PRIMARY_DEMO_CHECK_ID re-export
   scenarios.ts                   # Five named scenarios + per-phase percent/message lookup
   scenarioState.ts               # Pinia-free URL/localStorage helpers (mock client uses these)
   stores/
-    dev.store.ts                 # Reactive scenario id + panel open state
+    dev.store.ts                 # Reactive scenario id, panel open state, active demo claim, per-section collapsed state
   components/
-    DevPanel.vue                 # Floating badge + expandable panel (mounted from AppShell)
+    DevPanel.vue                 # Floating FAB + collapsible panel (mounted from AppShell)
     DevLoadingControls.vue       # Per-page phase + outcome controls on the loading page
 ```
 
@@ -39,10 +41,10 @@ The dev tooling never imports from page or feature code. Page code may import th
 
 ## Components
 
-| Component            | Purpose                                                                                                                                                                                          |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `DevPanel`           | Bottom-right "MOCK · &lt;scenario&gt;" badge. Click or `Shift+Alt+D` expands a small panel with three sections: Scenario (radios), Jump to (page links), Mock state (reset/complete/fail verbs). |
-| `DevLoadingControls` | Rendered at the bottom of the loading page. Lets you jump to any active phase (with the scenario's percent + message), replay the scenario, force-complete, or force-fail.                       |
+| Component            | Purpose                                                                                                                                                                                                                                                                                                                           |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DevPanel`           | Bottom-right "● Mock · &lt;scenario&gt;" FAB. Click opens a panel with four collapsible sections: Scenario (radios), Demo claim (radios + verdict-band chip), Jump to (pure navigation), Mock state (reset / complete / fail verbs). The panel internally scrolls; under 640px it becomes a bottom sheet pinned to the safe area. |
+| `DevLoadingControls` | Rendered at the bottom of the loading page. Lets you jump to any active phase (with the scenario's percent + message), replay the scenario, force-complete, or force-fail.                                                                                                                                                        |
 
 `DevPanel` is mounted in `AppShell.vue` behind the `showDevTools` guard via `defineAsyncComponent` + dynamic import, so the production bundle never sees it. `DevLoadingControls` is rendered in `CheckLoadingPage.vue` behind the same guard.
 
@@ -60,15 +62,40 @@ Adding a scenario: append to `DEV_SCENARIOS` in `dev/scenarios.ts`. The id must 
 
 Built-in scenarios:
 
-| Id                   | Behavior                                                        |
-| -------------------- | --------------------------------------------------------------- |
-| `success`            | Plays the full pipeline and lands on the result page (default). |
-| `success.instant`    | Skips to a completed result with no delay.                      |
-| `error.timeout`      | Fails at discovery with `PROVIDER_TIMEOUT` (retryable).         |
-| `error.rate_limited` | Fails immediately with `RATE_LIMITED`.                          |
-| `error.validation`   | Fails immediately with `INVALID_INPUT` (non-retryable).         |
+| Id                       | Behavior                                                               |
+| ------------------------ | ---------------------------------------------------------------------- |
+| `success`                | Plays the full pipeline and lands on the result page (default).        |
+| `success.instant`        | Skips to a completed result with no delay.                             |
+| `error.timeout`          | Fails at discovery with `PROVIDER_TIMEOUT` (retryable).                |
+| `error.input_extraction` | Fails at understanding with `INPUT_EXTRACTION_FAILED` (retryable).     |
+| `error.provider_config`  | Fails immediately with `PROVIDER_CONFIGURATION_ERROR` (non-retryable). |
 
 For "what does this loading phase look like in isolation", use the per-phase buttons in `DevLoadingControls` rather than adding a new scenario — the buttons read the scenario's percent/message lookup and override the displayed phase without restarting playback.
+
+## Demo claims
+
+`DEMO_CHECKS` (in `apps/web/src/features/checks/fixtures/demoChecks.ts`) is intentionally minimal. The list covers the four `verdictBand` values that have a per-claim fixture in `demoResults.ts`:
+
+| Demo id                  | `verdictBand`     | Purpose                                                                                              |
+| ------------------------ | ----------------- | ---------------------------------------------------------------------------------------------------- |
+| `demo-seat-belts`        | `evidence_strong` | Standard happy-path fixture. Also `PRIMARY_DEMO_CHECK_ID` and the `FALLBACK_RESULT` for unknown ids. |
+| `demo-vitamin-c-colds`   | `evidence_mixed`  | Sources support a narrower claim than the one being made.                                            |
+| `demo-handwritten-notes` | `evidence_weak`   | The headline number traces to one study with shaky replication.                                      |
+| `demo-ai-dangerous`      | `needs_context`   | Edge case: claim is too broad to verify; sources don't cleanly support or contradict.                |
+
+Failure states are reachable through scenarios (`error.timeout`, `error.input_extraction`, `error.provider_config`) — claims do not double as failure fixtures, so picking any claim with any error scenario produces the failure variant for that claim.
+
+## Panel layout & interaction
+
+The `DevPanel` follows the small-OSS-devtools convention surveyed against Pinia Colada Devtools, Leva, BUOY, and Astro Dev Toolbar:
+
+- **Width / height**: `width: min(22rem, 100vw - 2rem)`; `max-height: min(640px, 100dvh - 6rem)`. Internal scroll handles overflow; the FAB and footer stay anchored.
+- **Mobile**: under 640px the panel becomes a bottom sheet (`inset-x-2 bottom-2`), pinned above the iOS safe-area inset. The FAB stays in the corner and contracts to "● Mock" only.
+- **Sections**: four `<details>` blocks (Scenario, Demo claim, Jump to, Mock state). Default-open: Scenario, Demo claim. Default-collapsed: Jump to, Mock state. Each section's collapsed state persists in `localStorage[tt-dev-collapsed-sections]`.
+- **Open / close**: FAB click only. No keyboard shortcut — the app is form-heavy enough that any unmodified-key shortcut risks colliding with input focus flows.
+- **Demo-claim picker**: when the user is on a `/checks/:checkId/(loading|result|error)` route, picking a different claim issues a `router.replace` that swaps `:checkId` in place, so the same page re-derives against the new fixture.
+- **Mock-state verbs**: `reset / complete / fail` mutate the in-memory mock record and, when the user is on a check-scoped route, `router.replace` to the matching state route (`loading / result / error` respectively). This unifies behavior with the loading-page's `DevLoadingControls`, where `handleFail` / `handleComplete` produce the same observable result.
+- **Jump to**: pure navigation. Result and error jumps no longer silently force-complete or force-fail the record. To produce a state change, use Mock state.
 
 ## Behavior by API mode
 
