@@ -39,11 +39,11 @@ const outcomeLabel = computed(() =>
 <template>
   <div class="mt-8 border-t border-dashed border-border pt-3">
     <div class="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1">
-      <span class="font-mono text-micro tracking-[0.12em] text-foreground-subtle uppercase">
+      <span class="font-mono text-eyebrow text-foreground-subtle uppercase">
         dev · phase control
       </span>
       <span
-        class="rounded-full border border-border bg-surface/60 px-2 py-0.5 font-mono text-micro text-foreground-muted"
+        class="rounded-full border border-border bg-surface/60 px-2 py-0.5 font-mono text-caption text-foreground-muted"
         :title="dev.scenario.description"
       >
         {{ dev.scenario.id }} · {{ outcomeLabel }}
@@ -55,7 +55,7 @@ const outcomeLabel = computed(() =>
         v-for="phaseOption in phases"
         :key="phaseOption"
         type="button"
-        class="tt-btn rounded px-2 py-0.75 font-mono text-[10px]"
+        class="tt-btn rounded px-2 py-0.75 font-mono text-caption"
         :class="
           phase === phaseOption
             ? 'border border-foreground bg-foreground text-background'
@@ -72,7 +72,7 @@ const outcomeLabel = computed(() =>
 
       <button
         type="button"
-        class="tt-btn rounded border border-border bg-transparent px-2 py-0.75 font-mono text-[10px] text-foreground-subtle"
+        class="tt-btn rounded border border-border bg-transparent px-2 py-0.75 font-mono text-caption text-foreground-subtle"
         title="Re-run the active scenario from the start"
         @click="emit('replay')"
       >
@@ -80,7 +80,7 @@ const outcomeLabel = computed(() =>
       </button>
       <button
         type="button"
-        class="tt-btn inline-flex items-center gap-1 rounded border border-success bg-transparent px-2 py-0.75 font-mono text-[10px] text-success"
+        class="tt-btn inline-flex items-center gap-1 rounded border border-success bg-transparent px-2 py-0.75 font-mono text-caption text-success"
         title="Jump to completed and trigger the redirect"
         @click="emit('complete')"
       >
@@ -88,7 +88,7 @@ const outcomeLabel = computed(() =>
       </button>
       <button
         type="button"
-        class="tt-btn rounded border border-warning bg-transparent px-2 py-0.75 font-mono text-[10px] text-warning"
+        class="tt-btn rounded border border-warning bg-transparent px-2 py-0.75 font-mono text-caption text-warning"
         title="Force a failure with the active scenario's error"
         @click="emit('fail')"
       >

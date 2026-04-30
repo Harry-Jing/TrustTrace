@@ -21,7 +21,7 @@ withDefaults(
     >
       <div v-if="label || helper || $slots.label" class="md:flex-1">
         <div class="flex items-center gap-2">
-          <span v-if="label" class="text-sm font-medium text-foreground">{{ label }}</span>
+          <span v-if="label" class="text-body-sm font-medium text-foreground">{{ label }}</span>
           <slot name="label" />
           <BaseComingSoonPill v-if="comingSoon" />
         </div>
@@ -36,7 +36,7 @@ withDefaults(
     <div v-else class="flex flex-col gap-4">
       <div v-if="label || helper || $slots.label">
         <div class="flex items-center gap-2">
-          <span v-if="label" class="text-sm font-medium text-foreground">{{ label }}</span>
+          <span v-if="label" class="text-body-sm font-medium text-foreground">{{ label }}</span>
           <slot name="label" />
           <BaseComingSoonPill v-if="comingSoon" />
         </div>

@@ -11,7 +11,7 @@ defineProps<{
       <li
         v-for="(line, i) in lines"
         :key="i"
-        class="flex items-start gap-2 text-xs leading-[1.6] text-foreground-muted"
+        class="flex items-start gap-2 text-caption text-foreground-muted"
       >
         <svg
           class="mt-1 size-2.5 shrink-0 text-accent"

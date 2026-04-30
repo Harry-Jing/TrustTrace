@@ -40,7 +40,7 @@ const emit = defineEmits<{
       />
     </div>
     <div class="flex gap-1">
-      <span class="mr-1 self-center font-mono text-[10px] text-foreground-subtle">Sort:</span>
+      <span class="mr-1 self-center font-mono text-caption text-foreground-subtle">Sort:</span>
       <button
         v-for="[k, label] in [
           ['date', 'Date'],
@@ -48,7 +48,7 @@ const emit = defineEmits<{
         ] as const"
         :key="k"
         type="button"
-        class="tt-btn rounded-full px-4 py-2 text-xs font-medium"
+        class="tt-btn rounded-full px-4 py-2 text-caption font-medium"
         :class="
           sortBy === k
             ? 'border border-foreground bg-foreground text-background'

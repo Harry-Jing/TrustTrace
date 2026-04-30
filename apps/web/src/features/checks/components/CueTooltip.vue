@@ -19,7 +19,7 @@ defineProps<{
       <TooltipTrigger as-child>
         <button
           type="button"
-          class="tt-icon-btn inline-flex size-6 cursor-help items-center justify-center rounded-full border border-border bg-transparent text-[10px] text-foreground-subtle"
+          class="tt-icon-btn inline-flex size-6 cursor-help items-center justify-center rounded-full border border-border bg-transparent text-caption text-foreground-subtle"
           aria-label="Show details for this credibility cue"
         >
           ?
@@ -30,7 +30,7 @@ defineProps<{
           side="top"
           :side-offset="8"
           :collision-padding="12"
-          class="z-50 w-65 rounded-md bg-foreground p-3 text-xs leading-relaxed text-background shadow-lg data-[state=closed]:anim-tooltip-out data-[state=delayed-open]:anim-tooltip-in data-[state=instant-open]:anim-tooltip-in"
+          class="z-50 w-65 rounded-md bg-foreground p-3 text-caption text-background shadow-lg data-[state=closed]:anim-tooltip-out data-[state=delayed-open]:anim-tooltip-in data-[state=instant-open]:anim-tooltip-in"
         >
           {{ text }}
           <TooltipArrow class="fill-foreground" :width="10" :height="5" />

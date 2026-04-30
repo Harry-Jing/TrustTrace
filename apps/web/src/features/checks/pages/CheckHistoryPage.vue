@@ -22,8 +22,8 @@ function selectHistoryItem(historyItem: CheckListItem) {
       class="mb-6 flex animate-up flex-col gap-4 [animation-delay:50ms] md:flex-row md:items-end md:justify-between"
     >
       <div>
-        <h1 class="mt-2.5 mb-1.5 font-serif text-display-md">Your checks</h1>
-        <p class="text-sm leading-[1.7] text-foreground-subtle">
+        <h1 class="mt-2.5 mb-1.5 font-serif text-h1">Your checks</h1>
+        <p class="text-body-sm text-foreground-subtle">
           Your recent credibility checks. Select one to revisit the evidence and cues.
         </p>
       </div>

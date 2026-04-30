@@ -59,16 +59,16 @@ function onBeforeEnter(el: Element) {
     >
       <div class="p-5">
         <div class="mb-2 flex items-center justify-between">
-          <span class="font-mono text-[10px] text-foreground-subtle">{{
+          <span class="font-mono text-caption text-foreground-subtle">{{
             formatDate(historyItem.createdAt)
           }}</span>
         </div>
-        <div class="mb-1.5 text-body leading-snug font-semibold">{{ historyItem.claim }}</div>
-        <div class="mb-3 text-xs leading-relaxed text-foreground-subtle">
+        <div class="mb-1.5 text-body font-semibold">{{ historyItem.claim }}</div>
+        <div class="mb-3 text-caption text-foreground-subtle">
           {{ historyItem.snippet }}
         </div>
         <div class="flex items-center justify-between">
-          <EvidenceBadge :tone="evidenceToneFor(historyItem.verdictBand)" class="text-[10px]">{{
+          <EvidenceBadge :tone="evidenceToneFor(historyItem.verdictBand)" class="text-caption">{{
             historyItem.cue
           }}</EvidenceBadge>
         </div>

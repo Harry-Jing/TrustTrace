@@ -33,9 +33,9 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
 };
 
 const SIZE_CLASSES: Record<ButtonSize, string> = {
-  sm: "rounded-md px-3 py-1.5 text-xs",
+  sm: "rounded-md px-3 py-1.5 text-caption",
   md: "rounded-md px-4 py-2.5 text-body-sm font-semibold",
-  lg: "rounded-md px-7 py-2.75 text-sm font-semibold",
+  lg: "rounded-md px-7 py-2.75 text-body-sm font-semibold",
 };
 
 const variantClass = computed(() => VARIANT_CLASSES[props.variant]);

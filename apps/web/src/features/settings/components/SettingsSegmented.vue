@@ -49,7 +49,7 @@ function handleUpdate(value: unknown) {
       :key="option.value"
       :value="option.value"
       :disabled="disabled"
-      class="relative z-10 min-w-16 cursor-pointer rounded-full border-none bg-transparent px-4 py-2 text-xs font-medium tracking-tight text-foreground-subtle transition-colors duration-200 data-[disabled]:cursor-not-allowed data-[state=on]:text-background"
+      class="relative z-10 min-w-16 cursor-pointer rounded-full border-none bg-transparent px-4 py-2 text-caption font-medium text-foreground-subtle transition-colors duration-200 data-[disabled]:cursor-not-allowed data-[state=on]:text-background"
     >
       {{ option.label }}
     </ToggleGroupItem>

@@ -75,11 +75,11 @@ async function retryCheck() {
 
       <BaseTagBadge tone="warn">{{ errorCategory }}</BaseTagBadge>
 
-      <h1 class="mx-auto mt-5 mb-2.5 font-serif text-display-sm">
+      <h1 class="mx-auto mt-5 mb-2.5 font-serif text-h2">
         {{ errorMessage }}
       </h1>
 
-      <p class="mx-auto mb-7 max-w-100 text-sm leading-[1.75] text-foreground-subtle">
+      <p class="mx-auto mb-7 max-w-100 text-body-sm text-foreground-subtle">
         {{ retryHelp }}
       </p>
 
@@ -98,7 +98,7 @@ async function retryCheck() {
         </BaseButton>
       </div>
 
-      <p v-if="retryErrorMessage" class="mt-5 text-xs leading-relaxed text-warning" role="alert">
+      <p v-if="retryErrorMessage" class="mt-5 text-caption text-warning" role="alert">
         {{ retryErrorMessage }}
       </p>
 
@@ -110,7 +110,7 @@ async function retryCheck() {
       <div class="mx-auto mt-6 max-w-100 text-left">
         <button
           type="button"
-          class="flex items-center gap-1.5 border-none bg-transparent p-0 font-mono text-xs text-foreground-subtle"
+          class="flex items-center gap-1.5 border-none bg-transparent p-0 font-mono text-caption text-foreground-subtle"
           :aria-controls="detailId"
           :aria-expanded="showDetail"
           @click="showDetail = !showDetail"

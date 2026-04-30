@@ -75,38 +75,74 @@
      a hairline highlight that stays visible on a near-black background. */
   --shadow-nav-scrolled: var(--nav-scrolled-shadow);
 
-  --text-micro: 9px;
-  --text-micro--line-height: 1.4;
+  /* Typography — minor third (1.2) modular scale on a 4px line-height
+     grid, base 16px. Methodology mirrors Atlassian Design System
+     (Jira/Confluence/Trello, ~10M+ web DAU): seven distinct sizes
+     where multiple roles share a size and differentiation comes from
+     weight + tracking + uppercase rather than size alone. Cross-checked
+     against GitHub Primer and shadcn/ui. Mobile/desktop unified for
+     all body & heading tokens — only the hero (h1) uses clamp(). The
+     12px floor follows Atlassian's 11→12 accessibility bump and the
+     16px body baseline matches every modern web system surveyed.
 
-  --text-eyebrow: 10px;
+     Sizes:        12 → 14 → 16 → 20 → 24 → 32 → clamp(40,5vw,56)
+     Step ratios:  +17% +14% +25% +20% +33% +75%
+     Same-size pairs: caption + eyebrow @12; body-sm + label @14. */
+
+  --text-caption: 12px;
+  --text-caption--line-height: 1.4;
+
+  --text-eyebrow: 12px;
   --text-eyebrow--line-height: 1.4;
   --text-eyebrow--letter-spacing: 0.12em;
   --text-eyebrow--font-weight: 500;
 
-  --text-label: 11px;
+  --text-body-sm: 14px;
+  --text-body-sm--line-height: 1.5;
+
+  --text-label: 14px;
   --text-label--line-height: 1.4;
-  --text-label--letter-spacing: 0.04em;
+  --text-label--font-weight: 500;
 
-  --text-body-sm: 13px;
-  --text-body-sm--line-height: 1.7;
+  /* Body baseline — 16px is iOS-input-safe (no auto-zoom on focus) and
+     the universal modern web standard. */
+  --text-body: 16px;
+  --text-body--line-height: 1.5;
 
-  --text-body: 15px;
-  --text-body--line-height: 1.7;
+  /* Heading weights: all 500 (Medium), not 600 (Semibold). This codebase
+     pairs every heading token with font-serif (Newsreader) — a high-
+     contrast magazine serif that already carries strong visual mass at
+     any weight. Going to 600 reads as "news-page bold"; 500 reads as
+     "magazine editorial" which fits TrustTrace's calm, evidence-first
+     tone. NYT, Medium, Stripe Press follow the same "serif display at
+     400-500" tradition. Differentiation from body text comes from size
+     + font-family + letter-spacing rather than from weight alone. */
+  --text-h4: 20px;
+  --text-h4--line-height: 1.2;
+  --text-h4--letter-spacing: -0.005em;
+  --text-h4--font-weight: 500;
 
-  --text-stat: 26px;
-  --text-stat--line-height: 1;
-  --text-stat--letter-spacing: -0.01em;
+  --text-h3: 24px;
+  --text-h3--line-height: 1.2;
+  --text-h3--letter-spacing: -0.01em;
+  --text-h3--font-weight: 500;
 
-  --text-display-sm: 28px;
-  --text-display-sm--line-height: 1.15;
-  --text-display-sm--letter-spacing: -0.025em;
-  --text-display-sm--font-weight: 600;
+  --text-h2: 32px;
+  --text-h2--line-height: 1.15;
+  --text-h2--letter-spacing: -0.015em;
+  --text-h2--font-weight: 500;
 
-  --text-display-md: clamp(28px, 4.2vw, 40px);
-  --text-display-md--line-height: 1.15;
-  --text-display-md--letter-spacing: -0.025em;
-
-  --tracking-narrow: 0.03em;
+  /* h1 is the only fluid token: 40px on mobile, growing linearly to
+     56px on a ~1120px viewport. Matches the Atlassian/Linear/Vercel
+     pattern of static body + fluid hero. Weight 500 (not 600) because
+     this token is paired with font-serif (Newsreader) at every site
+     where it's used; Newsreader's optical sizing already adds visual
+     mass at display sizes, so 600 reads as bold-ish. NYT, Stripe
+     Press, Medium all use serif display at 400-500 weight. */
+  --text-h1: clamp(40px, 5vw, 56px);
+  --text-h1--line-height: 1.05;
+  --text-h1--letter-spacing: -0.025em;
+  --text-h1--font-weight: 500;
 
   --container-page: 1120px;
   --container-focus: 920px;

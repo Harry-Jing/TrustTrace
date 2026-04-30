@@ -88,20 +88,20 @@ function evidenceHref(item: EvidenceItem) {
         </div>
         <div class="flex-1">
           <div class="flex flex-wrap items-baseline justify-between gap-2">
-            <h2 class="font-serif text-lg font-semibold tracking-tight">
+            <h2 class="font-serif text-h4">
               {{ group.config.label }}
             </h2>
             <span class="font-mono text-label text-foreground-subtle">
               {{ group.items.length }} {{ group.items.length === 1 ? "source" : "sources" }}
             </span>
           </div>
-          <p class="mt-1 text-body-sm leading-[1.65] text-foreground-muted">
+          <p class="mt-1 text-body-sm text-foreground-muted">
             {{ group.config.description }}
           </p>
         </div>
       </header>
 
-      <p v-if="group.items.length === 0" class="ml-12 text-xs text-foreground-subtle italic">
+      <p v-if="group.items.length === 0" class="ml-12 text-caption text-foreground-subtle italic">
         No source landed at this tier.
       </p>
 
@@ -113,7 +113,7 @@ function evidenceHref(item: EvidenceItem) {
           :class="group.config.borderClass"
         >
           <div class="mb-1.5 flex flex-wrap items-center gap-2">
-            <span class="font-mono text-label font-medium text-accent">
+            <span class="font-mono text-label text-accent">
               {{ item.domain }}
             </span>
             <span class="font-mono text-label text-foreground-subtle">{{ item.date }}</span>
@@ -122,12 +122,12 @@ function evidenceHref(item: EvidenceItem) {
             </EvidenceRelationBadge>
             <span
               v-if="item.clusterId"
-              class="rounded-full border border-border bg-surface px-2 py-0.5 font-mono text-micro tracking-[0.04em] text-foreground-subtle"
+              class="rounded-full border border-border bg-surface px-2 py-0.5 font-mono text-caption text-foreground-subtle"
             >
               {{ item.clusterId }}
             </span>
           </div>
-          <h3 class="mb-1 text-body leading-snug font-semibold">{{ item.title }}</h3>
+          <h3 class="mb-1 text-body font-semibold">{{ item.title }}</h3>
           <p class="text-body-sm text-foreground-muted">{{ item.text }}</p>
 
           <div class="mt-3 flex items-center gap-4">
@@ -145,7 +145,7 @@ function evidenceHref(item: EvidenceItem) {
               target="_blank"
               rel="noopener noreferrer"
               :aria-label="`Open ${item.title}`"
-              class="ml-auto font-mono text-label font-medium text-accent"
+              class="ml-auto font-mono text-label text-accent"
             >
               open ↗
             </a>

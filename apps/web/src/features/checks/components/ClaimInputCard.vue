@@ -81,7 +81,7 @@ function submit() {
           v-for="modeOption in ['text', 'url'] as const"
           :key="modeOption"
           type="button"
-          class="relative z-10 min-w-16 rounded-full border-none bg-transparent px-5 py-2.5 font-mono text-body-sm font-medium tracking-[0.04em] text-foreground-subtle uppercase transition-colors duration-200 aria-[pressed=true]:text-background"
+          class="relative z-10 min-w-16 rounded-full border-none bg-transparent px-5 py-2.5 font-mono text-body-sm font-medium text-foreground-subtle uppercase transition-colors duration-200 aria-[pressed=true]:text-background"
           :aria-pressed="mode === modeOption"
           :disabled="isDisabled"
           @click="switchMode(modeOption)"
@@ -92,7 +92,7 @@ function submit() {
       <span class="flex-1" />
       <span
         v-if="mode === 'text'"
-        class="font-mono text-label tracking-narrow"
+        class="font-mono text-label"
         :class="charCount > 10000 ? 'text-warning' : 'text-foreground-subtle'"
       >
         {{ charCount.toLocaleString() }} / 10,000
@@ -112,7 +112,7 @@ function submit() {
       v-model="value"
       type="text"
       placeholder="https://example.com/article-to-check"
-      class="claim-field w-full border-none bg-transparent py-2.5 text-base leading-relaxed text-foreground outline-none"
+      class="claim-field w-full border-none bg-transparent py-2.5 text-body text-foreground outline-none"
       :disabled="isDisabled"
     />
     <textarea
@@ -121,17 +121,17 @@ function submit() {
       v-model="value"
       placeholder="Paste the claim or excerpt you want to double-check…"
       :rows="3"
-      class="claim-field max-h-50 min-h-20 w-full resize-y border-none bg-transparent text-base leading-[1.7] text-foreground outline-none"
+      class="claim-field max-h-50 min-h-20 w-full resize-y border-none bg-transparent text-body text-foreground outline-none"
       :disabled="isDisabled"
     />
 
-    <p v-if="errorMessage" class="mt-3 text-xs leading-relaxed text-warning" role="alert">
+    <p v-if="errorMessage" class="mt-3 text-caption text-warning" role="alert">
       {{ errorMessage }}
     </p>
 
     <!-- Submit row -->
     <div class="mt-3.5 flex items-center justify-between border-t border-border pt-3.5">
-      <span class="font-mono text-label tracking-narrow text-foreground-subtle">
+      <span class="font-mono text-label text-foreground-subtle">
         {{ mode === "url" ? "paste a full http(s) URL" : "min 3 characters" }}
       </span>
       <BaseButton type="submit" variant="accent" size="lg" :disabled="!isValid || isDisabled">

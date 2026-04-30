@@ -144,8 +144,8 @@ onBeforeUnmount(clearRedirectTimer);
           <path d="M5 12.5l4.5 4.5L19 7" />
         </svg>
       </div>
-      <div class="mb-2 font-serif text-display-sm">Check complete</div>
-      <span class="animate-in-delayed font-mono text-xs tracking-narrow text-foreground-subtle"
+      <div class="mb-2 font-serif text-h2">Check complete</div>
+      <span class="animate-in-delayed font-mono text-caption text-foreground-subtle"
         >redirecting to results…</span
       >
     </div>
@@ -156,8 +156,8 @@ onBeforeUnmount(clearRedirectTimer);
          an inline transient error, not a terminal error page. -->
     <div v-else-if="progressError" class="animate-up py-24 text-center" role="alert">
       <BaseWarnRingIllustration :size="56" />
-      <h1 class="mb-2.5 font-serif text-display-sm">Could not load progress</h1>
-      <p class="mx-auto mb-6 max-w-105 text-sm leading-[1.75] text-foreground-subtle">
+      <h1 class="mb-2.5 font-serif text-h2">Could not load progress</h1>
+      <p class="mx-auto mb-6 max-w-105 text-body-sm text-foreground-subtle">
         The check was created, but the live progress stream could not be loaded. You can retry the
         connection without starting over.
       </p>
@@ -170,10 +170,7 @@ onBeforeUnmount(clearRedirectTimer);
       <div class="mb-2 font-mono text-label tracking-[0.12em] text-foreground-subtle uppercase">
         checking claim
       </div>
-      <h1
-        class="mb-10 font-serif text-[clamp(26px,4vw,38px)] leading-[1.2] tracking-tight"
-        aria-live="polite"
-      >
+      <h1 class="mb-10 font-serif text-h2" aria-live="polite">
         <span v-if="claimText">&ldquo;{{ claimText }}&rdquo;</span>
         <span v-else class="text-foreground-subtle italic">Preparing the claim…</span>
       </h1>
@@ -187,15 +184,15 @@ onBeforeUnmount(clearRedirectTimer);
         <Transition name="phase-header" mode="out-in">
           <div :key="phaseDefinition.key">
             <div
-              class="mb-2 flex items-center gap-2 font-mono text-label tracking-widest text-accent uppercase"
+              class="mb-2 flex items-center gap-2 font-mono text-label tracking-[0.12em] text-accent uppercase"
             >
               <span class="size-1.5 animate-pulse-dot rounded-full bg-accent" aria-hidden="true" />
               <span>now &middot; {{ phaseDefinition.nowLabel }}</span>
             </div>
-            <h2 class="mb-2 font-serif text-[clamp(24px,3.4vw,32px)] tracking-tight">
+            <h2 class="mb-2 font-serif text-h3">
               {{ phaseDefinition.title }}
             </h2>
-            <p class="max-w-160 text-sm leading-[1.7] text-foreground-muted">
+            <p class="max-w-160 text-body-sm text-foreground-muted">
               {{ phaseDefinition.description }}
             </p>
           </div>
@@ -203,7 +200,7 @@ onBeforeUnmount(clearRedirectTimer);
       </section>
 
       <!-- Calm trust line (no live status box, no backend message echoed back) -->
-      <p class="mt-6 max-w-160 text-xs leading-[1.6] text-foreground-subtle">
+      <p class="mt-6 max-w-160 text-caption text-foreground-subtle">
         Sources are verified for safety and substance before they become evidence.
       </p>
 

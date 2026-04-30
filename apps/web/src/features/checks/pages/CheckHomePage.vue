@@ -36,19 +36,17 @@ function selectRecentCheck(recentCheck: CheckListItem) {
       <!-- Left: copy -->
       <div class="lg:flex-1">
         <div class="animate-up [animation-delay:50ms]">
-          <span class="font-mono text-label font-medium tracking-[0.12em] text-accent uppercase">
+          <span class="font-mono text-label tracking-[0.12em] text-accent uppercase">
             before you pass it on
           </span>
         </div>
 
-        <h1
-          class="mt-4 mb-5 animate-up font-serif text-[clamp(34px,5.5vw,48px)] leading-[1.12] tracking-tight [animation-delay:100ms]"
-        >
+        <h1 class="mt-4 mb-5 animate-up font-serif text-h1 [animation-delay:100ms]">
           Check the claim,<br />not just the headline.
         </h1>
 
         <p
-          class="mb-9 max-w-125 animate-up text-base leading-[1.7] text-foreground-muted [animation-delay:150ms] lg:mb-0"
+          class="mb-9 max-w-125 animate-up text-body text-foreground-muted [animation-delay:150ms] lg:mb-0"
         >
           Paste a link or a short excerpt. TrustTrace surfaces what it found, what it doubts, and
           what stays unknown.

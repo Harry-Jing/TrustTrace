@@ -30,20 +30,20 @@ defineProps<{
             class="block size-2 rounded-full bg-foreground transition-transform duration-200"
           />
         </span>
-        <span class="font-mono text-body-sm tracking-tight text-foreground">{{ code }}</span>
+        <span class="font-mono text-body-sm text-foreground">{{ code }}</span>
       </span>
       <span
         v-if="badge"
-        class="inline-flex items-center rounded-full px-2 py-0.5 font-mono text-eyebrow font-medium uppercase"
+        class="inline-flex items-center rounded-full px-2 py-0.5 font-mono text-eyebrow uppercase"
         :class="badgeToneClasses(badge.tone)"
       >
         {{ badge.label }}
       </span>
     </div>
-    <h3 class="font-serif text-[19px] leading-tight tracking-tight text-foreground">
+    <h3 class="font-serif text-h4 text-foreground">
       {{ headline }}
     </h3>
-    <p class="text-body-sm leading-[1.6] text-foreground-muted">
+    <p class="text-body-sm text-foreground-muted">
       {{ description }}
     </p>
   </RadioGroupItem>

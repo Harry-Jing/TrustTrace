@@ -27,7 +27,7 @@ function navigate(name: string) {
     <div class="flex flex-1 items-center">
       <button
         type="button"
-        class="cursor-pointer border-none bg-transparent p-0 font-serif text-[22px] tracking-tight text-foreground transition-colors duration-400"
+        class="cursor-pointer border-none bg-transparent p-0 font-serif text-h3 text-foreground transition-colors duration-400"
         @click="navigate('landing')"
       >
         TrustTrace
@@ -128,7 +128,7 @@ function navigate(name: string) {
       <button
         v-if="currentPage === 'history' || currentPage === 'settings'"
         type="button"
-        class="tt-btn rounded-full border border-border bg-transparent px-4 py-2.5 text-xs font-medium text-foreground-subtle"
+        class="tt-btn rounded-full border border-border bg-transparent px-4 py-2.5 text-caption font-medium text-foreground-subtle"
         @click="navigate('landing')"
       >
         {{ currentPage === "settings" ? "Done" : "New check" }}
@@ -136,7 +136,7 @@ function navigate(name: string) {
       <button
         v-else
         type="button"
-        class="tt-btn rounded-full border border-border bg-transparent px-4 py-2.5 text-xs font-medium text-foreground-subtle"
+        class="tt-btn rounded-full border border-border bg-transparent px-4 py-2.5 text-caption font-medium text-foreground-subtle"
         @click="navigate('history')"
       >
         History

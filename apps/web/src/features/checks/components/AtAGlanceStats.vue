@@ -58,7 +58,7 @@ const stats = computed<readonly GlanceStat[]>(() => [
         <dt class="font-mono text-eyebrow text-foreground-subtle uppercase">
           {{ stat.label }}
         </dt>
-        <dd class="mt-1 font-serif text-stat tracking-tight" :class="stat.toneClass">
+        <dd class="mt-1 font-serif text-h3" :class="stat.toneClass">
           {{ stat.value }}
         </dd>
       </div>

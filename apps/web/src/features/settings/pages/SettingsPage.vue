@@ -99,12 +99,10 @@ onBeforeUnmount(() => {
   <div class="mx-auto max-w-form px-6 pt-14 pb-15">
     <!-- Header -->
     <div class="max-w-180 animate-up [animation-delay:50ms]">
-      <span class="font-mono text-label font-medium tracking-[0.16em] text-accent uppercase">
+      <span class="font-mono text-label tracking-[0.12em] text-accent uppercase">
         settings &middot; trusttrace
       </span>
-      <h1
-        class="mt-4 mb-5 animate-up font-serif text-[clamp(30px,4.4vw,42px)] leading-[1.1] tracking-tight [animation-delay:100ms]"
-      >
+      <h1 class="mt-4 mb-5 animate-up font-serif text-h1 [animation-delay:100ms]">
         Tune how TrustTrace looks for evidence.
       </h1>
       <p class="max-w-150 animate-up text-body text-foreground-muted [animation-delay:150ms]">
@@ -188,7 +186,7 @@ onBeforeUnmount(() => {
           disabled
         >
           <p
-            class="mb-5 rounded-md border border-dashed border-border bg-surface/60 px-4 py-3 text-body-sm leading-[1.6] text-foreground-muted"
+            class="mb-5 rounded-md border border-dashed border-border bg-surface/60 px-4 py-3 text-body-sm text-foreground-muted"
           >
             Bring-your-own keys aren't wired yet — TrustTrace uses server-side credentials in this
             build.
@@ -201,7 +199,7 @@ onBeforeUnmount(() => {
           >
             <div class="space-y-3">
               <div
-                class="flex items-center justify-between rounded-md border border-border bg-card px-4 py-3 text-sm text-foreground-muted"
+                class="flex items-center justify-between rounded-md border border-border bg-card px-4 py-3 text-body-sm text-foreground-muted"
               >
                 <span>Tavily</span>
                 <svg
@@ -243,7 +241,7 @@ onBeforeUnmount(() => {
           >
             <div class="space-y-3">
               <div
-                class="flex items-center justify-between rounded-md border border-border bg-card px-4 py-3 text-sm text-foreground-muted"
+                class="flex items-center justify-between rounded-md border border-border bg-card px-4 py-3 text-body-sm text-foreground-muted"
               >
                 <span>OpenAI</span>
                 <svg
@@ -293,19 +291,19 @@ onBeforeUnmount(() => {
         <!-- About -->
         <SettingsSection id="about" eyebrow="about" title="The fine print.">
           <SettingsRow label="Version">
-            <span class="font-mono text-xs tracking-tight text-foreground-muted">
+            <span class="font-mono text-caption text-foreground-muted">
               {{ APP_VERSION }} <span class="mx-1.5 text-foreground-subtle">·</span>
               {{ APP_RELEASE_TAG }}
             </span>
           </SettingsRow>
           <SettingsRow label="Build">
-            <span class="font-mono text-xs tracking-tight text-foreground-muted">
+            <span class="font-mono text-caption text-foreground-muted">
               {{ APP_BUILD_LABEL }} <span class="mx-1.5 text-foreground-subtle">·</span>
               {{ APP_BUILD_DATE }}
             </span>
           </SettingsRow>
           <SettingsRow label="Tagline" helper="Shown at the foot of every check." is-last>
-            <span class="font-mono text-xs tracking-tight text-foreground-muted">
+            <span class="font-mono text-caption text-foreground-muted">
               {{ APP_TAGLINE }}
             </span>
           </SettingsRow>

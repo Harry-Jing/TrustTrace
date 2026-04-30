@@ -18,7 +18,7 @@ withDefaults(
 
 <template>
   <div class="w-full" :data-disabled="disabled || undefined">
-    <div class="flex items-baseline justify-between font-mono text-xs tracking-tight">
+    <div class="flex items-baseline justify-between font-mono text-caption">
       <span class="text-foreground">
         {{ value }}<span v-if="unit" class="ml-1.5 text-foreground-subtle">{{ unit }}</span>
       </span>

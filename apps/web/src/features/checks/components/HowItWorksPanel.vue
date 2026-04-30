@@ -69,12 +69,12 @@ const howSteps = [
         >
           <div v-for="(step, i) in howSteps" :key="i">
             <div
-              class="mb-2 flex size-7 items-center justify-center rounded-full bg-accent font-mono text-xs font-semibold text-card"
+              class="mb-2 flex size-7 items-center justify-center rounded-full bg-accent font-mono text-caption font-semibold text-card"
             >
               {{ i + 1 }}
             </div>
             <div class="mb-1 text-body-sm font-semibold">{{ step.title }}</div>
-            <div class="text-xs leading-relaxed text-foreground-subtle">{{ step.description }}</div>
+            <div class="text-caption text-foreground-subtle">{{ step.description }}</div>
           </div>
         </div>
       </div>

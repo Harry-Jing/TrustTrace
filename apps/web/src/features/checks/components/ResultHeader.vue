@@ -28,7 +28,7 @@ const description = computed(() =>
        competing with the verdict h1 below. -->
   <div class="mb-5 flex flex-wrap items-baseline gap-x-3 gap-y-1" aria-label="Checked input">
     <span class="font-mono text-eyebrow text-foreground-subtle uppercase">checked</span>
-    <span class="min-w-0 flex-1 truncate font-mono text-xs text-foreground-muted">
+    <span class="min-w-0 flex-1 truncate font-mono text-caption text-foreground-muted">
       &ldquo;{{ result.inputText }}&rdquo;
     </span>
     <span class="font-mono text-label text-foreground-subtle">
@@ -42,12 +42,10 @@ const description = computed(() =>
   </div>
 
   <!-- Headline + description -->
-  <h1 class="mb-3 animate-up font-serif text-display-md [animation-delay:100ms]">
+  <h1 class="mb-3 animate-up font-serif text-h1 [animation-delay:100ms]">
     {{ headline }}
   </h1>
-  <p
-    class="mb-2 max-w-160 animate-up text-sm leading-[1.7] text-foreground-muted [animation-delay:100ms]"
-  >
+  <p class="mb-2 max-w-160 animate-up text-body-sm text-foreground-muted [animation-delay:100ms]">
     {{ description }}
   </p>
 </template>

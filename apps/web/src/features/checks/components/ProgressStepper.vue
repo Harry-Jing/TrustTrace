@@ -50,7 +50,7 @@ function isCurrent(index: number, currentIndex: number) {
            one-shot scale pulse via CSS. The current step gets a continuous,
            breathing halo so the user can see "this is where work is happening". -->
       <div
-        class="relative z-10 flex size-9 items-center justify-center rounded-full border-[1.5px] font-mono text-body-sm leading-none transition-all duration-400"
+        class="relative z-10 flex size-9 items-center justify-center rounded-full border-[1.5px] font-mono text-body-sm transition-all duration-400"
         :class="[
           {
             'border-success bg-success text-card': isDone(index, currentIndex),

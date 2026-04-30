@@ -22,22 +22,17 @@ defineProps<{
     <header class="mb-7">
       <div class="flex items-center gap-3">
         <span
-          class="font-mono text-label font-medium tracking-[0.16em] text-foreground-subtle uppercase"
+          class="font-mono text-label tracking-[0.12em] text-foreground-subtle uppercase"
           aria-hidden="true"
         >
           {{ eyebrow }}
         </span>
         <BaseComingSoonPill v-if="comingSoon" />
       </div>
-      <h2
-        class="mt-3 font-serif text-[clamp(24px,3vw,30px)] leading-tight tracking-tight text-foreground"
-      >
+      <h2 class="mt-3 font-serif text-h3 text-foreground">
         {{ title }}
       </h2>
-      <p
-        v-if="description"
-        class="mt-3 max-w-readable text-body leading-[1.6] text-foreground-muted"
-      >
+      <p v-if="description" class="mt-3 max-w-readable text-body text-foreground-muted">
         {{ description }}
       </p>
     </header>

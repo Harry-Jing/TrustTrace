@@ -37,12 +37,12 @@ function formatRelativeTime(iso: string) {
       @click="emit('select', recentCheck)"
     >
       <div class="flex items-center justify-between md:contents">
-        <div class="shrink-0 md:w-32">
-          <EvidenceBadge :tone="evidenceToneFor(recentCheck.verdictBand)" class="text-micro">{{
+        <div class="shrink-0 md:w-36">
+          <EvidenceBadge :tone="evidenceToneFor(recentCheck.verdictBand)" class="text-caption">{{
             recentCheck.cue
           }}</EvidenceBadge>
         </div>
-        <span class="shrink-0 font-mono text-[10px] text-foreground-subtle md:order-last">{{
+        <span class="shrink-0 font-mono text-caption text-foreground-subtle md:order-last">{{
           formatRelativeTime(recentCheck.createdAt)
         }}</span>
       </div>

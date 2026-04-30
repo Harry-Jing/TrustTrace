@@ -20,8 +20,8 @@ const columns = [
       class="px-6 py-5"
       :class="i > 0 ? 'md:border-l md:border-border' : ''"
     >
-      <div class="mb-2 font-serif text-[17px] text-foreground">{{ column.title }}</div>
-      <div class="text-body-sm leading-[1.75] text-foreground-muted">{{ column.description }}</div>
+      <div class="mb-2 font-serif text-h4 text-foreground">{{ column.title }}</div>
+      <div class="text-body-sm text-foreground-muted">{{ column.description }}</div>
     </div>
   </div>
 </template>

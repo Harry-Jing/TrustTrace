@@ -132,7 +132,7 @@ function forceFail() {
         aria-label="Dev panel"
       >
         <header
-          class="flex items-center justify-between border-b border-border px-3 py-2 font-mono text-micro tracking-[0.12em] text-foreground-subtle uppercase"
+          class="flex items-center justify-between border-b border-border px-3 py-2 font-mono text-eyebrow text-foreground-subtle uppercase"
         >
           <span>Dev panel</span>
           <button
@@ -173,8 +173,8 @@ function forceFail() {
                 @change="pickScenario(scenario.id)"
               />
               <span class="flex min-w-0 flex-col">
-                <span class="text-body-sm leading-tight">{{ scenario.label }}</span>
-                <span class="font-mono text-micro text-foreground-subtle">
+                <span class="text-body-sm">{{ scenario.label }}</span>
+                <span class="font-mono text-caption text-foreground-subtle">
                   {{ scenario.description }}
                 </span>
               </span>
@@ -202,8 +202,8 @@ function forceFail() {
                 @change="pickDemoCheck(demo.checkId)"
               />
               <span class="flex min-w-0 flex-col">
-                <span class="truncate text-body-sm leading-tight">{{ demo.claim }}</span>
-                <span class="font-mono text-micro text-foreground-subtle">{{ demo.cue }}</span>
+                <span class="truncate text-body-sm">{{ demo.claim }}</span>
+                <span class="font-mono text-caption text-foreground-subtle">{{ demo.cue }}</span>
               </span>
             </label>
           </div>
@@ -214,35 +214,35 @@ function forceFail() {
           <div class="flex flex-wrap gap-1">
             <button
               type="button"
-              class="tt-btn rounded border border-border bg-transparent px-2 py-1 font-mono text-[10px] text-foreground-muted"
+              class="tt-btn rounded border border-border bg-transparent px-2 py-1 font-mono text-caption text-foreground-muted"
               @click="gotoHome"
             >
               home
             </button>
             <button
               type="button"
-              class="tt-btn rounded border border-border bg-transparent px-2 py-1 font-mono text-[10px] text-foreground-muted"
+              class="tt-btn rounded border border-border bg-transparent px-2 py-1 font-mono text-caption text-foreground-muted"
               @click="gotoLoading"
             >
               loading
             </button>
             <button
               type="button"
-              class="tt-btn rounded border border-border bg-transparent px-2 py-1 font-mono text-[10px] text-foreground-muted"
+              class="tt-btn rounded border border-border bg-transparent px-2 py-1 font-mono text-caption text-foreground-muted"
               @click="gotoResult"
             >
               result
             </button>
             <button
               type="button"
-              class="tt-btn rounded border border-border bg-transparent px-2 py-1 font-mono text-[10px] text-foreground-muted"
+              class="tt-btn rounded border border-border bg-transparent px-2 py-1 font-mono text-caption text-foreground-muted"
               @click="gotoError"
             >
               error
             </button>
             <button
               type="button"
-              class="tt-btn rounded border border-border bg-transparent px-2 py-1 font-mono text-[10px] text-foreground-muted"
+              class="tt-btn rounded border border-border bg-transparent px-2 py-1 font-mono text-caption text-foreground-muted"
               @click="gotoHistory"
             >
               history
@@ -257,7 +257,7 @@ function forceFail() {
           <div class="flex flex-wrap gap-1">
             <button
               type="button"
-              class="tt-btn rounded border border-border bg-transparent px-2 py-1 font-mono text-[10px] text-foreground-muted"
+              class="tt-btn rounded border border-border bg-transparent px-2 py-1 font-mono text-caption text-foreground-muted"
               :title="`Reset ${activeCheckId} to its initial phase`"
               @click="resetProgress"
             >
@@ -265,7 +265,7 @@ function forceFail() {
             </button>
             <button
               type="button"
-              class="tt-btn rounded border border-success bg-transparent px-2 py-1 font-mono text-[10px] text-success"
+              class="tt-btn rounded border border-success bg-transparent px-2 py-1 font-mono text-caption text-success"
               :title="`Force ${activeCheckId} to completed`"
               @click="forceComplete"
             >
@@ -273,7 +273,7 @@ function forceFail() {
             </button>
             <button
               type="button"
-              class="tt-btn rounded border border-warning bg-transparent px-2 py-1 font-mono text-[10px] text-warning"
+              class="tt-btn rounded border border-warning bg-transparent px-2 py-1 font-mono text-caption text-warning"
               :title="`Apply the active scenario's failure to ${activeCheckId}`"
               @click="forceFail"
             >
@@ -283,7 +283,7 @@ function forceFail() {
         </div>
 
         <footer
-          class="flex items-center justify-between gap-2 border-t border-border bg-surface/60 px-3 py-2 font-mono text-micro text-foreground-subtle"
+          class="flex items-center justify-between gap-2 border-t border-border bg-surface/60 px-3 py-2 font-mono text-caption text-foreground-subtle"
         >
           <span>{{ activeCheckId }}</span>
           <span class="flex items-center gap-1">
@@ -298,7 +298,7 @@ function forceFail() {
     <!-- Always-visible badge / toggle -->
     <button
       type="button"
-      class="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 font-mono text-micro tracking-narrow shadow-sm backdrop-blur-sm transition-transform duration-150 hover:-translate-y-px hover:shadow-md"
+      class="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 font-mono text-caption shadow-sm backdrop-blur-sm transition-transform duration-150 hover:-translate-y-px hover:shadow-md"
       :class="badgeToneClass"
       :aria-expanded="dev.panelOpen"
       aria-label="Toggle dev panel"
@@ -306,7 +306,7 @@ function forceFail() {
       @click="dev.togglePanel()"
     >
       <span class="flex size-1.5 animate-pulse-dot rounded-full bg-current" aria-hidden="true" />
-      <span class="font-semibold tracking-[0.08em] uppercase">MOCK</span>
+      <span class="font-semibold tracking-[0.12em] uppercase">MOCK</span>
       <span class="text-foreground-subtle/80" aria-hidden="true">·</span>
       <span class="truncate">{{ dev.scenario.label }}</span>
     </button>
