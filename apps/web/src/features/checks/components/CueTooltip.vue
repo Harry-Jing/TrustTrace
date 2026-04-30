@@ -19,7 +19,7 @@ defineProps<{
       <TooltipTrigger as-child>
         <button
           type="button"
-          class="inline-flex size-6 cursor-help items-center justify-center rounded-full border border-border bg-transparent text-[10px] text-foreground-subtle"
+          class="tt-icon-btn inline-flex size-6 cursor-help items-center justify-center rounded-full border border-border bg-transparent text-[10px] text-foreground-subtle"
           aria-label="Show details for this credibility cue"
         >
           ?

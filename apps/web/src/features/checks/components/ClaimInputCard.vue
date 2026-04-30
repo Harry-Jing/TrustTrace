@@ -121,7 +121,7 @@ function submit() {
       v-model="value"
       placeholder="Paste the claim or excerpt you want to double-check…"
       :rows="3"
-      class="claim-field max-h-50 min-h-20 w-full resize-y border-none bg-transparent text-body leading-[1.7] text-foreground outline-none"
+      class="claim-field max-h-50 min-h-20 w-full resize-y border-none bg-transparent text-base leading-[1.7] text-foreground outline-none"
       :disabled="isDisabled"
     />
 

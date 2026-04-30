@@ -489,6 +489,26 @@
     box-shadow: none;
   }
 
+  /* Decouple visual size from hit area for icon buttons. Apple HIG
+     mandates 44pt minimum tappable area; SwiftUI implements this via
+     `contentShape()` and React Native via `hitSlop`. Web parallel: a
+     transparent ::before centered on the button, sized to at least
+     44×44 — visual button stays at its design size, hit area always
+     reaches 44px. Click on the extended zone bubbles to the button. */
+  .tt-icon-btn {
+    position: relative;
+  }
+
+  .tt-icon-btn::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+  }
+
   .page-forward-enter-active {
     animation: page-forward-enter-kf 0.35s ease both;
   }

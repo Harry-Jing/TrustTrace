@@ -61,7 +61,7 @@ function navigate(name: string) {
       <!-- Settings gear -->
       <button
         type="button"
-        class="tt-btn flex size-9 items-center justify-center rounded-full border border-border bg-transparent text-foreground-subtle transition-colors duration-200"
+        class="tt-btn tt-icon-btn flex size-9 items-center justify-center rounded-full border border-border bg-transparent text-foreground-subtle transition-colors duration-200"
         :class="{ 'text-foreground': currentPage === 'settings' }"
         aria-label="Open settings"
         @click="navigate('settings')"
@@ -83,11 +83,11 @@ function navigate(name: string) {
         </svg>
       </button>
 
-      <!-- Theme toggle: 36×36 square keeps comfortable touch target while
-           staying visually proportionate inside the 56px nav. -->
+      <!-- Theme toggle: visual 36×36 stays proportionate inside the 56px nav;
+           tt-icon-btn extends the hit area to 44px (Apple HIG). -->
       <button
         type="button"
-        class="tt-btn flex size-9 items-center justify-center rounded-full border border-border bg-transparent text-foreground-subtle transition-colors duration-200"
+        class="tt-btn tt-icon-btn flex size-9 items-center justify-center rounded-full border border-border bg-transparent text-foreground-subtle transition-colors duration-200"
         aria-label="Toggle theme"
         @click="preferences.toggleTheme"
       >
