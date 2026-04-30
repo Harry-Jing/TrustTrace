@@ -7,6 +7,20 @@ export type AssessmentLike = Pick<
   "sourceUrl" | "relation" | "scopeMatch" | "credibilityLabel" | "isPrimary" | "evidenceText"
 >;
 
+/**
+ * Returns the first string in `values` that is non-null, non-undefined,
+ * and non-empty — or `null` if no candidate qualifies. Used in place of
+ * `||` fallback chains so the `prefer-nullish-coalescing` lint rule
+ * passes without losing the "empty string falls through" semantics
+ * (which `??` does not provide).
+ */
+function firstNonEmpty(...values: readonly (string | null | undefined)[]): string | null {
+  for (const value of values) {
+    if (value !== null && value !== undefined && value !== "") return value;
+  }
+  return null;
+}
+
 export function buildEvidenceItems(
   extractions: readonly SourceExtractionRecordDto[],
   assessments: readonly AssessmentLike[],
@@ -42,14 +56,15 @@ export function buildEvidenceItems(
             ? 3
             : 2;
       const text =
-        assessment?.evidenceText || extraction.textExcerpt || "Verified source text extracted.";
+        firstNonEmpty(assessment?.evidenceText, extraction.textExcerpt) ??
+        "Verified source text extracted.";
 
       return {
         sourceName: domain,
         domain,
-        credibilityLabel: assessment?.credibilityLabel || "Verified source",
+        credibilityLabel: firstNonEmpty(assessment?.credibilityLabel) ?? "Verified source",
         date: `accessed ${extraction.updatedAt.slice(0, 10)}`,
-        title: extraction.title || domain,
+        title: firstNonEmpty(extraction.title) ?? domain,
         text: truncate(text, 520),
         url: resolvedUrl,
         relation,

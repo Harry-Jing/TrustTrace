@@ -7,6 +7,7 @@ import {
 import pluginVue from "eslint-plugin-vue";
 import pluginVitest from "@vitest/eslint-plugin";
 import pluginOxlint from "eslint-plugin-oxlint";
+import pluginTsdoc from "eslint-plugin-tsdoc";
 import skipFormatting from "eslint-config-prettier/flat";
 
 configureVueProject({
@@ -94,6 +95,21 @@ export default defineConfigWithVueTs(
     rules: {
       "@typescript-eslint/no-non-null-assertion": "off",
       "vue/one-component-per-file": "off",
+    },
+  },
+
+  {
+    // Validates TSDoc syntax in /** ... */ blocks against the official
+    // Microsoft spec — does not require comments, only checks the ones
+    // that exist. `warn` follows the plugin's own recommendation; it
+    // surfaces issues without blocking CI while we tune the policy.
+    name: "app/tsdoc",
+    files: ["src/**/*.{vue,ts,mts,tsx}"],
+    plugins: {
+      tsdoc: pluginTsdoc,
+    },
+    rules: {
+      "tsdoc/syntax": "warn",
     },
   },
 

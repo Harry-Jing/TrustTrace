@@ -1,3 +1,18 @@
+/**
+ * Source ranking — shared scoring helpers used by discovery and
+ * evidence selection.
+ *
+ * The pipeline applies the same authority-aware score at three points:
+ * raw discovery results (`rankDiscoveredSources`), candidate DB records
+ * pre-fetch (`rankCandidateRecords`), and verified evidence sources
+ * post-extraction (`rankEvidenceSources`). `selectBestEvidenceByDomain`
+ * then enforces single-source-per-domain so one publisher cannot
+ * dominate the verdict.
+ *
+ * Authority weights and snippet penalties below are policy choices —
+ * adjust them with the consequences for the verdict band in mind.
+ */
+
 import type { SourceExtractionRecordDto } from "../types/sources";
 
 export interface DiscoveredSourceLike {
@@ -81,6 +96,10 @@ export function authorityScoreForUrl(urlValue: string, title: string | null = nu
   const titleText = title?.toLowerCase() ?? "";
   let score = 0;
 
+  // Authority TLD weights are an institutional-trust ordering: .gov/.mil
+  // (top, primary government), .edu (academic), .int (intergovernmental
+  // body). The 5/4/3 gaps leave room for the curated official/academic
+  // host bonuses below to break ties without one signal dominating.
   if (hostname.endsWith(".gov") || hostname.endsWith(".mil")) score += 5;
   if (hostname.endsWith(".edu")) score += 4;
   if (hostname.endsWith(".int")) score += 3;
@@ -110,7 +129,13 @@ function candidateScore(source: CandidateLike): number {
 
 function evidenceSourceScore(source: SourceExtractionRecordDto): number {
   const resolvedUrl = source.resolvedUrl ?? source.candidateUrl;
+  // Snippet-only sources get a deliberately heavy penalty so they
+  // cannot outrank a single full-text source even when their domain
+  // has higher authority. The asymmetry (-25 vs +12) is what enforces
+  // "snippet_only is weak context" without a hard exclude.
   const fullTextBonus = isSnippetOnlySource(source) ? -25 : 12;
+  // Cap excerpt-length contribution at 5 so one very long article
+  // cannot outrank multiple shorter primary sources purely on size.
   const textLengthBonus = Math.min((source.textExcerpt?.length ?? 0) / 200, 5);
 
   return (

@@ -36,5 +36,6 @@ function normalizeQueries(queries: readonly string[]): string[] {
 
 function normalizeNullableString(value: string | null): string | null {
   const trimmed = value?.trim();
-  return trimmed ? trimmed : null;
+  if (!trimmed) return null;
+  return trimmed;
 }

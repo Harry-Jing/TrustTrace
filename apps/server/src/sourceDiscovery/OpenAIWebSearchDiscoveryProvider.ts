@@ -3,7 +3,7 @@ import { zodTextFormat } from "openai/helpers/zod";
 
 import type { OpenAIReasoningEffort } from "../config";
 import { EvidenceProviderError } from "../evidenceProvider/types";
-import { discoveryResponseSchema, type DiscoveryResponse } from "../evidenceProvider/openaiSchemas";
+import { discoveryResponseSchema } from "../evidenceProvider/openaiSchemas";
 import { providerError } from "../evidenceProvider/openaiErrors";
 import { dedupeSources, extractSourcesFromResponse } from "./responseSources";
 import type {
@@ -67,7 +67,7 @@ export class OpenAIWebSearchDiscoveryProvider implements SourceDiscoveryProvider
       });
 
       return dedupeSources([
-        ...((response.output_parsed as DiscoveryResponse | null)?.candidates ?? []),
+        ...(response.output_parsed?.candidates ?? []),
         ...extractSourcesFromResponse(response),
       ]).slice(0, maxCandidates);
     } catch (error) {

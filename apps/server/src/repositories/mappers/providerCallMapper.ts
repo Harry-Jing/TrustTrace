@@ -1,4 +1,4 @@
-import { providerCallsTable } from "../../schema/audit";
+import { type providerCallsTable } from "../../schema/audit";
 import type { ProviderCallRecordDto } from "../../types/audit";
 
 type ProviderCallRow = typeof providerCallsTable.$inferSelect;

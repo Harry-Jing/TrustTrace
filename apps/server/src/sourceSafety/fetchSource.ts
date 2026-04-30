@@ -79,7 +79,9 @@ export async function fetchAndExtractSource(
 
 async function fetchWithTimeout(url: string, options: SourceFetchOptions): Promise<Response> {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), options.timeoutMs);
+  const timeout = setTimeout(() => {
+    controller.abort();
+  }, options.timeoutMs);
 
   try {
     return await options.fetch(url, {

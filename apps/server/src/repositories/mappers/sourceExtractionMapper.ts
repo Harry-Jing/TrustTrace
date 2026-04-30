@@ -1,4 +1,4 @@
-import { sourceExtractionsTable } from "../../schema/sources";
+import { type sourceExtractionsTable } from "../../schema/sources";
 import type { SourceExtractionRecordDto } from "../../types/sources";
 
 type SourceExtractionRow = typeof sourceExtractionsTable.$inferSelect;

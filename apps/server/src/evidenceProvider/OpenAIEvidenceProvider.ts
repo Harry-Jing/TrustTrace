@@ -8,9 +8,6 @@ import {
   assessmentResponseSchema,
   claimAnalysisResponseSchema,
   resultCopyResponseSchema,
-  type AssessmentResponse,
-  type ClaimAnalysisResponse,
-  type ResultCopyResponse,
 } from "./openaiSchemas";
 import {
   EvidenceProviderError,
@@ -70,7 +67,7 @@ export class OpenAIEvidenceProvider implements EvidenceProvider {
         ),
       });
 
-      const parsed = response.output_parsed as ClaimAnalysisResponse | null;
+      const parsed = response.output_parsed;
       if (!parsed) {
         throw new EvidenceProviderError(
           "CLAIM_ANALYSIS_EMPTY",
@@ -118,7 +115,7 @@ export class OpenAIEvidenceProvider implements EvidenceProvider {
         ),
       });
 
-      const parsed = response.output_parsed as AssessmentResponse | null;
+      const parsed = response.output_parsed;
       return parsed?.assessments ?? [];
     } catch (error) {
       throw providerError(error, "PROVIDER_ERROR", "OpenAI source assessment failed.");
@@ -157,7 +154,7 @@ export class OpenAIEvidenceProvider implements EvidenceProvider {
         ),
       });
 
-      const parsed = response.output_parsed as ResultCopyResponse | null;
+      const parsed = response.output_parsed;
       if (!parsed) {
         throw new EvidenceProviderError("RESULT_COPY_EMPTY", "OpenAI did not return result copy.");
       }

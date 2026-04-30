@@ -35,7 +35,7 @@ describe("TrustTrace server API", () => {
 
     const firstPageResponse = await services.app.request("/v1/checks?limit=1");
     const firstPage = (await firstPageResponse.json()) as {
-      items: Array<{ checkId: string; claim: string }>;
+      items: { checkId: string; claim: string }[];
     };
 
     expect(firstPageResponse.status).toBe(200);
@@ -45,7 +45,7 @@ describe("TrustTrace server API", () => {
 
     const secondPageResponse = await services.app.request("/v1/checks?limit=1&offset=1");
     const secondPage = (await secondPageResponse.json()) as {
-      items: Array<{ checkId: string; claim: string }>;
+      items: { checkId: string; claim: string }[];
     };
 
     expect(secondPage.items).toHaveLength(1);

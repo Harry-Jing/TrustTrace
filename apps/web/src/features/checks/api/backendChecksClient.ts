@@ -1,3 +1,13 @@
+/**
+ * HTTP / SSE client for the TrustTrace backend.
+ *
+ * Every backend response is validated against the shared Zod schemas
+ * in `packages/contracts` before it leaves this module — never trust
+ * raw JSON. SSE subscriptions also live here; the composable layer
+ * reacts to events but does not own the connection lifecycle (open,
+ * reconnect backoff, close on terminal status).
+ */
+
 import { apiBaseUrl } from "@/app/env";
 import {
   checkListResponseSchema,
@@ -18,6 +28,10 @@ import type {
 } from "@/features/checks/types";
 import type { DiscoveryStrategy } from "@/features/checks/types/progress";
 
+// SSE reconnect backoff: three attempts on EventSource error before
+// the subscription gives up and reports a closed stream. Covers a
+// transient proxy reset (~1–2s) without masking a sustained outage.
+// The composable's poll fallback takes over after the last attempt.
 const STREAM_RECONNECT_DELAYS_MS = [500, 1000, 2000] as const;
 
 class HttpApiError extends Error {
@@ -139,6 +153,20 @@ export async function listChecks(params?: CheckListParams): Promise<readonly Che
   );
 }
 
+/**
+ * Open an SSE subscription for a single check's progress events.
+ *
+ * If `EventSource` is unavailable, schedules a microtask `onError`
+ * with an explanatory error and returns a no-op subscription — the
+ * calling composable is expected to fall back to polling. Reconnect
+ * backoff is bounded by {@link STREAM_RECONNECT_DELAYS_MS}; after
+ * the last attempt fails the subscription closes and reports
+ * "Lost connection to the check progress stream." via `onError`.
+ *
+ * Pass `options.afterSeq` to resume after a known sequence — the
+ * server replays missed events from persistence on connect, so the
+ * subscriber sees no gaps.
+ */
 export function subscribeCheckEvents(
   checkId: string,
   handlers: CheckEventHandlers,

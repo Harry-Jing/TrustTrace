@@ -1,4 +1,4 @@
-import { checksTable } from "../../schema/checks";
+import { type checksTable } from "../../schema/checks";
 import type {
   CheckListItemDto,
   CheckRecordDto,
@@ -56,7 +56,7 @@ function listSnippet(row: CheckRow): string {
 }
 
 function listCue(row: CheckRow): string {
-  if (row.status === "completed") return row.resultJson?.verdictLabel || "needs context";
+  if (row.status === "completed") return row.resultJson?.verdictLabel ?? "needs context";
   if (row.status === "failed") return "failed";
   return "checking";
 }

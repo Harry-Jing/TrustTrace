@@ -3,7 +3,7 @@ import type { Database } from "bun:sqlite";
 import { ensureColumn } from "./migrations";
 
 export function initializeSchema(sqlite: Database) {
-  sqlite.exec(`
+  sqlite.run(`
     CREATE TABLE IF NOT EXISTS checks (
       id TEXT PRIMARY KEY,
       status TEXT NOT NULL,

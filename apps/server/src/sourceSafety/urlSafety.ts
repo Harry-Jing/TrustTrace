@@ -129,10 +129,10 @@ function isUnsafeIpv6(address: string): boolean {
 }
 
 function readIpv4MappedAddress(address: string): string | null {
-  const dotted = address.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/);
+  const dotted = /^::ffff:(\d+\.\d+\.\d+\.\d+)$/.exec(address);
   if (dotted?.[1]) return dotted[1];
 
-  const hex = address.match(/^::ffff:([0-9a-f]{1,4}):([0-9a-f]{1,4})$/);
+  const hex = /^::ffff:([0-9a-f]{1,4}):([0-9a-f]{1,4})$/.exec(address);
   const highPart = hex?.[1];
   const lowPart = hex?.[2];
   if (!highPart || !lowPart) return null;

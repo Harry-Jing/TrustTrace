@@ -68,6 +68,10 @@ export const usePreferencesStore = defineStore("preferences", {
     applyTheme() {
       if (typeof document === "undefined") return;
 
+      // style.css's dark-mode tokens are gated on `[data-theme="dark"]`;
+      // toggling this attribute on `<html>` is the single source of
+      // truth for theme. Removing the attribute (vs setting "light")
+      // lets `:root` defaults apply unmodified.
       if (resolveEffectiveTheme(this.theme) === "dark") {
         document.documentElement.setAttribute("data-theme", "dark");
       } else {

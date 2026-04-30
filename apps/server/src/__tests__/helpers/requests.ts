@@ -51,7 +51,9 @@ export async function responseText(response: Response): Promise<string> {
   return Promise.race([
     response.text(),
     new Promise<string>((_, reject) => {
-      setTimeout(() => reject(new Error("Timed out while reading response text.")), 1000);
+      setTimeout(() => {
+        reject(new Error("Timed out while reading response text."));
+      }, 1000);
     }),
   ]);
 }

@@ -22,6 +22,7 @@ logs/
 # Caches
 *.tsbuildinfo
 .cache/
+.eslintcache
 
 # SQLite
 data/*.sqlite

@@ -1,4 +1,4 @@
-import { claimAnalysesTable } from "../../schema/audit";
+import { type claimAnalysesTable } from "../../schema/audit";
 import type { ClaimAnalysisDto } from "../../types/claim";
 
 type ClaimAnalysisRow = typeof claimAnalysesTable.$inferSelect;

@@ -20,11 +20,11 @@ const DEFAULT_DB_PATH = fileURLToPath(new URL("../data/trusttrace.sqlite", impor
 export function readConfig(env: Record<string, string | undefined> = Bun.env): ServerConfig {
   return {
     port: readPort(env.TRUSTTRACE_PORT),
-    dbPath: env.TRUSTTRACE_DB_PATH?.trim() || DEFAULT_DB_PATH,
+    dbPath: readOptionalString(env.TRUSTTRACE_DB_PATH) ?? DEFAULT_DB_PATH,
     logLevel: readLogLevel(env.TRUSTTRACE_LOG_LEVEL),
     openAiApiKey: readOptionalString(env.OPENAI_API_KEY),
     tavilyApiKey: readOptionalString(env.TAVILY_API_KEY),
-    openAiModel: env.TRUSTTRACE_OPENAI_MODEL?.trim() || "gpt-5.5",
+    openAiModel: readOptionalString(env.TRUSTTRACE_OPENAI_MODEL) ?? "gpt-5.5",
     openAiReasoningEffort: readReasoningEffort(env.TRUSTTRACE_OPENAI_REASONING_EFFORT),
     maxCandidateSources: readPositiveInteger(env.TRUSTTRACE_MAX_CANDIDATE_SOURCES, 10, {
       name: "TRUSTTRACE_MAX_CANDIDATE_SOURCES",
@@ -50,7 +50,8 @@ function readPort(value: string | undefined): number {
 
 function readOptionalString(value: string | undefined): string | null {
   const trimmed = value?.trim();
-  return trimmed ? trimmed : null;
+  if (!trimmed) return null;
+  return trimmed;
 }
 
 function readLogLevel(value: string | undefined): LogLevel {

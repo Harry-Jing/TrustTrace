@@ -31,7 +31,7 @@ export function truncate(value: string, maxLength: number): string {
 }
 
 function extractTitle(html: string): string | null {
-  const match = html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i);
+  const match = /<title\b[^>]*>([\s\S]*?)<\/title>/i.exec(html);
   if (!match?.[1]) return null;
   return decodeHtmlEntities(normalizeWhitespace(match[1]));
 }

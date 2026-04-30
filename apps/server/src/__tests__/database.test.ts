@@ -52,15 +52,15 @@ describe("database schema initialization", () => {
       oldDb.close();
 
       const database = openDatabase(dbPath);
-      const checkColumns = database.sqlite.query("PRAGMA table_info(checks)").all() as Array<{
+      const checkColumns = database.sqlite.query("PRAGMA table_info(checks)").all() as {
         name: string;
-      }>;
+      }[];
       const sourceColumns = database.sqlite
         .query("PRAGMA table_info(source_extractions)")
-        .all() as Array<{ name: string }>;
+        .all() as { name: string }[];
       const tables = database.sqlite
         .query("SELECT name FROM sqlite_master WHERE type = 'table'")
-        .all() as Array<{ name: string }>;
+        .all() as { name: string }[];
 
       expect(checkColumns.map((column) => column.name)).toContain("discovery_strategy");
       expect(sourceColumns.map((column) => column.name)).toContain("discovery_snippet");

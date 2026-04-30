@@ -1,5 +1,5 @@
 import { EvidenceProviderError } from "../evidenceProvider/types";
-import { ChecksRepository } from "../repositories/repositoryFacade";
+import { type ChecksRepository } from "../repositories/repositoryFacade";
 import { SourceFetchError } from "../sourceSafety/types";
 import { makeCheckError } from "../synthesis/errors";
 import type { CheckApiErrorDto, CheckErrorCode } from "../types/checks";

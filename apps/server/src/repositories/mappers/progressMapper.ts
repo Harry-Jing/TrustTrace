@@ -1,4 +1,4 @@
-import { progressEventsTable } from "../../schema/progress";
+import { type progressEventsTable } from "../../schema/progress";
 import type { CheckApiErrorDto, CheckProgressDto, ProgressEventDto } from "../../types/checks";
 
 type ProgressEventRow = typeof progressEventsTable.$inferSelect;

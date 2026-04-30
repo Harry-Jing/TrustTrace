@@ -1,4 +1,4 @@
-import { sourceEvaluationsTable } from "../../schema/audit";
+import { type sourceEvaluationsTable } from "../../schema/audit";
 import type { SourceEvaluationRecordDto } from "../../types/audit";
 
 type SourceEvaluationRow = typeof sourceEvaluationsTable.$inferSelect;

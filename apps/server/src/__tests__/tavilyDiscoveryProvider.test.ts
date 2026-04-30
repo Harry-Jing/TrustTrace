@@ -29,7 +29,7 @@ function discoveryInput(overrides: Partial<DiscoveryInput["claimAnalysis"]> = {}
 
 describe("TavilyDiscoveryProvider", () => {
   it("runs cost-conscious search fanout and maps results", async () => {
-    const calls: Array<{ query: string; options: unknown }> = [];
+    const calls: { query: string; options: unknown }[] = [];
     const client: TavilySearchClient = {
       async search(query, options) {
         calls.push({ query, options });

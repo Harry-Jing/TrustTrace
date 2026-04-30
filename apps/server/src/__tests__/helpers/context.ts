@@ -47,7 +47,9 @@ export function createTestContext(options: TestContextOptions = {}): TestContext
   });
   const context = {
     services,
-    cleanup: () => rmSync(dir, { recursive: true, force: true }),
+    cleanup: () => {
+      rmSync(dir, { recursive: true, force: true });
+    },
   };
   contexts.push(context);
   return context;

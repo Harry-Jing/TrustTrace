@@ -1,14 +1,29 @@
+/**
+ * HTTP surface for the TrustTrace backend.
+ *
+ * Routes are intentionally thin: validate the request against the
+ * shared contract schemas, delegate to the repository or pipeline,
+ * and return the resulting DTO. The progress stream is the one
+ * non-trivial endpoint — see `streamProgressEvents` for the SSE
+ * lifecycle (replay-then-subscribe, heartbeat, terminal-event close).
+ */
+
 import { Hono, type Context } from "hono";
 import type { Logger } from "pino";
 import { z } from "zod";
 import { createCheckRequestSchema } from "@trusttrace/contracts/checks";
 
-import { ProgressEventBus } from "./events";
-import { EvidencePipeline } from "./pipeline/EvidencePipeline";
+import { type ProgressEventBus } from "./events";
+import { type EvidencePipeline } from "./pipeline/EvidencePipeline";
 import { toCreateCheckResponse } from "./repositories/mappers/checkMapper";
-import { ChecksRepository } from "./repositories/repositoryFacade";
+import { type ChecksRepository } from "./repositories/repositoryFacade";
 import type { CheckStatus, ProgressEventDto } from "./types/checks";
 
+// Send a `: keep-alive` comment line every 8s to keep proxies and
+// load balancers from closing the SSE stream as idle. 8s sits well
+// below typical 30–60s idle-timeout windows on Cloudflare, Render,
+// and similar reverse proxies, while staying quiet enough not to
+// dwarf real progress events in client logs.
 const SSE_HEARTBEAT_INTERVAL_MS = 8_000;
 
 export interface AppServices {

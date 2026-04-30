@@ -23,6 +23,10 @@ import { readCheckId } from "@/features/checks/utils";
 import { useAsyncData } from "@/shared/composables/useAsyncData";
 
 const FINAL_ACTIVE_PHASE: ActiveCheckPhase = "verdict";
+
+// Fallback poll interval used when SSE drops. 2s balances UI freshness
+// against repeated GETs on a still-running check; the SSE retry chain
+// in `backendChecksClient` already handles short blips before this fires.
 const FALLBACK_POLL_INTERVAL_MS = 2_000;
 
 function isActiveStatus(status: CheckStatus): boolean {
@@ -90,6 +94,20 @@ function makeDevProgress(checkId: string, phase: CheckPhase): CheckProgress {
   };
 }
 
+/**
+ * Reactive subscription to a single check's progress.
+ *
+ * Reads `:checkId` from the route, fetches the persisted record, then
+ * subscribes to SSE for live progress events. On stream error, falls
+ * back to polling the record every {@link FALLBACK_POLL_INTERVAL_MS}
+ * until the check reaches a terminal status. Cleans up subscription
+ * and timers on route change and on Vue scope disposal.
+ *
+ * In dev mode `setPhase()` synthesizes a progress object from the
+ * active scenario, so the loading-page UI can be inspected without a
+ * live backend. Manual phase jumps and auto-played stream events
+ * therefore agree on the same percent/message at every phase.
+ */
 export function useCheckProgress() {
   const route = useRoute();
   const checks = useChecksStore();

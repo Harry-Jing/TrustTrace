@@ -11,15 +11,19 @@ export async function readLimitedBody(response: Response, maxBytes: number): Pro
     return TEXT_DECODER.decode(buffer);
   }
 
+  // Bun's ReadableStream type loses the Uint8Array chunk parameter in
+  // the ESNext-only lib (DOM is excluded for backend); cast the read
+  // result to recover the chunk type so value/byteLength are not `any`.
   const reader = response.body.getReader();
   const chunks: Uint8Array[] = [];
   let total = 0;
 
   try {
-    while (true) {
-      const { done, value } = await reader.read();
+    for (;;) {
+      const { done, value } = (await reader.read()) as
+        | { done: false; value: Uint8Array }
+        | { done: true; value: undefined };
       if (done) break;
-      if (!value) continue;
 
       total += value.byteLength;
       if (total > maxBytes) {

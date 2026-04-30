@@ -34,9 +34,9 @@ export function openDatabase(dbPath: string): OpenDatabaseResult {
   }
 
   const sqlite = new Database(dbPath);
-  sqlite.exec("PRAGMA foreign_keys = ON;");
+  sqlite.run("PRAGMA foreign_keys = ON;");
   if (dbPath !== ":memory:") {
-    sqlite.exec("PRAGMA journal_mode = WAL;");
+    sqlite.run("PRAGMA journal_mode = WAL;");
   }
 
   initializeSchema(sqlite);
@@ -44,6 +44,8 @@ export function openDatabase(dbPath: string): OpenDatabaseResult {
   return {
     sqlite,
     db: drizzle(sqlite, { schema }),
-    close: () => sqlite.close(),
+    close: () => {
+      sqlite.close();
+    },
   };
 }

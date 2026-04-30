@@ -1,3 +1,14 @@
+/**
+ * Source verification — second stage of the evidence pipeline.
+ *
+ * Takes ranked candidate URLs from discovery, fetches and extracts
+ * each (with URL-safety pre-checks), and falls back to snippet-only
+ * context when fetch/extract fails but the discovery snippet is
+ * non-trivial. Snippet-only sources are intentionally downweighted
+ * later in `rankEvidenceSources` / `selectBestEvidenceByDomain` so
+ * they cannot independently produce an `evidence_strong` band.
+ */
+
 import type { SourceForAssessment } from "../evidenceProvider/types";
 import type { ChecksRepository } from "../repositories/repositoryFacade";
 import { fetchAndExtractSource } from "../sourceSafety/fetchSource";
@@ -113,6 +124,11 @@ async function tryCreateSnippetOnlySource(
 
 function normalizeSnippet(value: string | null): string | null {
   const snippet = value?.replace(/\s+/g, " ").trim();
+  // Below ~20 chars a discovery snippet carries no meaningful evidence
+  // and is dropped (the source is then marked as failed extraction).
+  // Above 1200 chars we truncate so the assessment provider call does
+  // not burn tokens on filler — discovery snippets longer than this
+  // are typically multi-paragraph dumps from cached page bodies.
   if (!snippet || snippet.length < 20) return null;
   return snippet.length <= 1_200 ? snippet : `${snippet.slice(0, 1_199)}…`;
 }

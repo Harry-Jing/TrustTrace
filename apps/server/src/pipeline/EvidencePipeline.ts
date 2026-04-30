@@ -1,10 +1,24 @@
+/**
+ * Evidence pipeline orchestrator.
+ *
+ * Runs a single check from claim preparation through deterministic
+ * synthesis. Each step records its provider call, persists its
+ * partial state, and publishes a progress event on the SSE bus so
+ * the frontend can render the loading page in real time.
+ *
+ * Failure handling is intentional: any thrown error is normalized to
+ * a `CheckApiErrorDto` and emitted as a final `failed` progress event.
+ * The pipeline never throws to the caller after `start()` — callers
+ * observe outcomes via the event stream and persisted record.
+ */
+
 import type { Logger } from "pino";
 
 import type { EvidenceProvider } from "../evidenceProvider/types";
 import type { SourceDiscoveryProvider } from "../sourceDiscovery/types";
-import { ProgressEventBus } from "../events";
+import { type ProgressEventBus } from "../events";
 import { makeProgressEvent } from "../repositories/mappers/progressMapper";
-import { ChecksRepository } from "../repositories/repositoryFacade";
+import { type ChecksRepository } from "../repositories/repositoryFacade";
 import { defaultSourceFetchOptions } from "../sourceSafety/defaults";
 import type { SourceFetchOptions } from "../sourceSafety/types";
 import {
@@ -52,6 +66,9 @@ export class EvidencePipeline {
   start(checkId: string): void {
     const runPromise = this.run(checkId).catch((error: unknown) => {
       this.logger.error({ error, checkId }, "Evidence pipeline failed unexpectedly");
+      // seq=7 mirrors the would-be completion seq, so an unexpected
+      // failure surfaces as the final event in the stream regardless
+      // of which earlier phase actually crashed.
       this.failFromError(checkId, 7, error);
     });
     this.activeRuns.add(runPromise);
@@ -66,7 +83,7 @@ export class EvidencePipeline {
 
   private async run(checkId: string): Promise<void> {
     const record = this.repository.getCheck(checkId);
-    if (!record || record.status !== "running") return;
+    if (record?.status !== "running") return;
     const input = record.input ?? { type: "text", content: "" };
     const callEvidenceProviderForCheck = <T>(
       operation: string,
@@ -292,14 +309,14 @@ export class EvidencePipeline {
   private async recordAndPublish(event: ProgressEventDto): Promise<void> {
     await sleep(this.delayMs);
     const record = this.repository.getCheck(event.checkId);
-    if (!record || record.status !== "running") return;
+    if (record?.status !== "running") return;
     this.repository.recordProgressEvent(event);
     this.events.publish(event);
   }
 
   private failFromError(checkId: string, seq: number, error: unknown): void {
     const record = this.repository.getCheck(checkId);
-    if (!record || record.status !== "running") return;
+    if (record?.status !== "running") return;
 
     this.failCheck(checkId, seq, errorToCheckError(error));
   }
