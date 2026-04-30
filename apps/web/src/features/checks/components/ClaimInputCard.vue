@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 
 import BaseButton from "@/components/BaseButton.vue";
+import PillToggleGroup from "@/components/PillToggleGroup.vue";
+import { describeRequestError } from "@/features/checks/constants/apiErrorCopy";
 import type { CheckInputDraft, CheckInputMode } from "@/features/checks/types";
 
 const props = defineProps<{
@@ -14,6 +16,11 @@ const emit = defineEmits<{
   submit: [input: CheckInputDraft];
 }>();
 
+const MODE_OPTIONS: readonly { value: CheckInputMode; label: string }[] = [
+  { value: "text", label: "text" },
+  { value: "url", label: "url" },
+];
+
 const mode = ref<CheckInputMode>("text");
 const value = ref("");
 const inputId = "claim-input";
@@ -21,11 +28,11 @@ const inputId = "claim-input";
 const normalizedValue = computed(() => value.value.trim());
 const charCount = computed(() => value.value.length);
 const isDisabled = computed(() => props.disabled || props.submitting);
-const errorMessage = computed(() => {
-  if (!props.error) return null;
-  if (props.error instanceof Error) return props.error.message;
-  return "Could not start this check. Please try again.";
-});
+const errorMessage = computed(() =>
+  props.error
+    ? describeRequestError(props.error, "Could not start this check. Please try again.")
+    : null,
+);
 
 function isHttpUrl(input: string) {
   try {
@@ -42,12 +49,9 @@ const isValid = computed(() =>
     : normalizedValue.value.length >= 3 && normalizedValue.value.length <= 10000,
 );
 
-function switchMode(nextMode: CheckInputMode) {
-  if (isDisabled.value) return;
-
-  mode.value = nextMode;
+watch(mode, () => {
   value.value = "";
-}
+});
 
 function submit() {
   if (!isValid.value || isDisabled.value) return;
@@ -67,28 +71,13 @@ function submit() {
   >
     <!-- Mode toggle + char count -->
     <div class="mb-3.5 flex items-center gap-3">
-      <div
-        class="relative isolate inline-flex overflow-hidden rounded-full bg-surface p-0.75"
-        role="group"
-        aria-label="Claim input type"
-      >
-        <!-- Sliding indicator -->
-        <div
-          class="pointer-events-none absolute top-0.75 z-0 h-[calc(100%-6px)] w-[calc(50%-3px)] rounded-full bg-foreground transition-[left] duration-250 ease-snappy"
-          :class="mode === 'text' ? 'left-0.75' : 'left-1/2'"
-        />
-        <button
-          v-for="modeOption in ['text', 'url'] as const"
-          :key="modeOption"
-          type="button"
-          class="relative z-10 min-w-16 rounded-full border-none bg-transparent px-5 py-2.5 font-mono text-body-sm font-medium text-foreground-subtle uppercase transition-colors duration-200 aria-[pressed=true]:text-background"
-          :aria-pressed="mode === modeOption"
-          :disabled="isDisabled"
-          @click="switchMode(modeOption)"
-        >
-          {{ modeOption }}
-        </button>
-      </div>
+      <PillToggleGroup
+        v-model="mode"
+        :options="MODE_OPTIONS"
+        label="Claim input type"
+        size="md"
+        :disabled="isDisabled"
+      />
       <span class="flex-1" />
       <span
         v-if="mode === 'text'"

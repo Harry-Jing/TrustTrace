@@ -9,6 +9,7 @@ import BaseWarnRingIllustration from "@/components/BaseWarnRingIllustration.vue"
 import { useMockRecordSync } from "@/dev/composables/useMockRecordSync";
 import { getCheck } from "@/features/checks/api/checksApi";
 import { useCreateCheck } from "@/features/checks/composables/useCreateCheck";
+import { describeRequestError } from "@/features/checks/constants/apiErrorCopy";
 import { getErrorCodeMeta } from "@/features/checks/constants/errorCopy";
 import { useChecksStore } from "@/features/checks/stores/checks.store";
 import type { CheckApiError } from "@/features/checks/types";
@@ -63,11 +64,14 @@ const retryHelp = computed(() => {
   if (isRetryable.value) return "Return to the claim editor to start a new check.";
   return "Please try again with a different claim.";
 });
-const retryErrorMessage = computed(() => {
-  if (!submitError.value) return null;
-  if (submitError.value instanceof Error) return submitError.value.message;
-  return "Could not retry this check. Please edit the claim and try again.";
-});
+const retryErrorMessage = computed(() =>
+  submitError.value
+    ? describeRequestError(
+        submitError.value,
+        "Could not retry this check. Please edit the claim and try again.",
+      )
+    : null,
+);
 
 const errorExplanation = computed(() => errorCodeMeta.value?.explanation ?? FALLBACK_EXPLANATION);
 

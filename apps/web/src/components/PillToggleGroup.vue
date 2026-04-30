@@ -2,16 +2,36 @@
 import { ToggleGroupItem, ToggleGroupRoot } from "reka-ui";
 import { computed } from "vue";
 
-const props = defineProps<{
-  options: readonly { value: T; label: string }[];
-  modelValue: T;
-  label: string;
-  disabled?: boolean;
-}>();
+type PillToggleSize = "sm" | "md";
+
+const props = withDefaults(
+  defineProps<{
+    options: readonly { value: T; label: string }[];
+    modelValue: T;
+    label: string;
+    size?: PillToggleSize;
+    disabled?: boolean;
+  }>(),
+  { size: "sm" },
+);
 
 const emit = defineEmits<{
   "update:modelValue": [value: T];
 }>();
+
+// Two visual presets only — there are exactly two call sites today and the
+// classes diverge enough (mono uppercase vs sans caption, ring vs no-ring)
+// that exposing them as separate props would over-engineer the abstraction.
+// Add a new size when (and only when) a third call site shows up.
+const ROOT_CLASSES: Record<PillToggleSize, string> = {
+  sm: "ring-1 ring-border-strong ring-inset",
+  md: "",
+};
+
+const ITEM_CLASSES: Record<PillToggleSize, string> = {
+  sm: "px-4 py-2 text-caption font-medium",
+  md: "px-5 py-2.5 font-mono text-body-sm font-medium uppercase",
+};
 
 const activeIndex = computed(() =>
   props.options.findIndex((option) => option.value === props.modelValue),
@@ -32,7 +52,8 @@ function handleUpdate(value: unknown) {
     :model-value="modelValue"
     :disabled="disabled"
     :aria-label="label"
-    class="relative isolate inline-flex overflow-hidden rounded-full bg-surface p-0.75 ring-1 ring-border-strong transition-opacity duration-200 ring-inset data-[disabled]:opacity-60"
+    class="relative isolate inline-flex overflow-hidden rounded-full bg-surface p-0.75 transition-opacity duration-200 data-[disabled]:opacity-60"
+    :class="ROOT_CLASSES[size]"
     @update:model-value="handleUpdate"
   >
     <div
@@ -49,7 +70,8 @@ function handleUpdate(value: unknown) {
       :key="option.value"
       :value="option.value"
       :disabled="disabled"
-      class="relative z-10 min-w-16 cursor-pointer rounded-full border-none bg-transparent px-4 py-2 text-caption font-medium text-foreground-subtle transition-colors duration-200 data-[disabled]:cursor-not-allowed data-[state=on]:text-background"
+      class="relative z-10 min-w-16 cursor-pointer rounded-full border-none bg-transparent text-foreground-subtle transition-colors duration-200 data-[disabled]:cursor-not-allowed data-[state=on]:text-background"
+      :class="ITEM_CLASSES[size]"
     >
       {{ option.label }}
     </ToggleGroupItem>

@@ -8,6 +8,8 @@
  * reconnect backoff, close on terminal status).
  */
 
+import { apiErrorResponseSchema } from "@trusttrace/contracts/checks";
+
 import { apiBaseUrl } from "@/app/env";
 import {
   checkListResponseSchema,
@@ -34,13 +36,22 @@ import type { DiscoveryStrategy } from "@/features/checks/types/progress";
 // The composable's poll fallback takes over after the last attempt.
 const STREAM_RECONNECT_DELAYS_MS = [500, 1000, 2000] as const;
 
-class HttpApiError extends Error {
+/**
+ * Error thrown when the backend returns a non-2xx status. Carries the HTTP
+ * `status`, the wire `code` parsed from the response body (or `null` when
+ * the body is missing / malformed), and the raw `message` so callers can
+ * branch on `code` for friendly copy and fall through to `message` for the
+ * unknown-code fallback. See `features/checks/constants/apiErrorCopy.ts`.
+ */
+export class HttpApiError extends Error {
   readonly status: number;
+  readonly code: string | null;
 
-  constructor(message: string, status: number) {
+  constructor(message: string, status: number, code: string | null) {
     super(message);
     this.name = "HttpApiError";
     this.status = status;
+    this.code = code;
   }
 }
 
@@ -63,17 +74,6 @@ function appendAfterSeq(url: string, afterSeq: number) {
 
   const separator = url.includes("?") ? "&" : "?";
   return `${url}${separator}afterSeq=${encodeURIComponent(String(afterSeq))}`;
-}
-
-function asObject(value: unknown): Record<string, unknown> {
-  return value && typeof value === "object" && !Array.isArray(value)
-    ? (value as Record<string, unknown>)
-    : {};
-}
-
-function readString(source: Record<string, unknown>, key: string, fallback = "") {
-  const value = source[key];
-  return typeof value === "string" ? value : fallback;
 }
 
 async function readJson(response: Response): Promise<unknown> {
@@ -101,10 +101,16 @@ async function requestJson(path: string, init?: RequestInit): Promise<unknown> {
   const body = await readJson(response);
 
   if (!response.ok) {
-    const errorBody = asObject(body);
+    // Body MAY conform to `apiErrorResponseSchema` ({ code, message }), but
+    // the network layer or an upstream proxy can also short-circuit with a
+    // non-JSON / empty payload. Use safeParse so a malformed body falls
+    // through to a generic message rather than throwing a contract error.
+    const parsed = apiErrorResponseSchema.safeParse(body);
+    const fallbackMessage = `Request failed with status ${String(response.status)}.`;
     throw new HttpApiError(
-      readString(errorBody, "message", `Request failed with status ${String(response.status)}.`),
+      parsed.success ? parsed.data.message : fallbackMessage,
       response.status,
+      parsed.success ? parsed.data.code : null,
     );
   }
 

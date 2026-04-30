@@ -8,9 +8,13 @@ import {
   TooltipTrigger,
 } from "reka-ui";
 
-defineProps<{
-  text: string;
-}>();
+withDefaults(
+  defineProps<{
+    text: string;
+    label?: string;
+  }>(),
+  { label: "Show details" },
+);
 </script>
 
 <template>
@@ -20,7 +24,7 @@ defineProps<{
         <button
           type="button"
           class="tt-icon-btn inline-flex size-6 cursor-help items-center justify-center rounded-full border border-border bg-transparent text-caption text-foreground-subtle"
-          aria-label="Show details for this credibility cue"
+          :aria-label="label"
         >
           ?
         </button>

@@ -38,6 +38,35 @@ export const CHECK_ERROR_CODES = [
 
 export const checkErrorCodeSchema = z.enum(CHECK_ERROR_CODES);
 
+/**
+ * HTTP-transport-level error codes emitted by the backend's request handlers
+ * (validation failures, missing records, internal errors). These are a
+ * separate space from {@link CHECK_ERROR_CODES} — the latter live on the
+ * persisted `CheckRecord.error.code` and describe pipeline outcomes; these
+ * describe how the HTTP request itself failed, with no persisted record yet.
+ *
+ * Frontend friendly-copy lives in `features/checks/constants/apiErrorCopy.ts`.
+ * Adding a new code here means adding copy there — TS will surface the gap.
+ */
+export const API_ERROR_CODES = [
+  "INTERNAL_ERROR",
+  "INVALID_CHECK_INPUT",
+  "INVALID_LIST_QUERY",
+  "INVALID_EVENTS_QUERY",
+  "CHECK_NOT_FOUND",
+] as const;
+
+export const apiErrorCodeSchema = z.enum(API_ERROR_CODES);
+
+// Wire shape `{ code, message }` that backend route handlers emit for non-2xx
+// responses. `code` is permissive on the wire (raw string) so an unknown
+// future code from a newer backend doesn't fail the schema — the frontend
+// narrows with `isApiErrorCode` before reaching for friendly copy.
+export const apiErrorResponseSchema = z.object({
+  code: z.string().min(1),
+  message: z.string().min(1),
+});
+
 export const finiteNumberSchema = z.number().refine(Number.isFinite, "Expected a finite number");
 export const nonNegativeIntegerSchema = z.number().int().min(0);
 export const percentSchema = z.number().int().min(0).max(100);
@@ -242,6 +271,8 @@ export type DiscoveryStrategyDto = z.infer<typeof discoveryStrategySchema>;
 export type CheckPhaseDto = z.infer<typeof checkPhaseSchema>;
 export type VerdictBandDto = z.infer<typeof verdictBandSchema>;
 export type CheckErrorCodeDto = z.infer<typeof checkErrorCodeSchema>;
+export type ApiErrorCodeDto = z.infer<typeof apiErrorCodeSchema>;
+export type ApiErrorResponseDto = z.infer<typeof apiErrorResponseSchema>;
 export type CheckInputDto = z.infer<typeof checkInputSchema>;
 export type CreateCheckRequestDto = z.infer<typeof createCheckRequestSchema>;
 export type CheckApiErrorDto = z.infer<typeof checkApiErrorSchema>;
@@ -281,4 +312,10 @@ const CHECK_ERROR_CODE_SET: ReadonlySet<string> = new Set(CHECK_ERROR_CODES);
 
 export function isCheckErrorCode(code: string): code is CheckErrorCodeDto {
   return CHECK_ERROR_CODE_SET.has(code);
+}
+
+const API_ERROR_CODE_SET: ReadonlySet<string> = new Set(API_ERROR_CODES);
+
+export function isApiErrorCode(code: string): code is ApiErrorCodeDto {
+  return API_ERROR_CODE_SET.has(code);
 }

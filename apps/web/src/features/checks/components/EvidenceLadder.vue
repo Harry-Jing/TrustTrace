@@ -67,6 +67,13 @@ const groupedEvidence = computed(() =>
   })),
 );
 
+// When the run completed with zero verified sources at every tier, the
+// per-tier list collapses to four "No source landed" lines stacked together,
+// which reads as broken UI rather than a meaningful outcome. The rollup
+// below replaces the whole ladder with a single explanatory block in that
+// case — per-tier emptiness still uses the inline italic line below.
+const hasAnyEvidence = computed(() => props.evidence.length > 0);
+
 function scopeMatchStyle(scope: number) {
   return { "--evidence-scope": String(Math.max(0, Math.min(1, scope))) };
 }
@@ -77,7 +84,19 @@ function evidenceHref(item: EvidenceItem) {
 </script>
 
 <template>
-  <div class="space-y-10">
+  <div v-if="!hasAnyEvidence" class="animate-up">
+    <div
+      class="rounded-lg border border-dashed border-border bg-card/60 px-6 py-10 text-center"
+      role="status"
+    >
+      <p class="font-serif text-h4 text-foreground">No verified evidence at any tier.</p>
+      <p class="mx-auto mt-2 max-w-100 text-body-sm text-foreground-muted">
+        Discovery returned no sources we could safely fetch and weigh against this claim. The
+        verdict above reflects that absence — treat it as missing context, not as a finding.
+      </p>
+    </div>
+  </div>
+  <div v-else class="space-y-10">
     <section v-for="group in groupedEvidence" :key="group.config.tier" class="animate-up">
       <header class="mb-4 flex items-start gap-4">
         <div

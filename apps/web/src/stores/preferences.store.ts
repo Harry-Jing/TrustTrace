@@ -1,10 +1,13 @@
 import { defineStore } from "pinia";
+import { discoveryStrategySchema } from "@trusttrace/contracts/checks";
 
 import type { DiscoveryStrategy } from "@/features/checks/types/progress";
 import type { EffectiveTheme, Theme } from "@/types/app";
 
 const THEMES = ["light", "dark", "auto"] as const;
-const DISCOVERY_STRATEGIES: DiscoveryStrategy[] = ["search_api", "llm_web"];
+// Derive the runtime list from the contract schema so adding a strategy on
+// the wire side updates this guard automatically — no hand-mirrored array.
+const DISCOVERY_STRATEGIES = discoveryStrategySchema.options;
 
 const STORAGE_KEYS = {
   theme: "tt-theme",

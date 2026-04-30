@@ -10,7 +10,8 @@ const howSteps = [
   },
   {
     title: "AI searches live sources",
-    description: "We query multiple providers with web search enabled — not a static database.",
+    description:
+      "Your chosen discovery strategy queries the live web for candidate sources — not a static database.",
   },
   {
     title: "Evidence streams in",

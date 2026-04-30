@@ -14,8 +14,8 @@ import SettingsRadioCardGroup from "@/features/settings/components/SettingsRadio
 import SettingsRangeSlider from "@/features/settings/components/SettingsRangeSlider.vue";
 import SettingsRow from "@/features/settings/components/SettingsRow.vue";
 import SettingsSection from "@/features/settings/components/SettingsSection.vue";
-import SettingsSegmented from "@/features/settings/components/SettingsSegmented.vue";
 import SettingsSidebar from "@/features/settings/components/SettingsSidebar.vue";
+import PillToggleGroup from "@/components/PillToggleGroup.vue";
 import { usePreferencesStore } from "@/stores/preferences.store";
 import type { DiscoveryStrategy } from "@/features/checks/types/progress";
 import type { Theme } from "@/types/app";
@@ -167,7 +167,7 @@ onBeforeUnmount(() => {
             coming-soon
             is-last
           >
-            <SettingsSegmented
+            <PillToggleGroup
               :options="reasoningOptions"
               :model-value="reasoningRigor"
               label="Reasoning rigor"
@@ -186,7 +186,7 @@ onBeforeUnmount(() => {
           disabled
         >
           <p
-            class="mb-5 rounded-md border border-dashed border-border bg-surface/60 px-4 py-3 text-body-sm text-foreground-muted"
+            class="mb-5 rounded-lg border border-dashed border-border bg-surface/60 px-4 py-3 text-body-sm text-foreground-muted"
           >
             Bring-your-own keys aren't wired yet — TrustTrace uses server-side credentials in this
             build.
@@ -199,7 +199,7 @@ onBeforeUnmount(() => {
           >
             <div class="space-y-3">
               <div
-                class="flex items-center justify-between rounded-md border border-border bg-card px-4 py-3 text-body-sm text-foreground-muted"
+                class="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-3 text-body-sm text-foreground-muted"
               >
                 <span>Tavily</span>
                 <svg
@@ -219,7 +219,7 @@ onBeforeUnmount(() => {
                 type="text"
                 placeholder="tvly-…"
                 disabled
-                class="w-full rounded-md border border-border bg-card px-4 py-3 font-mono text-body-sm text-foreground-muted placeholder:text-foreground-subtle"
+                class="w-full rounded-lg border border-border bg-card px-4 py-3 font-mono text-body-sm text-foreground-muted placeholder:text-foreground-subtle"
               />
               <div
                 class="flex items-center justify-between font-mono text-pill text-foreground-subtle uppercase"
@@ -241,7 +241,7 @@ onBeforeUnmount(() => {
           >
             <div class="space-y-3">
               <div
-                class="flex items-center justify-between rounded-md border border-border bg-card px-4 py-3 text-body-sm text-foreground-muted"
+                class="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-3 text-body-sm text-foreground-muted"
               >
                 <span>OpenAI</span>
                 <svg
@@ -261,7 +261,7 @@ onBeforeUnmount(() => {
                 type="text"
                 placeholder="sk-…"
                 disabled
-                class="w-full rounded-md border border-border bg-card px-4 py-3 font-mono text-body-sm text-foreground-muted placeholder:text-foreground-subtle"
+                class="w-full rounded-lg border border-border bg-card px-4 py-3 font-mono text-body-sm text-foreground-muted placeholder:text-foreground-subtle"
               />
               <div
                 class="flex items-center justify-between font-mono text-pill text-foreground-subtle uppercase"
@@ -279,7 +279,7 @@ onBeforeUnmount(() => {
         <!-- Appearance -->
         <SettingsSection id="appearance" eyebrow="appearance" title="How the trace looks.">
           <SettingsRow label="Theme" helper="Auto follows your system." is-last>
-            <SettingsSegmented
+            <PillToggleGroup
               :options="themeOptions"
               :model-value="preferences.theme"
               label="Theme"

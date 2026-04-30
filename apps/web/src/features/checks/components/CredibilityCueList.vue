@@ -19,7 +19,7 @@ defineProps<{
     >
       <div class="mb-1 flex items-center gap-2">
         <span class="flex-1 text-body-sm font-semibold">{{ cue.name }}</span>
-        <CueTooltip :text="cue.tooltip" />
+        <CueTooltip :text="cue.tooltip" :label="`Show details for ${cue.name}`" />
         <div class="flex gap-0.75" :aria-label="`Strength ${cue.strength} of 5`" role="img">
           <div
             v-for="d in 5"
