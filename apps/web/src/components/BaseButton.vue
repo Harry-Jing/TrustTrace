@@ -32,10 +32,20 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   subtle: "border border-border bg-transparent text-foreground-muted",
 };
 
+// Heights are explicit `h-X` tokens (not derived from `padding × text-size`).
+// This pins each size to a known value regardless of font-metric drift, and
+// matches what shadcn / Radix / GitHub Primer all do — the design system
+// owns the height, content owns the width. lg = h-11 (44px) hits Apple HIG
+// + WCAG AAA touch target exactly; md = h-10 (40px) carries the secondary-
+// action visual weight without competing with lg; sm = h-8 (32px) is the
+// floor for a still-tappable button on the 4pt grid. Horizontal padding
+// follows the same scale (px-3/4/6) — px-7 is dropped (the same non-standard
+// value AppNav just shed) and the prior `py-2.75` quarter-step (a fragile
+// way of approximating 44px) is gone in favor of the explicit height token.
 const SIZE_CLASSES: Record<ButtonSize, string> = {
-  sm: "rounded-md px-3 py-1.5 text-caption",
-  md: "rounded-md px-4 py-2.5 text-body-sm font-semibold",
-  lg: "rounded-md px-7 py-2.75 text-body-sm font-semibold",
+  sm: "h-8 rounded-md px-3 text-caption",
+  md: "h-10 rounded-md px-4 text-body-sm font-semibold",
+  lg: "h-11 rounded-md px-6 text-body-sm font-semibold",
 };
 
 const variantClass = computed(() => VARIANT_CLASSES[props.variant]);

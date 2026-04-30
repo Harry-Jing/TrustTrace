@@ -11,7 +11,7 @@ const props = defineProps<{
 
 <template>
   <span
-    class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 font-mono text-caption font-medium uppercase transition-colors duration-400"
+    class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 font-mono text-pill uppercase transition-colors duration-400"
     :class="evidenceRelationToneBadgeClasses(props.tone)"
   >
     <slot />

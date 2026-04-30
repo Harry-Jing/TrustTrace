@@ -45,10 +45,8 @@
      green / rose-red) so the two domain palettes don't bleed. */
   --color-evidence-relation-affirm: var(--evidence-relation-affirm);
   --color-evidence-relation-affirm-muted: var(--evidence-relation-affirm-muted);
-  --color-evidence-relation-affirm-border: var(--evidence-relation-affirm-border);
   --color-evidence-relation-oppose: var(--evidence-relation-oppose);
   --color-evidence-relation-oppose-muted: var(--evidence-relation-oppose-muted);
-  --color-evidence-relation-oppose-border: var(--evidence-relation-oppose-border);
 
   /* Domain-semantic tokens for the evidence ladder weight surface
      (tier 1 strongest → tier 4 weakest). Single low-chroma slate
@@ -87,7 +85,9 @@
 
      Sizes:        12 → 14 → 16 → 20 → 24 → 32 → clamp(40,5vw,56)
      Step ratios:  +17% +14% +25% +20% +33% +75%
-     Same-size pairs: caption + eyebrow @12; body-sm + label @14. */
+     Sub-floor:    10 (pill only — see comment above text-pill token).
+     Same-size pair @12: caption + eyebrow (separated by letter-spacing).
+     Same-size pair @14: body-sm + label. */
 
   --text-caption: 12px;
   --text-caption--line-height: 1.4;
@@ -96,6 +96,38 @@
   --text-eyebrow--line-height: 1.4;
   --text-eyebrow--letter-spacing: 0.12em;
   --text-eyebrow--font-weight: 500;
+
+  /* Pill / badge text — uppercase mono in chip-style components
+     (EvidenceBadge "EVIDENCE STRONG", BaseTagBadge "checking…", etc.).
+     Sits at 10px, deliberately BELOW the system's 12px floor. Pills
+     are auxiliary metadata (state chips, tags) read by shape + color
+     more than by parsing — the 12px floor protects body-text legibility,
+     and pill content is scannable rather than readable, so it can
+     sub-floor without an a11y cost. This puts us in Notion micro-tag
+     territory (10/0.06em); shadcn/Vercel/Primer run pills at 12 and
+     Linear/Stripe at 11 — we go a step further to keep chips visually
+     quiet next to the serif headers and 16px body.
+
+     The 0.06em letter-spacing is mandatory, not decorative: uppercase
+     monospace text is visually compressed (every glyph is cap-height,
+     no ascender/descender variation, identical advance widths), and
+     the smaller the size the more tracking it needs to breathe. At
+     10px we use 0.06em (~0.6px) vs the 12px norm of 0.04em — the
+     convention scales inverse to size, not linearly with it. Without
+     this, "EVIDENCE STRONG" reads as a wall of glyphs.
+
+     Weight stays at 500 to match caption/eyebrow. Notion uses 600 at
+     10px, but we lean on letter-spacing + uppercase + mono for emphasis
+     rather than added weight, which keeps the chip visually quiet.
+
+     Distinct from text-eyebrow (12px / 0.12em, section labels where
+     extra tracking signals "header for the block below") and
+     text-label (14px, mixed-case form labels where larger size aids
+     scannability). */
+  --text-pill: 10px;
+  --text-pill--line-height: 1.4;
+  --text-pill--letter-spacing: 0.06em;
+  --text-pill--font-weight: 500;
 
   --text-body-sm: 14px;
   --text-body-sm--line-height: 1.5;
@@ -197,17 +229,32 @@
   /* Polarity pair — equal-chroma cool/warm so neither side reads
      as reward or alarm. Deep teal sits outside the verdict ramp's
      forest-green band; maroon sits outside both the rose-red of
-     evidence-thin and the orange of warning. -muted stops sit one
-     LCH step deeper than a Polaris/Stripe-on-white recipe would
-     pick because the page bg is warm cream paper (#faf9f6, L≈0.95)
-     rather than near-white — keeps chip-vs-page delta-L ~0.20 so
-     the chip still pops on tinted paper. */
-  --evidence-relation-affirm: #3a6b73;
-  --evidence-relation-affirm-muted: #cfe1e3;
-  --evidence-relation-affirm-border: #a8c5c8;
-  --evidence-relation-oppose: #8c4054;
-  --evidence-relation-oppose-muted: #e9c9d3;
-  --evidence-relation-oppose-border: #d3a3b3;
+     evidence-thin and the orange of warning.
+
+     -muted stops sit at HSL S≈32-40% / L≈74% — saturated enough that
+     the chip is a fast scan target (user's primary affordance for
+     "does this source support or contradict the claim"), but still
+     visibly tonal rather than full-saturation alarm-color. The
+     earlier ~19% saturation was tuned for "secondary metadata"
+     visual weight, but the chip's actual functional role is
+     scan-by-color, not background metadata — the higher saturation
+     matches that role.
+
+     The chip carries no border — at the new saturation level the
+     muted bg vs cream paper bg (#faf9f6, L≈0.95) opens up to a
+     ~0.21 delta-L which is enough chip-edge definition on its own.
+     The earlier border-token (GitHub IssueLabel adaptive-border
+     pattern) was needed only because the original muted stops sat
+     so close to paper-L that the chip was indistinguishable
+     without one.
+
+     Text tokens (-affirm, -oppose) sit darker than the saturated-bg
+     would suggest — chosen to clear WCAG AA contrast (≥4.5:1) on the
+     new muted bg, since chip text is 10px mono and AA Normal applies. */
+  --evidence-relation-affirm: #2a525a; /* 188°, 36%, 26% — text on muted bg, contrast 5.12 */
+  --evidence-relation-affirm-muted: #a3d2d6; /* 187°, 32%, 74% */
+  --evidence-relation-oppose: #6a2a3a; /* 343°, 43%, 29% — text on muted bg, contrast 4.78 */
+  --evidence-relation-oppose-muted: #d99fb3; /* 343°, 40%, 74% */
   /* Tier weight ramp — single low-chroma slate, lightness only.
      tier-1 is dark enough that text-card on its fill clears AA;
      tier-3/-4 are light enough that the number circle switches to
@@ -259,15 +306,8 @@
      low-chroma tints so chips stay softly tinted, not glaring. */
   --evidence-relation-affirm: #75bcc3;
   --evidence-relation-affirm-muted: #0e2123;
-  /* Dark mode keeps the chip's perimeter quiet: saturated text on a
-     deep muted bg already pops against near-black, so the border
-     token resolves to the same value as the muted bg (no visible
-     stroke). The token still exists so the light-mode lift can
-     re-use the same class map. */
-  --evidence-relation-affirm-border: #0e2123;
   --evidence-relation-oppose: #dd8298;
   --evidence-relation-oppose-muted: #22151a;
-  --evidence-relation-oppose-border: #22151a;
   /* Tier weight ramp, dark — same single-hue lightness ramp,
      inverted so tier-1 is the brightest stop (heaviest visual
      weight against a near-black background) and tier-4 the

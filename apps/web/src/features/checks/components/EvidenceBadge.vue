@@ -11,7 +11,7 @@ const props = defineProps<{
 
 <template>
   <span
-    class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-mono text-label whitespace-nowrap uppercase transition-colors duration-400"
+    class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-mono text-pill whitespace-nowrap uppercase transition-colors duration-400"
     :class="evidenceToneBadgeClasses(props.tone)"
   >
     <slot />

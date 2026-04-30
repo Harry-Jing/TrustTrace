@@ -15,7 +15,7 @@ const emit = defineEmits<{
 <template>
   <div class="flex animate-up flex-wrap items-center gap-2.5 [animation-delay:100ms]">
     <div
-      class="flex min-w-50 flex-1 items-center gap-2 rounded-lg border border-border bg-card px-3.5 py-2 transition-[border-color] duration-200 focus-within:border-accent"
+      class="flex h-9 min-w-50 flex-1 items-center gap-2 rounded-lg border border-border bg-card px-4 transition-[border-color] duration-200 focus-within:border-accent"
     >
       <svg
         class="size-4 shrink-0 text-foreground-subtle"
@@ -48,7 +48,7 @@ const emit = defineEmits<{
         ] as const"
         :key="k"
         type="button"
-        class="tt-btn rounded-full px-4 py-2 text-caption font-medium"
+        class="tt-btn flex h-9 items-center rounded-full px-4 text-caption font-medium"
         :class="
           sortBy === k
             ? 'border border-foreground bg-foreground text-background'

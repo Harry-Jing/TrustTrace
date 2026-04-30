@@ -222,7 +222,7 @@ onBeforeUnmount(() => {
                 class="w-full rounded-md border border-border bg-card px-4 py-3 font-mono text-body-sm text-foreground-muted placeholder:text-foreground-subtle"
               />
               <div
-                class="flex items-center justify-between font-mono text-label text-foreground-subtle uppercase"
+                class="flex items-center justify-between font-mono text-pill text-foreground-subtle uppercase"
               >
                 <span>api key</span>
                 <span class="flex items-center gap-1.5">
@@ -264,7 +264,7 @@ onBeforeUnmount(() => {
                 class="w-full rounded-md border border-border bg-card px-4 py-3 font-mono text-body-sm text-foreground-muted placeholder:text-foreground-subtle"
               />
               <div
-                class="flex items-center justify-between font-mono text-label text-foreground-subtle uppercase"
+                class="flex items-center justify-between font-mono text-pill text-foreground-subtle uppercase"
               >
                 <span>api key</span>
                 <span class="flex items-center gap-1.5">

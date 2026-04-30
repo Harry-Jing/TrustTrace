@@ -29,18 +29,18 @@ export function evidenceRelationToneFor(relation: EvidenceRelation): EvidenceRel
  * pair (teal affirm / maroon oppose) is intentionally equal-chroma
  * and equal-weight: neither side reads as reward or alarm.
  *
- * Border uses a dedicated `*-border` token (one step deeper than
- * `*-muted`) so the chip edge stays visible on tinted page bg
- * (cream paper at L≈0.95 collapses the chip-vs-page delta-L of a
- * pure muted-fill chip — the GitHub IssueLabel adaptive-border
- * pattern). Dark mode keeps the border invisible by aliasing it to
- * the muted bg.
+ * No border on affirm/oppose: at the muted-bg saturation level
+ * (~32% S, 74% L) the chip-vs-cream-paper delta-L is ~0.21, large
+ * enough to define the chip edge without an additional stroke.
+ * Layering a border on top of an already-saturated tonal fill
+ * over-emphasizes the chip and competes with text legibility.
+ *
+ * Neutral keeps a 1px border because its bg matches surface — there
+ * is no fill to define the chip edge, so the border carries it.
  */
 export const EVIDENCE_RELATION_TONE_BADGE_CLASSES: Record<EvidenceRelationTone, string> = {
-  affirm:
-    "border border-evidence-relation-affirm-border bg-evidence-relation-affirm-muted text-evidence-relation-affirm",
-  oppose:
-    "border border-evidence-relation-oppose-border bg-evidence-relation-oppose-muted text-evidence-relation-oppose",
+  affirm: "bg-evidence-relation-affirm-muted text-evidence-relation-affirm",
+  oppose: "bg-evidence-relation-oppose-muted text-evidence-relation-oppose",
   neutral: "border border-border bg-surface text-foreground-muted",
 };
 

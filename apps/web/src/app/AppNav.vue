@@ -21,13 +21,23 @@ function navigate(name: string) {
 
 <template>
   <nav
-    class="sticky top-0 z-20 flex h-14 items-center border-b border-border bg-nav px-7 backdrop-blur transition-[background,border-color,box-shadow] duration-400"
+    class="sticky top-0 z-20 flex h-14 items-center border-b border-border bg-nav px-4 backdrop-blur transition-[background,border-color,box-shadow] duration-400 sm:px-6 lg:px-8"
     :class="{ 'shadow-nav-scrolled': isScrolled }"
   >
     <div class="flex flex-1 items-center">
+      <!-- `translate-y-px` is an optical adjustment, not a layout fix.
+           "TrustTrace" has no descenders (no p/g/y/j), so the visible ink
+           (cap-line to baseline) sits in the UPPER portion of the line-box.
+           Pure flex centering puts the line-box at center 27.5, but the
+           visible ink center then lands ~1.25px ABOVE the adjacent icon
+           buttons' geometric centers. Pushing the button down 1px brings
+           the visible ink center back into harmony with the icons. This
+           is the same technique NYT / Stripe Press use for their serif
+           mastheads — see https://www.logodesign.net/blog/optical-adjustments
+           Verified by canvas pixel-scanning the rendered glyphs. -->
       <button
         type="button"
-        class="cursor-pointer border-none bg-transparent p-0 font-serif text-h3 text-foreground transition-colors duration-400"
+        class="translate-y-px cursor-pointer border-none bg-transparent p-0 font-serif text-h3 leading-none text-foreground transition-colors duration-400"
         @click="navigate('landing')"
       >
         TrustTrace
@@ -124,11 +134,16 @@ function navigate(name: string) {
         </svg>
       </button>
 
-      <!-- Nav link: contextual -->
+      <!-- Nav link: contextual. h-9 explicitly matches the icon buttons'
+           size-9 (36px) so all three right-side buttons share an identical
+           height. Without this the pill collected its height from
+           text-caption × 1.4 line-height + py-2.5 + 1px border = 38.8px,
+           making it ~3px taller than the 36px icons — the kind of
+           sub-pixel mismatch that reads as "off" without being obvious. -->
       <button
         v-if="currentPage === 'history' || currentPage === 'settings'"
         type="button"
-        class="tt-btn rounded-full border border-border bg-transparent px-4 py-2.5 text-caption font-medium text-foreground-subtle"
+        class="tt-btn flex h-9 items-center rounded-full border border-border bg-transparent px-4 text-caption font-medium text-foreground-subtle"
         @click="navigate('landing')"
       >
         {{ currentPage === "settings" ? "Done" : "New check" }}
@@ -136,7 +151,7 @@ function navigate(name: string) {
       <button
         v-else
         type="button"
-        class="tt-btn rounded-full border border-border bg-transparent px-4 py-2.5 text-caption font-medium text-foreground-subtle"
+        class="tt-btn flex h-9 items-center rounded-full border border-border bg-transparent px-4 text-caption font-medium text-foreground-subtle"
         @click="navigate('history')"
       >
         History
