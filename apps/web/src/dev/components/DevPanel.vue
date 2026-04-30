@@ -95,6 +95,14 @@ function pickDemoCheck(id: string) {
   const currentRouteName = checkRouteName.value;
   if (currentRouteName === null) return;
   if (id === checkIdParam.value) return;
+
+  // Prime the target claim's mock record to match the page we're on, so
+  // /error doesn't render the default-completed record as "UNKNOWN_ERROR"
+  // and /loading doesn't auto-redirect away from a previously-completed
+  // demo. /result is naturally completed-by-default, so no priming.
+  if (currentRouteName === "error") devSetCheckFailed(id);
+  else if (currentRouteName === "loading") devResetCheckProgress(id);
+
   void router.replace({ name: currentRouteName, params: { checkId: id } });
 }
 

@@ -32,12 +32,16 @@ dev/
   scenarioState.ts               # Pinia-free URL/localStorage helpers (mock client uses these)
   stores/
     dev.store.ts                 # Reactive scenario id, panel open state, active demo claim, per-section collapsed state
+  composables/
+    useMockRecordSync.ts         # MOCK_RECORD_CHANGED_EVENT + dispatcher + useMockRecordSync(checkId, reload)
   components/
     DevPanel.vue                 # Floating FAB + collapsible panel (mounted from AppShell)
     DevLoadingControls.vue       # Per-page phase + outcome controls on the loading page
 ```
 
-The dev tooling never imports from page or feature code. Page code may import the `Dev*` components, but only inside `v-if="showDevTools"` guards.
+The dev tooling never imports from page or feature code. Page code may import from `dev/`, but only inside `v-if="showDevTools"` guards or via composables that already self-no-op when the guard is false (see `useMockRecordSync`).
+
+`useMockRecordSync(checkId, reload)` is the only sanctioned way for page-side composables to react to dev-panel mock mutations. The mock client's `devSet*` / `devReset*` helpers call `dispatchMockRecordChanged(checkId)` (also exported from `dev/composables/useMockRecordSync.ts`), and any composable rendering a check calls `useMockRecordSync` to re-fetch when the matching `checkId` is mutated. This matters because `router.replace` to the same `:checkId` route is a no-op, so without the broadcast the panel's force-fail / force-complete / reset on the currently-viewed record would update memory but not the screen.
 
 ## Components
 

@@ -1,6 +1,7 @@
 import { computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
+import { useMockRecordSync } from "@/dev/composables/useMockRecordSync";
 import { getCheck } from "@/features/checks/api/checksApi";
 import { readCheckId } from "@/features/checks/utils";
 import { useAsyncData } from "@/shared/composables/useAsyncData";
@@ -32,6 +33,10 @@ export function useCheckResult() {
     },
     { immediate: true },
   );
+
+  // DEV: page-side reload trigger for panel-driven mock mutations on the
+  // currently-viewed checkId. No-op in production via showDevTools guard.
+  useMockRecordSync(checkId, () => state.reload());
 
   watch(record, (nextRecord) => {
     if (!nextRecord) return;

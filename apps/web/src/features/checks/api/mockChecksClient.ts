@@ -1,3 +1,4 @@
+import { dispatchMockRecordChanged } from "@/dev/composables/useMockRecordSync";
 import { readActiveScenario } from "@/dev/scenarioState";
 import type { DevScenario } from "@/dev/scenarios";
 import { DEMO_CHECK_IDS, DEMO_CHECKS } from "@/features/checks/fixtures/demoChecks";
@@ -49,6 +50,11 @@ const mockScenarioByCheckId = new Map<string, DevScenario>();
 const knownDemoCheckIds = DEMO_CHECK_IDS;
 const MAX_NON_DEMO_RECORDS = 50;
 let mockIdSequence = 0;
+
+// MOCK DEV — broadcasting that a record changed is a dev-tooling concept,
+// so the event constant + dispatcher both live in `@/dev/composables/
+// useMockRecordSync`. The mock client only emits; subscribers (page-side
+// composables) consume via `useMockRecordSync(checkId, reload)`.
 
 function resolveMock<T>(value: T): Promise<T> {
   return Promise.resolve(value);
@@ -356,6 +362,7 @@ export function devResetCheckProgress(checkId: string): void {
     updatedAt: createdAt,
     completedAt: null,
   });
+  dispatchMockRecordChanged(checkId);
 }
 
 /**
@@ -363,8 +370,13 @@ export function devResetCheckProgress(checkId: string): void {
  * error if it has one, otherwise falls back to PROVIDER_TIMEOUT.
  */
 export function devSetCheckFailed(checkId: string): void {
-  const scenario = ensureScenario(checkId);
+  // Re-snapshot the scenario so a "switch scenario then click fail" flow
+  // picks up the new scenario's error variant. Without this, an existing
+  // mock record's previously-cached scenario would mask the new pick.
+  const scenario = readActiveScenario();
+  rememberScenario(checkId, scenario);
   rememberMockRecord(checkId, makeFailedRecord(checkId, scenario));
+  dispatchMockRecordChanged(checkId);
 }
 
 /** MOCK ONLY — Force a mock check into a completed state with the demo result. */
@@ -377,6 +389,7 @@ export function devSetCheckCompleted(checkId: string): void {
     completedAt,
   );
   applyProgress(checkId, progress);
+  dispatchMockRecordChanged(checkId);
 }
 
 export function listChecks(params?: CheckListParams): Promise<readonly CheckListItem[]> {

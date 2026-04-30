@@ -1,6 +1,7 @@
 import { computed, onScopeDispose, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
+import { useMockRecordSync } from "@/dev/composables/useMockRecordSync";
 import { readActiveScenario } from "@/dev/scenarioState";
 import { buildPhaseLookup } from "@/dev/scenarios";
 import { getCheck, subscribeCheckEvents } from "@/features/checks/api/checksApi";
@@ -244,6 +245,11 @@ export function useCheckProgress() {
     },
     { immediate: true },
   );
+
+  // DEV: panel-driven mock mutations on the same checkId reload the
+  // record and re-subscribe so a `reset` while sitting on /loading
+  // replays the new scenario. No-op in production via showDevTools guard.
+  useMockRecordSync(checkId, () => loadCheckRecord(checkId.value));
 
   onScopeDispose(() => {
     closeSubscription();

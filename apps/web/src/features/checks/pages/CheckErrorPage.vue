@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import BaseButton from "@/components/BaseButton.vue";
 import BasePageFooter from "@/components/BasePageFooter.vue";
 import BaseTagBadge from "@/components/BaseTagBadge.vue";
 import BaseWarnRingIllustration from "@/components/BaseWarnRingIllustration.vue";
+import { useMockRecordSync } from "@/dev/composables/useMockRecordSync";
 import { getCheck } from "@/features/checks/api/checksApi";
 import { useCreateCheck } from "@/features/checks/composables/useCreateCheck";
 import { getErrorCodeMeta } from "@/features/checks/constants/errorCopy";
@@ -24,7 +25,20 @@ const detailId = "error-detail";
 
 const checkId = computed(() => String(route.params.checkId ?? ""));
 
-const { data: record } = useAsyncData(() => getCheck(checkId.value));
+const { data: record, reload } = useAsyncData(() => getCheck(checkId.value));
+
+// Refresh when the route's :checkId swaps in place (e.g. dev panel
+// claim picker `router.replace`s to a different checkId on the same
+// /error route). The page component is keyed on `route.path` in
+// AppShell so it remounts in practice today, but watching keeps the
+// page robust if that key strategy ever changes.
+watch(checkId, () => {
+  void reload();
+});
+
+// DEV: panel-driven re-fail on the same checkId (route.replace would be
+// a no-op, so the watch above won't fire). No-op in production.
+useMockRecordSync(checkId, () => reload());
 
 const error = computed<CheckApiError | null>(() => record.value?.error ?? null);
 const errorCode = computed(() => error.value?.code ?? "UNKNOWN_ERROR");
