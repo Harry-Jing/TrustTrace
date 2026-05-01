@@ -6,19 +6,19 @@
   "scripts": {
     "dev": "bun --watch src/index.ts",
     "lint": "bun run typecheck && bun run lint:eslint",
-    "lint:eslint": "eslint . --cache",
-    "lint:eslint:fix": "eslint . --fix --cache",
+    "lint:eslint": "eslint .",
+    "lint:eslint:fix": "eslint . --fix",
     "lint:fix": "bun run lint:eslint:fix",
     "test": "bun test",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "build": "bun run typecheck"
   },
   "dependencies": {
-    "@tavily/core": "^0.7.2",
+    "@tavily/core": "^0.7.3",
     "@trusttrace/contracts": "workspace:*",
     "drizzle-orm": "^0.45.0",
-    "hono": "^4.10.7",
-    "openai": "^6.34.0",
+    "hono": "^4.12.16",
+    "openai": "^6.35.0",
     "pino": "^10.1.0",
     "zod": "catalog:"
   },

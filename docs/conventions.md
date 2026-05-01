@@ -13,6 +13,7 @@ For the current frontend, Bun is the package manager and workspace script runner
 - Use `bunx <package>` instead of `npx <package>` when a one-off package runner is needed.
 - Bun automatically loads `.env`; don't add `dotenv` unless a future non-Bun runtime explicitly needs it.
 - Shared dependency versions that appear in multiple workspaces belong in the root Bun `catalog`; workspace package manifests should reference them with `catalog:`.
+- Use `bun outdated -r --no-cache` for dependency audits. Prefer non-major updates that stay within the active runtime/tooling baseline; do not cross the Node/Bun baseline just because a type package has a newer major.
 - The root `tsconfig.json` is a solution file with `files: []` and references to the active workspace projects.
 
 Bun runtime APIs such as `Bun.serve`, `bun:sqlite`, `Bun.sql`, or `Bun.file` are backend concerns only. Do not use them inside `apps/web` browser code.
@@ -78,6 +79,7 @@ Frontend tests should protect the boundaries and workflows that are expensive or
 - Test files: `*.test.ts` or `*.spec.ts` under `apps/web/src` (not `__tests__/`).
 - Tailwind CSS v4: enabled through `@tailwindcss/vite` and `@import "tailwindcss"` in `src/style.css`.
 - Root-owned Prettier config follows Prettier defaults for semicolons and quotes, with `prettier-plugin-tailwindcss` and `tailwindStylesheet: "./apps/web/src/style.css"` for theme-aware class sorting. Root Prettier scripts pass `--no-cache` so local hooks match fresh CI checkouts instead of trusting stale formatter cache entries.
+- ESLint check scripts intentionally run uncached. ESLint's cache speeds up local linting, but it does not automatically clear when lint plugins are upgraded, so uncached checks keep hooks and CI behavior aligned.
 - `eslint.config.mjs` kept as JavaScript to avoid adding `jiti` for config loading, and sets the Vue ESLint project root explicitly for the monorepo workspace.
 - `.editorconfig` applies repo-wide UTF-8, LF line endings, two-space indentation, trailing whitespace trimming, and final newlines, with Markdown trailing whitespace preserved.
 
@@ -155,7 +157,7 @@ References: [Tailwind utility-first](https://tailwindcss.com/docs/utility-first)
 3. `test` (contracts Bun tests + frontend Vitest + backend Bun tests)
 4. `build` (contracts type-check build + frontend `vue-tsc`/Vite build + backend type-check build)
 
-`format:check` is repo-wide, runs without Prettier cache, and covers app source, docs, and configuration files from the root Prettier config.
+`format:check` is repo-wide, runs without Prettier cache, and covers app source, docs, and configuration files from the root Prettier config. ESLint checks also run without cache so local hooks do not trust stale rule/plugin results.
 
 Use `bun run test`, not bare `bun test` from the repo root — frontend tests run through Vitest/Vite, and backend tests run through the server workspace script.
 
