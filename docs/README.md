@@ -41,4 +41,4 @@ This directory is the source of truth for product, architecture, development, op
 - `development/` — setup, commands, quality, conventions, and dev tooling.
 - `operations/` — environment configuration and CI.
 - `reference/` — API details and glossary.
-- `archive/` — historical plans that are useful context but not current truth.
+- `archive/` — historical docs that are useful context but not current truth.
