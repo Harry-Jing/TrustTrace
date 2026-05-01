@@ -1,25 +1,24 @@
 # Contributing
 
-Thanks for contributing to TrustTrace. Please keep changes small, focused, and easy to review.
+Thanks for contributing to TrustTrace. Keep changes small, focused, and easy to review.
 
-## Setup
+## Workflow
 
-```sh
-bun install
-bun run dev
-```
+1. Install dependencies with `bun install`.
+2. Create a focused branch.
+3. Make the change and update docs when behavior, workflow, APIs, tooling, or conventions change.
+4. Run the relevant checks locally.
+5. Open a PR with what changed, why, and which checks you ran.
 
-`bun install` also installs the Lefthook-managed Git hooks for local commit, commit-message, and push checks.
+## Local checks
 
-## Before Opening a PR
-
-Run the quality gate:
+Run the full gate before a PR is ready:
 
 ```sh
 bun run check
 ```
 
-For quicker local checks, run the focused gate that matches your change:
+For smaller feedback loops, use focused commands:
 
 ```sh
 bun run format
@@ -29,13 +28,18 @@ bun run test
 bun run build
 ```
 
-Use `bun run lint` for lint-only checks and `bun run typecheck` for TypeScript checks; workspace lint scripts intentionally do not hide type-checking work. Use `bun run test`, not bare `bun test`, because frontend tests run through Vitest/Vite for Vue SFC transforms, path aliases, jsdom, and Vitest mocking APIs.
+Use `bun run test`, not bare `bun test`, from the repository root. Frontend tests run through Vitest/Vite; contracts and backend tests run through their workspace scripts.
 
-Lefthook runs faster checks locally before commit and the full quality gate before push. Git hooks are not a substitute for CI; pushes and pull requests must pass the GitHub Actions quality workflow.
+More detail:
 
-## Commit Messages
+- Setup: [docs/development/setup.md](docs/development/setup.md)
+- Commands: [docs/development/commands.md](docs/development/commands.md)
+- Quality gate, hooks, CI: [docs/development/quality.md](docs/development/quality.md)
+- Conventions: [docs/development/conventions.md](docs/development/conventions.md)
 
-Commits must follow [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/):
+## Commit messages
+
+Commits use Conventional Commits:
 
 ```txt
 <type>[optional scope]: <description>
@@ -48,21 +52,16 @@ Examples:
 ```txt
 feat(web): add evidence summary
 fix(router): preserve query params
-docs: add contributing guide
+docs: reorganize architecture docs
 ```
 
-For breaking changes, use `!` or a `BREAKING CHANGE:` footer:
+For breaking changes, use `!` or a `BREAKING CHANGE:` footer.
 
-```txt
-feat(api)!: rename score field
-```
-
-## PR Guidelines
+## PR checklist
 
 - Explain what changed and why.
 - Link related issues when applicable.
 - Include screenshots for UI changes.
 - Mention the checks you ran.
-- Update docs when changing behavior, workflow, APIs, tooling, or conventions.
-
-Do not commit secrets, API keys, credentials, or local environment files.
+- Update documentation for changed behavior, APIs, workflow, tooling, or conventions.
+- Do not commit secrets, API keys, credentials, local database files, or local environment files.

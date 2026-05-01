@@ -1,41 +1,59 @@
 # TrustTrace
 
-Evidence-oriented credibility checking service. Submit a URL or text, the system gathers evidence from web discovery providers, and presents cues, uncertainty, and source context instead of a binary true/false verdict.
+TrustTrace is an evidence-oriented credibility checking service. Submit a URL or text claim; the system discovers candidate sources, verifies what it can read, and presents source-backed credibility context instead of a binary true/false verdict.
 
-## Status
+## Why it exists
 
-- **Current:** `apps/web` — Vue 3 frontend with mock/backend modes.
-- **Current:** `apps/server` — Hono backend with SQLite persistence, selectable Tavily/OpenAI-backed source discovery, backend URL safety/extraction, and progress SSE.
-- **Current:** `packages/contracts` — shared Zod schemas and inferred DTO types for TrustTrace API boundaries.
-- **Current P1.5 accepted:** create-check requests require `discoveryStrategy` (`search_api` or `llm_web`); all discovered URLs still pass through the same backend evidence gate.
+Many credibility tools overstate certainty or ask an LLM to judge from memory. TrustTrace keeps the product promise narrower:
 
-## Commands
+- show the evidence trail behind a claim,
+- separate source discovery from evidence verification,
+- make uncertainty visible,
+- keep final credibility bands grounded in backend-verified evidence.
 
-Bun is used for dependency installation and script orchestration; the frontend remains Vue/Vite/Vitest.
+## Current status
+
+- `apps/web` — Vue 3 frontend with backend mode by default and explicit mock/demo mode.
+- `apps/server` — Hono/Bun API with SQLite persistence, Tavily or OpenAI-backed source discovery, backend URL safety/extraction, deterministic synthesis, and progress SSE.
+- `packages/contracts` — shared Zod schemas and inferred DTO types for frontend/backend HTTP and SSE boundaries.
+- P1.5 is accepted: create-check requests require `discoveryStrategy` (`search_api` or `llm_web`); every discovered URL still passes through the same backend evidence gate.
+
+## Quick start
 
 ```sh
-bun install          # install workspace dependencies
-bun run dev          # start the frontend dev server
-bun run dev:server   # start the backend API server on port 8000
-bun run dev:all      # start frontend and backend dev servers together
-bun run start:server # start the backend API server without watch mode
-bun run format       # format files
-bun run lint         # lint checks
-bun run typecheck    # type checks
-bun run test         # run tests
-bun run build        # type-check and build
-bun run check        # full quality gate: format:check → lint → typecheck → test → build
+bun install
+bun run dev:all
 ```
 
-## Project Structure
+Then open the Vite frontend and use the backend API on port `8000`. For fixture-backed demo mode, set `VITE_TRUSTTRACE_API_MODE=mock` in `apps/web/.env`.
+
+Useful commands:
+
+```sh
+bun run dev          # frontend only
+bun run dev:server   # backend only, port 8000 by default
+bun run test         # workspace tests; do not use bare bun test at repo root
+bun run check        # full quality gate
+```
+
+See [docs/development/commands.md](docs/development/commands.md) for the full command reference.
+
+## Project layout
 
 ```txt
-apps/web/            # @trusttrace/web — Vue 3 frontend
-apps/server/         # @trusttrace/server — Hono backend slice
-packages/contracts/  # @trusttrace/contracts — shared API Zod schemas + DTO types
-docs/                # Project documentation
+apps/web/             Vue 3 frontend package
+apps/server/          Hono/Bun backend package
+packages/contracts/   Shared Zod API contract package
+docs/                 Product, architecture, development, operations, and reference docs
 ```
 
 ## Documentation
 
-See [docs/](docs/) for conventions, architecture, and roadmap.
+Start at [docs/README.md](docs/README.md).
+
+- Product intent: [docs/product/overview.md](docs/product/overview.md)
+- Evidence model: [docs/product/evidence-model.md](docs/product/evidence-model.md)
+- Architecture: [docs/architecture/README.md](docs/architecture/README.md)
+- Local development: [docs/development/setup.md](docs/development/setup.md)
+- API reference: [docs/reference/api.md](docs/reference/api.md)
+- Contributing: [CONTRIBUTING.md](CONTRIBUTING.md)

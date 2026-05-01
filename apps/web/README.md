@@ -1,53 +1,8 @@
 # TrustTrace Web
 
-`@trusttrace/web` — Vue 3 frontend for TrustTrace. Vite-powered SPA demonstrating the credibility-checking flow with backend-shaped mock API data.
+`@trusttrace/web` is the Vue 3 frontend for TrustTrace. Backend mode is the default; fixture-backed mock mode is available for local demos and UI inspection.
 
-## Structure
-
-```txt
-src/app/                         # App shell and navigation
-src/components/                  # Shared Base* UI primitives
-src/features/checks/api/         # API clients and DTO-to-view-model mapping
-src/features/checks/components/  # Check-flow presentation components
-src/features/checks/composables/ # Page-facing data/lifecycle composables
-src/features/checks/constants/   # Product constants shared by runtime code
-src/features/checks/dev/         # Mock/dev-only presentation helpers
-src/features/checks/fixtures/    # Static demo data
-src/features/checks/pages/       # Route-level page orchestration
-src/features/checks/stores/      # Check lifecycle Pinia store
-src/features/checks/types/       # API, event, evidence, list, and view-model types
-src/stores/                      # App-wide Pinia stores
-src/router/                      # Vue Router configuration
-```
-
-## Routes
-
-| Route                           | Name      | Purpose                                  |
-| ------------------------------- | --------- | ---------------------------------------- |
-| `/checks/new`                   | `landing` | New-check screen with demo form.         |
-| `/`                             | —         | Redirects to `/checks/new`.              |
-| `/checks/:checkId/loading`      | `loading` | Check-specific progress route.           |
-| `/checks/:checkId/result`       | `result`  | Check-specific result route.             |
-| `/checks/:checkId/error`        | `error`   | Check-specific failure route.            |
-| `/history`                      | `history` | Searchable/sortable history cards.       |
-| `/loading`, `/result`, `/error` | —         | Dev-mode redirects to demo check routes. |
-
-## Current Behavior
-
-- `checksApi.ts` is the stable frontend API boundary. It selects `mockChecksClient.ts` or `backendChecksClient.ts` based on `VITE_TRUSTTRACE_API_MODE`.
-- Backend JSON is validated with shared `@trusttrace/contracts` Zod schemas at the API boundary before being mapped into frontend view-model types.
-- Creating a check is modeled as an async operation returning a `checkId`; routes are driven by `/checks/:checkId/*`, and submit failures are surfaced in the input card.
-- `checks.store.ts` is a lightweight cache for current check metadata and progress by check ID.
-- `useAsyncData.ts` tracks `idle/loading/success/error` status with a sequence counter to discard stale responses on rapid `reload()` calls, preventing race conditions.
-- Mock/demo controls and demo loading evidence are shown only when `showDevTools` is true (`DEV && apiMode === 'mock'`), so local backend debugging keeps production-like loading redirects and never shows fixture evidence.
-- The backend progress stream uses a created check's `eventsUrl` when available, reconnects transient EventSource failures, and resumes with `afterSeq` based on the last accepted progress event.
-- API mode defaults to `backend` in both development and production. Use `VITE_TRUSTTRACE_API_MODE=mock` when you intentionally want fixture-backed demo data.
-- `VITE_TRUSTTRACE_API_BASE_URL` controls the backend API base URL and defaults to same-origin `/v1`; `vite.config.ts` proxies `/v1` to `http://127.0.0.1:8000` for local backend development.
-- Theme preference persists to `localStorage` via `preferences.store.ts` and is applied with the root `data-theme` attribute.
-
-## Commands
-
-From this package:
+## Run
 
 ```sh
 bun run dev
@@ -60,4 +15,61 @@ bun run build
 
 Formatting is root-owned; run `bun run format` from the repository root.
 
-See [docs/](../../docs/) for conventions, quality tooling, and architecture.
+## Environment
+
+```sh
+VITE_TRUSTTRACE_API_MODE=backend
+VITE_TRUSTTRACE_API_BASE_URL=/v1
+```
+
+- `backend` mode calls the Hono API.
+- `mock` mode enables fixture-backed data and the dev panel when running in Vite dev mode.
+- Local Vite dev proxies `/v1` to `http://127.0.0.1:8000`.
+
+## Routes
+
+| Route                           | Name       | Purpose                                 |
+| ------------------------------- | ---------- | --------------------------------------- |
+| `/`                             | —          | Redirects to `/checks/new`.             |
+| `/checks/new`                   | `landing`  | New-check screen.                       |
+| `/checks/:checkId/loading`      | `loading`  | Check-specific progress route.          |
+| `/checks/:checkId/result`       | `result`   | Check-specific result route.            |
+| `/checks/:checkId/error`        | `error`    | Check-specific failure route.           |
+| `/history`                      | `history`  | Searchable/sortable history cards.      |
+| `/settings`                     | `settings` | Theme and discovery-strategy settings.  |
+| `/loading`, `/result`, `/error` | —          | Dev-only shorthand routes in mock mode. |
+
+## Structure
+
+```txt
+src/app/                         App shell, nav, env
+src/components/                  Shared Base* UI primitives
+src/dev/                         Mock/dev-only panel, scenarios, helpers
+src/features/checks/api/         API clients and DTO-to-view-model mapping
+src/features/checks/components/  Check-flow presentation components
+src/features/checks/composables/ Page-facing data/lifecycle composables
+src/features/checks/constants/   Product constants and tone maps
+src/features/checks/fixtures/    Static demo data
+src/features/checks/pages/       Route-level page orchestration
+src/features/checks/stores/      Check lifecycle Pinia store
+src/features/checks/types/       API, event, evidence, list, and view-model types
+src/features/settings/           Settings page and controls
+src/router/                      Vue Router configuration
+src/stores/                      App-wide Pinia stores
+```
+
+## Key behavior
+
+- `checksApi.ts` selects mock or backend clients based on `VITE_TRUSTTRACE_API_MODE`.
+- Backend JSON is validated with shared `@trusttrace/contracts` schemas before mapping into frontend view models.
+- Creating a check returns a `checkId`; routes are driven by `/checks/:checkId/*`.
+- Progress uses SSE and resumes with `afterSeq`; the loading flow falls back to polling if the stream is unavailable or lost.
+- `preferences.store.ts` persists theme and default discovery strategy to `localStorage`.
+- Mock/demo UI is rendered only when `showDevTools` is true.
+
+## Related docs
+
+- [Frontend architecture](../../docs/architecture/frontend.md)
+- [Development conventions](../../docs/development/conventions.md)
+- [Dev tooling](../../docs/development/dev-tooling.md)
+- [API reference](../../docs/reference/api.md)

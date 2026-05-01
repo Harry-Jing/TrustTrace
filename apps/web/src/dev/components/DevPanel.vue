@@ -10,7 +10,7 @@
  *   4. Mock state   — reset / complete / fail the active mock record (default collapsed)
  *
  * Layout follows the small-OSS-devtools convention surveyed in
- * `docs/dev-tooling.md`: `width: min(380px, 100vw - 32px)`, internal scroll
+ * `docs/development/dev-tooling.md`: `width: min(380px, 100vw - 32px)`, internal scroll
  * via `max-height: min(640px, 100dvh - 96px)`, mobile-narrow viewports
  * become a bottom sheet. Section open/closed state and panel open state
  * persist via the dev store. The FAB is the only way to open the panel —
