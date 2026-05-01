@@ -55,7 +55,7 @@ watch(
 
 <template>
   <div
-    class="duration-tone min-h-screen bg-background text-foreground transition-[background,color]"
+    class="min-h-screen bg-background text-foreground transition-[background,color] duration-tone"
   >
     <a class="skip-link" href="#main-content">Skip to content</a>
     <AppNav />

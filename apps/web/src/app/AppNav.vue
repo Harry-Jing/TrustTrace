@@ -21,7 +21,7 @@ function navigate(name: string) {
 
 <template>
   <nav
-    class="duration-tone sticky top-0 z-20 flex h-14 items-center border-b border-border bg-nav px-4 backdrop-blur transition-[background,border-color,box-shadow] sm:px-6 lg:px-8"
+    class="sticky top-0 z-20 flex h-14 items-center border-b border-border bg-nav px-4 backdrop-blur transition-[background,border-color,box-shadow] duration-tone sm:px-6 lg:px-8"
     :class="{ 'shadow-nav-scrolled': isScrolled }"
   >
     <div class="flex flex-1 items-center">
@@ -37,7 +37,7 @@ function navigate(name: string) {
            Verified by canvas pixel-scanning the rendered glyphs. -->
       <button
         type="button"
-        class="duration-tone translate-y-px cursor-pointer border-none bg-transparent p-0 font-serif text-h3 leading-none text-foreground transition-colors"
+        class="translate-y-px cursor-pointer border-none bg-transparent p-0 font-serif text-h3 leading-none text-foreground transition-colors duration-tone"
         @click="navigate('landing')"
       >
         TrustTrace

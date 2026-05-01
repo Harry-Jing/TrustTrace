@@ -77,7 +77,7 @@ Frontend tests should protect the boundaries and workflows that are expensive or
 - Bun workspaces: root scripts delegate into `apps/web`, `apps/server`, and `packages/contracts` with `bun run --cwd ...`.
 - Test files: `*.test.ts` or `*.spec.ts` under `apps/web/src` (not `__tests__/`).
 - Tailwind CSS v4: enabled through `@tailwindcss/vite` and `@import "tailwindcss"` in `src/style.css`.
-- Root-owned Prettier config follows Prettier defaults for semicolons and quotes, with `prettier-plugin-tailwindcss` and `tailwindStylesheet: "./apps/web/src/style.css"` for theme-aware class sorting.
+- Root-owned Prettier config follows Prettier defaults for semicolons and quotes, with `prettier-plugin-tailwindcss` and `tailwindStylesheet: "./apps/web/src/style.css"` for theme-aware class sorting. Root Prettier scripts pass `--no-cache` so local hooks match fresh CI checkouts instead of trusting stale formatter cache entries.
 - `eslint.config.mjs` kept as JavaScript to avoid adding `jiti` for config loading, and sets the Vue ESLint project root explicitly for the monorepo workspace.
 - `.editorconfig` applies repo-wide UTF-8, LF line endings, two-space indentation, trailing whitespace trimming, and final newlines, with Markdown trailing whitespace preserved.
 
@@ -155,7 +155,7 @@ References: [Tailwind utility-first](https://tailwindcss.com/docs/utility-first)
 3. `test` (contracts Bun tests + frontend Vitest + backend Bun tests)
 4. `build` (contracts type-check build + frontend `vue-tsc`/Vite build + backend type-check build)
 
-`format:check` is repo-wide and covers app source, docs, and configuration files from the root Prettier config.
+`format:check` is repo-wide, runs without Prettier cache, and covers app source, docs, and configuration files from the root Prettier config.
 
 Use `bun run test`, not bare `bun test` from the repo root — frontend tests run through Vitest/Vite, and backend tests run through the server workspace script.
 

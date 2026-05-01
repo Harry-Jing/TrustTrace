@@ -100,7 +100,7 @@ function evidenceHref(item: EvidenceItem) {
     <section v-for="group in groupedEvidence" :key="group.config.tier" class="animate-up">
       <header class="mb-4 flex items-start gap-4">
         <div
-          class="duration-tone mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full border-medium font-mono text-body-sm transition-colors"
+          class="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full border-medium font-mono text-body-sm transition-colors duration-tone"
           :class="group.config.numberClass"
         >
           {{ group.config.tier }}
@@ -128,7 +128,7 @@ function evidenceHref(item: EvidenceItem) {
         <article
           v-for="(item, index) in group.items"
           :key="`${group.config.tier}-${index}`"
-          class="duration-tone overflow-hidden rounded-lg border border-border bg-card p-4 transition-colors"
+          class="overflow-hidden rounded-lg border border-border bg-card p-4 transition-colors duration-tone"
           :class="group.config.borderClass"
         >
           <div class="mb-1.5 flex flex-wrap items-center gap-2">
