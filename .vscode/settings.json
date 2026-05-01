@@ -1,14 +1,17 @@
 {
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.patterns": {
+    "package.json": "bun.lock, bun.lockb, package-lock.json, pnpm*, .yarnrc*, yarn*, .eslint*, eslint*, .oxlint*, oxlint*, .oxfmt*, .prettier*, prettier*, .editorconfig, commitlint*, lefthook.yml",
     "tsconfig.json": "tsconfig.*.json, env.d.ts, typed-router.d.ts",
-    "vite.config.*": "jsconfig*, vitest.config.*, cypress.config.*, playwright.config.*",
-    "package.json": "bun.lock, bun.lockb, package-lock.json, pnpm*, .yarnrc*, yarn*, .eslint*, eslint*, .oxlint*, oxlint*, .oxfmt*, .prettier*, prettier*, .editorconfig"
+    "vite.config.*": "jsconfig*, vitest.config.*, cypress.config.*, playwright.config.*"
   },
-  "editor.codeActionsOnSave": {
-    "source.fixAll": "explicit"
-  },
-  "eslint.workingDirectories": [{ "mode": "auto" }],
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "never"
+  },
+  "eslint.format.enable": false,
+  "eslint.workingDirectories": ["apps/web", "apps/server", "packages/contracts"],
+  "js/ts.tsdk.path": "./node_modules/typescript/lib",
+  "js/ts.tsdk.promptToUseWorkspaceVersion": true
 }

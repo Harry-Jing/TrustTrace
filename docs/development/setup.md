@@ -13,6 +13,12 @@ bun install
 
 The root `prepare` script installs Lefthook-managed Git hooks.
 
+## VS Code
+
+Open the repository root as the VS Code workspace so `.vscode` settings and extension recommendations apply.
+
+After `bun install`, accept the workspace TypeScript prompt. VS Code uses the root `node_modules/typescript/lib` SDK, Prettier owns formatting, and ESLint fixes do not run on save.
+
 ## Environment files
 
 Use the examples as templates:

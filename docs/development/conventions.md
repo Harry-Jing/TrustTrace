@@ -5,10 +5,11 @@
 - Use `bun install` for dependencies.
 - Use `bun run <script>` for scripts.
 - Use `bunx <package>` instead of `npx <package>` for one-off runners.
-- Shared dependency versions used by multiple workspaces belong in the root Bun `catalog`; workspace manifests should reference them with `catalog:`.
+- Shared dependency versions used by multiple workspaces belong in the root Bun `catalog`; root `devDependencies` are only for repository-level tooling and editor discovery.
 - Use `bun outdated -r --no-cache` for dependency audits. Prefer non-major updates within the current runtime/tooling baseline.
 - Bun automatically loads `.env`; do not add `dotenv` unless a future non-Bun runtime requires it.
 - The root `tsconfig.json` is a solution file with `files: []` and references to active workspace projects.
+- `tsconfig.base.json` owns shared strict TypeScript options for server/contracts; workspace configs own runtime settings.
 - Package-specific runtime dependencies belong in the owning workspace manifest; root scripts should orchestrate workspaces, not hide package ownership.
 
 Bun runtime APIs such as `Bun.serve`, `bun:sqlite`, `Bun.sql`, or `Bun.file` are backend-only and must not be used in browser code.
@@ -19,10 +20,11 @@ Bun runtime APIs such as `Bun.serve`, `bun:sqlite`, `Bun.sql`, or `Bun.file` are
 - Stable API enums belong in contracts; UI copy, retry guidance, and presentation tones belong in `apps/web`.
 - Do not put backend internals, Drizzle schema, repository types, pipeline state, frontend view models, mock fixtures, or UI component types in contracts.
 - Add new contract modules only when a real boundary exists.
+- Contracts source should stay runtime-neutral; add DOM or Bun APIs only for a real boundary or test need.
 
 ## Backend
 
-- Backend TypeScript follows Bun's runtime baseline: `lib`/`target` `ESNext`, `module` `Preserve`, `moduleResolution` `bundler`, `moduleDetection` `force`, and `noEmit`.
+- Backend TypeScript declares Bun runtime settings locally and keeps `build` typecheck-only because Bun runs TypeScript source directly.
 - Strict checks remain enabled, including `exactOptionalPropertyTypes`, `noUncheckedIndexedAccess`, `isolatedModules`, `noImplicitReturns`, and `noUncheckedSideEffectImports`.
 - Backend responses must satisfy shared Zod schemas before frontend mapping.
 - Keep migrations/schema changes small and explicit.
@@ -107,6 +109,8 @@ Prefer user-observable behavior and boundary effects. Avoid assertions on Tailwi
 
 Do not chase one-test-per-component or coverage targets while the product surface is moving. Presentational components and visual polish are usually manual-review or future browser-smoke territory; if a page test needs deep router/env/composable/fixture mocking, prefer a smaller composable/API test.
 
-## Frontend documentation rule
+## Documentation rule
 
-Frontend code has fewer inline comments than the backend, so cross-file behavior belongs in docs. If a change spans routes, pages, composables, stores, API clients, theme tokens, or dev tooling — and the behavior cannot be understood from one file — update the matching frontend architecture, convention, or dev-tooling doc. Use code comments for local tricky implementation only; put product semantics and cross-module contracts in documentation.
+Update docs when code, workflow, structure, APIs, conventions, or tech stack changes. Keep the update proportional: prefer one precise sentence or bullet when the change is obvious from the diff, and avoid explanatory paragraphs for small config changes.
+
+Frontend code has fewer inline comments than the backend, so cross-file behavior belongs in docs. If a frontend change spans routes, pages, composables, stores, API clients, theme tokens, or dev tooling — and the behavior cannot be understood from one file — update the matching frontend architecture, convention, or dev-tooling doc.
