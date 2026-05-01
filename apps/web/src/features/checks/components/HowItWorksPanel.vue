@@ -28,7 +28,7 @@ const howSteps = [
   <div class="mt-7 animate-up text-left [animation-delay:300ms]">
     <button
       type="button"
-      class="flex w-full items-center gap-2 rounded-lg border border-border bg-card px-4 py-3 text-body-sm font-medium text-foreground transition-colors duration-150 hover:bg-surface"
+      class="flex w-full items-center gap-2 rounded-lg border border-border bg-card px-4 py-3 text-label text-foreground transition-colors duration-150 hover:bg-surface"
       :aria-controls="panelId"
       :aria-expanded="showHow"
       @click="showHow = !showHow"

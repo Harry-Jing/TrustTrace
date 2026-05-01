@@ -45,7 +45,9 @@ const description = computed(() =>
   <h1 class="mb-3 animate-up font-serif text-h1 [animation-delay:100ms]">
     {{ headline }}
   </h1>
-  <p class="mb-2 max-w-160 animate-up text-body-sm text-foreground-muted [animation-delay:100ms]">
+  <p
+    class="mb-2 max-w-readable animate-up text-body-sm text-foreground-muted [animation-delay:100ms]"
+  >
     {{ description }}
   </p>
 </template>

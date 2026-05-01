@@ -90,7 +90,7 @@ function evidenceHref(item: EvidenceItem) {
       role="status"
     >
       <p class="font-serif text-h4 text-foreground">No verified evidence at any tier.</p>
-      <p class="mx-auto mt-2 max-w-100 text-body-sm text-foreground-muted">
+      <p class="mx-auto mt-2 max-w-narrow text-body-sm text-foreground-muted">
         Discovery returned no sources we could safely fetch and weigh against this claim. The
         verdict above reflects that absence — treat it as missing context, not as a finding.
       </p>
@@ -100,7 +100,7 @@ function evidenceHref(item: EvidenceItem) {
     <section v-for="group in groupedEvidence" :key="group.config.tier" class="animate-up">
       <header class="mb-4 flex items-start gap-4">
         <div
-          class="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full border-[1.5px] font-mono text-body-sm transition-colors duration-400"
+          class="duration-tone mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full border-medium font-mono text-body-sm transition-colors"
           :class="group.config.numberClass"
         >
           {{ group.config.tier }}
@@ -128,7 +128,7 @@ function evidenceHref(item: EvidenceItem) {
         <article
           v-for="(item, index) in group.items"
           :key="`${group.config.tier}-${index}`"
-          class="overflow-hidden rounded-lg border border-border bg-card py-4 pr-4 pl-4 transition-colors duration-400"
+          class="duration-tone overflow-hidden rounded-lg border border-border bg-card p-4 transition-colors"
           :class="group.config.borderClass"
         >
           <div class="mb-1.5 flex flex-wrap items-center gap-2">

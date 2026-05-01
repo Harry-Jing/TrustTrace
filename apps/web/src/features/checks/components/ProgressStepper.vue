@@ -36,7 +36,7 @@ function isCurrent(index: number, currentIndex: number) {
         aria-hidden="true"
       >
         <div
-          class="h-full w-full origin-left bg-success transition-transform duration-500 ease-(--ease-snappy)"
+          class="h-full w-full origin-left bg-success transition-transform duration-500 ease-snappy"
           :style="{ transform: isDone(index, currentIndex) ? 'scaleX(1)' : 'scaleX(0)' }"
         />
         <div
@@ -50,7 +50,7 @@ function isCurrent(index: number, currentIndex: number) {
            one-shot scale pulse via CSS. The current step gets a continuous,
            breathing halo so the user can see "this is where work is happening". -->
       <div
-        class="relative z-10 flex size-9 items-center justify-center rounded-full border-[1.5px] font-mono text-body-sm transition-all duration-400"
+        class="duration-tone relative z-10 flex size-9 items-center justify-center rounded-full border-medium font-mono text-body-sm transition-all"
         :class="[
           {
             'border-success bg-success text-card': isDone(index, currentIndex),
@@ -83,7 +83,7 @@ function isCurrent(index: number, currentIndex: number) {
       <!-- Label (hidden on small screens; the "now · {phase}" header below carries the
            current-step copy, so per-step labels would just crowd narrow viewports) -->
       <div
-        class="mt-3 hidden text-center text-body-sm transition-colors duration-400 sm:block"
+        class="duration-tone mt-3 hidden text-center text-body-sm transition-colors sm:block"
         :class="{
           'font-semibold text-foreground': isCurrent(index, currentIndex),
           'font-medium text-foreground-muted': isDone(index, currentIndex),

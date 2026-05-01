@@ -30,7 +30,7 @@ const ROOT_CLASSES: Record<PillToggleSize, string> = {
 
 const ITEM_CLASSES: Record<PillToggleSize, string> = {
   sm: "px-4 py-2 text-caption font-medium",
-  md: "px-5 py-2.5 font-mono text-body-sm font-medium uppercase",
+  md: "px-5 py-2.5 font-mono text-label uppercase",
 };
 
 const activeIndex = computed(() =>

@@ -72,6 +72,11 @@
      reads as a soft separator in light mode, while the dark variant uses
      a hairline highlight that stays visible on a near-black background. */
   --shadow-nav-scrolled: var(--nav-scrolled-shadow);
+  /* Theme-aware thumb / small-control shadow. Same indirection as the nav
+     shadow above — pure black-alpha disappears on a near-black surface, so
+     the dark variant uses a hairline white highlight to keep the thumb
+     legible. Used by the settings range-slider thumb today. */
+  --shadow-thumb: var(--thumb-shadow);
 
   /* Typography — minor third (1.2) modular scale on a 4px line-height
      grid, base 16px. Methodology mirrors Atlassian Design System
@@ -96,6 +101,17 @@
   --text-eyebrow--line-height: 1.4;
   --text-eyebrow--letter-spacing: 0.12em;
   --text-eyebrow--font-weight: 500;
+
+  /* Larger eyebrow at the body-sm size (14px). Same letter-spacing and
+     weight as `--text-eyebrow` — the size differentiates a section-level
+     header (eyebrow-lg, e.g. SETTINGS · TRUSTTRACE) from a sub-block label
+     (eyebrow, e.g. AT A GLANCE). Without this paired token the section
+     headers had to bolt `tracking-[0.12em]` onto `text-label` by hand at
+     every call site. */
+  --text-eyebrow-lg: 14px;
+  --text-eyebrow-lg--line-height: 1.4;
+  --text-eyebrow-lg--letter-spacing: 0.12em;
+  --text-eyebrow-lg--font-weight: 500;
 
   /* Pill / badge text — uppercase mono in chip-style components
      (EvidenceBadge "EVIDENCE STRONG", BaseTagBadge "checking…", etc.).
@@ -182,6 +198,10 @@
   --container-alert: 520px;
   /* `readable`, not `prose`: Tailwind reserves max-w-prose for 65ch. */
   --container-readable: 640px;
+  /* Narrow text column for retry guidance, error help text, and ladder
+     rollup copy — sits below `alert` (520) so the ~one-sentence body sits
+     in a more compact column than a full alert callout. */
+  --container-narrow: 400px;
 
   --ease-snappy: cubic-bezier(0.4, 0, 0.2, 1);
 
@@ -268,6 +288,7 @@
   --card: #ffffff;
   --nav: rgba(250, 249, 246, 0.92);
   --nav-scrolled-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --thumb-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
 }
 
 [data-theme="dark"] {
@@ -323,6 +344,10 @@
      dark side) and a soft drop (visible against the page surface). A
      pure black-alpha drop disappears on a near-black background. */
   --nav-scrolled-shadow: 0 1px 0 rgba(255, 255, 255, 0.04), 0 1px 3px rgba(0, 0, 0, 0.4);
+  /* Same recipe as `--nav-scrolled-shadow` for small controls (slider
+     thumbs etc.) — a faint white highlight reads against near-black where
+     a pure black-alpha drop would vanish. */
+  --thumb-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 @layer base {
@@ -541,6 +566,25 @@
 
 @utility step-circle-pop {
   animation: celeb-pop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* `border-medium` sits between Tailwind's `border` (1px) and `border-2`
+   (2px). 1.5px is the optical sweet spot for serif-tone outlines on circle
+   indicators and card glow rings — see ProgressStepper, SettingsRadioCard,
+   ClaimInputCard, EvidenceLadder. v4 `@utility` replaces the v3 plugin
+   pattern for one-off custom border-widths. */
+@utility border-medium {
+  border-width: 1.5px;
+}
+
+/* Tone-transition duration. Theme + verdict-color tokens fade between
+   light/dark and between scenarios at this duration; sits between
+   Tailwind's canonical 300/500 stops by design (slower than UI hover so
+   a tone shift reads as a state-change cue, faster than 500 so it stays
+   responsive). Defined as a custom utility because Tailwind v4 does not
+   register `--duration-*` as an auto-utility namespace. */
+@utility duration-tone {
+  transition-duration: 400ms;
 }
 
 @layer components {

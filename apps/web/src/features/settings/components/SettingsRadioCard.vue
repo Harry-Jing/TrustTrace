@@ -23,7 +23,7 @@ defineProps<{
     <div class="flex items-center justify-between gap-3">
       <span class="flex items-center gap-2.5">
         <span
-          class="flex size-4 items-center justify-center rounded-full border-[1.5px] border-border-strong transition-colors duration-200 group-data-[state=checked]:border-foreground"
+          class="flex size-4 items-center justify-center rounded-full border-medium border-border-strong transition-colors duration-200 group-data-[state=checked]:border-foreground"
           aria-hidden="true"
         >
           <RadioGroupIndicator

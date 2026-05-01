@@ -46,9 +46,7 @@ function formatRelativeTime(iso: string) {
           formatRelativeTime(recentCheck.createdAt)
         }}</span>
       </div>
-      <span class="text-body-sm font-medium md:order-2 md:flex-1 md:truncate">{{
-        recentCheck.claim
-      }}</span>
+      <span class="text-label md:order-2 md:flex-1 md:truncate">{{ recentCheck.claim }}</span>
     </button>
   </div>
 </template>

@@ -5,7 +5,7 @@ import { useRoute } from "vue-router";
 import BaseButton from "@/components/BaseButton.vue";
 import BasePageFooter from "@/components/BasePageFooter.vue";
 import BaseTagBadge from "@/components/BaseTagBadge.vue";
-import BaseWarnRingIllustration from "@/components/BaseWarnRingIllustration.vue";
+import CheckErrorIllustration from "@/features/checks/components/CheckErrorIllustration.vue";
 import { useMockRecordSync } from "@/dev/composables/useMockRecordSync";
 import { getCheck } from "@/features/checks/api/checksApi";
 import { useCreateCheck } from "@/features/checks/composables/useCreateCheck";
@@ -89,7 +89,7 @@ async function retryCheck() {
 <template>
   <div class="mx-auto max-w-alert px-6 pt-25 pb-20 text-center">
     <div class="animate-up">
-      <BaseWarnRingIllustration />
+      <CheckErrorIllustration />
 
       <BaseTagBadge tone="warn">{{ errorCategory }}</BaseTagBadge>
 
@@ -97,7 +97,7 @@ async function retryCheck() {
         {{ errorMessage }}
       </h1>
 
-      <p class="mx-auto mb-7 max-w-100 text-body-sm text-foreground-subtle">
+      <p class="mx-auto mb-7 max-w-narrow text-body-sm text-foreground-subtle">
         {{ retryHelp }}
       </p>
 
@@ -125,7 +125,7 @@ async function retryCheck() {
       </div>
 
       <!-- Expandable explanation -->
-      <div class="mx-auto mt-6 max-w-100 text-left">
+      <div class="mx-auto mt-6 max-w-narrow text-left">
         <button
           type="button"
           class="flex items-center gap-1.5 border-none bg-transparent p-0 font-mono text-caption text-foreground-subtle"

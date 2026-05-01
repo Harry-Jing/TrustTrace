@@ -169,7 +169,7 @@ export function useCheckProgress() {
           });
         },
         onError: () => {
-          void handleStreamError(checkIdToSubscribe);
+          void pollCheckRecord(checkIdToSubscribe);
         },
       },
       subscriptionOptions,
@@ -193,18 +193,12 @@ export function useCheckProgress() {
     }, FALLBACK_POLL_INTERVAL_MS);
   }
 
+  // Single fallback path used both when SSE errors out and when the
+  // scheduled poll timer fires. Reloads the record, then schedules the
+  // next tick if the check is still active. Both call sites had identical
+  // bodies before consolidation; the SSE path no longer carries its own
+  // `handleStreamError` because the recovery action is the same.
   async function pollCheckRecord(checkIdToReload: string) {
-    const record = await reloadRecordFor(checkIdToReload);
-    if (!record) return;
-
-    eventError.value = null;
-
-    if (isActiveStatus(record.status)) {
-      scheduleFallbackPoll(checkIdToReload);
-    }
-  }
-
-  async function handleStreamError(checkIdToReload: string) {
     const record = await reloadRecordFor(checkIdToReload);
     if (!record) return;
 

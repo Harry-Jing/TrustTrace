@@ -21,10 +21,7 @@ defineProps<{
   >
     <header class="mb-7">
       <div class="flex items-center gap-3">
-        <span
-          class="font-mono text-label tracking-[0.12em] text-foreground-subtle uppercase"
-          aria-hidden="true"
-        >
+        <span class="font-mono text-eyebrow-lg text-foreground-subtle uppercase" aria-hidden="true">
           {{ eyebrow }}
         </span>
         <BaseComingSoonPill v-if="comingSoon" />

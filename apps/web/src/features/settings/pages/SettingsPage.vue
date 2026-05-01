@@ -99,7 +99,7 @@ onBeforeUnmount(() => {
   <div class="mx-auto max-w-form px-6 pt-14 pb-15">
     <!-- Header -->
     <div class="max-w-180 animate-up [animation-delay:50ms]">
-      <span class="font-mono text-label tracking-[0.12em] text-accent uppercase">
+      <span class="font-mono text-eyebrow-lg text-accent uppercase">
         settings &middot; trusttrace
       </span>
       <h1 class="mt-4 mb-5 animate-up font-serif text-h1 [animation-delay:100ms]">

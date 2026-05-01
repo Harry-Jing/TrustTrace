@@ -36,7 +36,7 @@ function selectRecentCheck(recentCheck: CheckListItem) {
       <!-- Left: copy -->
       <div class="lg:flex-1">
         <div class="animate-up [animation-delay:50ms]">
-          <span class="font-mono text-label tracking-[0.12em] text-accent uppercase">
+          <span class="font-mono text-eyebrow-lg text-accent uppercase">
             before you pass it on
           </span>
         </div>

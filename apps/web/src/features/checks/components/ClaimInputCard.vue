@@ -66,7 +66,7 @@ function submit() {
        Falls back gracefully (border stays rest-state) on browsers without
        :has() support — no JS focus tracking needed. -->
   <form
-    class="claim-input-card animate-up rounded-lg border-[1.5px] border-border-strong bg-card p-5 text-left shadow-input-rest transition-[border-color,box-shadow,background-color] duration-200 [animation-delay:220ms] sm:p-6"
+    class="claim-input-card animate-up rounded-lg border-medium border-border-strong bg-card p-5 text-left shadow-input-rest transition-[border-color,box-shadow,background-color] duration-200 [animation-delay:220ms] sm:p-6"
     @submit.prevent="submit"
   >
     <!-- Mode toggle + char count -->

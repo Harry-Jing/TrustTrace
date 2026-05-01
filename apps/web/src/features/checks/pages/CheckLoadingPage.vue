@@ -4,7 +4,7 @@ import { useRouter } from "vue-router";
 
 import BaseButton from "@/components/BaseButton.vue";
 import BasePageFooter from "@/components/BasePageFooter.vue";
-import BaseWarnRingIllustration from "@/components/BaseWarnRingIllustration.vue";
+import CheckErrorIllustration from "@/features/checks/components/CheckErrorIllustration.vue";
 import DevLoadingControls from "@/dev/components/DevLoadingControls.vue";
 import {
   devResetCheckProgress,
@@ -155,9 +155,9 @@ onBeforeUnmount(clearRedirectTimer);
          like the same product family. Smaller scale (56 vs 72) since this is
          an inline transient error, not a terminal error page. -->
     <div v-else-if="progressError" class="animate-up py-24 text-center" role="alert">
-      <BaseWarnRingIllustration :size="56" />
+      <CheckErrorIllustration :size="56" />
       <h1 class="mb-2.5 font-serif text-h2">Could not load progress</h1>
-      <p class="mx-auto mb-6 max-w-105 text-body-sm text-foreground-subtle">
+      <p class="mx-auto mb-6 max-w-narrow text-body-sm text-foreground-subtle">
         The check was created, but the live progress stream could not be loaded. You can retry the
         connection without starting over.
       </p>
@@ -167,7 +167,7 @@ onBeforeUnmount(clearRedirectTimer);
     <!-- Loading state -->
     <template v-else>
       <!-- Header: claim being checked -->
-      <div class="mb-2 font-mono text-label tracking-[0.12em] text-foreground-subtle uppercase">
+      <div class="mb-2 font-mono text-eyebrow-lg text-foreground-subtle uppercase">
         checking claim
       </div>
       <h1 class="mb-10 font-serif text-h2" aria-live="polite">
@@ -184,7 +184,7 @@ onBeforeUnmount(clearRedirectTimer);
         <Transition name="phase-header" mode="out-in">
           <div :key="phaseDefinition.key">
             <div
-              class="mb-2 flex items-center gap-2 font-mono text-label tracking-[0.12em] text-accent uppercase"
+              class="mb-2 flex items-center gap-2 font-mono text-eyebrow-lg text-accent uppercase"
             >
               <span class="size-1.5 animate-pulse-dot rounded-full bg-accent" aria-hidden="true" />
               <span>now &middot; {{ phaseDefinition.nowLabel }}</span>
@@ -192,7 +192,7 @@ onBeforeUnmount(clearRedirectTimer);
             <h2 class="mb-2 font-serif text-h3">
               {{ phaseDefinition.title }}
             </h2>
-            <p class="max-w-160 text-body-sm text-foreground-muted">
+            <p class="max-w-readable text-body-sm text-foreground-muted">
               {{ phaseDefinition.description }}
             </p>
           </div>
@@ -200,7 +200,7 @@ onBeforeUnmount(clearRedirectTimer);
       </section>
 
       <!-- Calm trust line (no live status box, no backend message echoed back) -->
-      <p class="mt-6 max-w-160 text-caption text-foreground-subtle">
+      <p class="mt-6 max-w-readable text-caption text-foreground-subtle">
         Sources are verified for safety and substance before they become evidence.
       </p>
 

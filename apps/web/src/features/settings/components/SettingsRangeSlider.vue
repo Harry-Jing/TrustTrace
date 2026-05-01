@@ -74,7 +74,7 @@ withDefaults(
   background: var(--foreground);
   border: 2px solid var(--background);
   margin-top: -7px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-thumb);
 }
 .tt-settings-range::-moz-range-thumb {
   width: 14px;
@@ -82,7 +82,7 @@ withDefaults(
   border-radius: 999px;
   background: var(--foreground);
   border: 2px solid var(--background);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-thumb);
 }
 .tt-settings-range[data-disabled],
 .tt-settings-range:disabled {

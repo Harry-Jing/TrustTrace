@@ -12,7 +12,7 @@ const props = withDefaults(
 
 <template>
   <span
-    class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-mono text-pill uppercase transition-colors duration-400"
+    class="duration-tone inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-mono text-pill uppercase transition-colors"
     :class="badgeToneClasses(props.tone)"
   >
     <slot />
