@@ -10,6 +10,10 @@ Thanks for contributing to TrustTrace. Keep changes small, focused, and easy to 
 4. Run the relevant checks locally.
 5. Open a PR with what changed, why, and which checks you ran.
 
+## Branch and merge policy
+
+`main` is protected: do not push directly to it. Open a focused PR, wait for `Quality / check` to pass, and squash merge with a Conventional Commit title.
+
 ## Local checks
 
 Run the full gate before a PR is ready:

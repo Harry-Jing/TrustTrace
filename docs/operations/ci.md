@@ -20,7 +20,7 @@ The workflow grants `contents: read` only.
 
 ## Required branch protection
 
-For shared branches, require the `Quality / check` status before merge. Local hooks can be bypassed; GitHub Actions is the shared source of truth.
+Protect `main` so changes require a pull request, `Quality / check` passes, force pushes/deletions are blocked, and pull requests use squash merge. Local hooks can be bypassed; GitHub Actions is the shared source of truth.
 
 ## Keeping CI small
 
