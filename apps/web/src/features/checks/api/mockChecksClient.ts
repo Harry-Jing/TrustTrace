@@ -445,7 +445,7 @@ export function subscribeCheckEvents(
     lastStep !== undefined && (lastStep.phase === "completed" || lastStep.phase === "failed");
 
   const lastTick = timeline[timeline.length - 1];
-  let finalDelay = lastTick === undefined ? 0 : lastTick.delay + stepDelay;
+  const finalDelay = lastTick === undefined ? 0 : lastTick.delay + stepDelay;
 
   if (scenario.outcome.type === "failed" && !lastIsTerminal) {
     timers.push(
@@ -457,7 +457,6 @@ export function subscribeCheckEvents(
         handlers.onClose?.();
       }, finalDelay),
     );
-    finalDelay += stepDelay;
   }
 
   for (const tick of timeline) {

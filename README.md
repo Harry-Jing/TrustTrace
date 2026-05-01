@@ -17,12 +17,14 @@ Bun is used for dependency installation and script orchestration; the frontend r
 bun install          # install workspace dependencies
 bun run dev          # start the frontend dev server
 bun run dev:server   # start the backend API server on port 8000
+bun run dev:all      # start frontend and backend dev servers together
+bun run start:server # start the backend API server without watch mode
 bun run format       # format files
 bun run lint         # lint checks
 bun run typecheck    # type checks
 bun run test         # run tests
 bun run build        # type-check and build
-bun run check        # full quality gate: format:check → lint → test → build
+bun run check        # full quality gate: format:check → lint → typecheck → test → build
 ```
 
 ## Project Structure

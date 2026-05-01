@@ -9,14 +9,24 @@
   },
   "scripts": {
     "build": "bun run typecheck",
-    "lint": "bun run typecheck",
-    "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "bun test"
+    "lint": "bun run lint:eslint",
+    "lint:eslint": "eslint . --max-warnings=0",
+    "lint:eslint:fix": "eslint . --fix",
+    "lint:fix": "bun run lint:eslint:fix",
+    "test": "bun test",
+    "test:watch": "bun test --watch",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
     "zod": "catalog:"
   },
   "devDependencies": {
-    "typescript": "catalog:"
+    "@eslint/js": "catalog:",
+    "@types/bun": "catalog:",
+    "eslint": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "eslint-plugin-tsdoc": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:"
   }
 }

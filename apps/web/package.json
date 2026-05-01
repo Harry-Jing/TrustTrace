@@ -9,12 +9,12 @@
     "preview": "vite preview",
     "lint": "bun run lint:oxlint && bun run lint:eslint",
     "lint:fix": "bun run lint:oxlint:fix && bun run lint:eslint:fix",
-    "lint:oxlint": "oxlint .",
+    "lint:oxlint": "oxlint . --deny-warnings",
     "lint:oxlint:fix": "oxlint . --fix",
-    "lint:eslint": "eslint .",
+    "lint:eslint": "eslint . --max-warnings=0",
     "lint:eslint:fix": "eslint . --fix",
     "test": "vitest run",
-    "test:watch": "vitest",
+    "test:watch": "vitest watch",
     "typecheck": "vue-tsc --build"
   },
   "dependencies": {
@@ -29,6 +29,7 @@
     "vue-router": "^5.0.6"
   },
   "devDependencies": {
+    "@eslint/js": "catalog:",
     "@tsconfig/node24": "^24.0.4",
     "@types/jsdom": "^28.0.1",
     "@types/node": "^24.12.2",
@@ -37,10 +38,10 @@
     "@vue/eslint-config-typescript": "^14.7.0",
     "@vue/test-utils": "^2.4.10",
     "@vue/tsconfig": "^0.9.1",
-    "eslint": "^10.2.1",
-    "eslint-config-prettier": "^10.1.8",
+    "eslint": "catalog:",
+    "eslint-config-prettier": "catalog:",
     "eslint-plugin-oxlint": "^1.62.0",
-    "eslint-plugin-tsdoc": "^0.5.2",
+    "eslint-plugin-tsdoc": "catalog:",
     "eslint-plugin-vue": "^10.9.0",
     "jsdom": "^29.1.1",
     "oxlint": "^1.62.0",

@@ -18,7 +18,7 @@ For the current frontend, Bun is used for dependency installation and script orc
 
 Current backend: Bun runtime, Hono, Zod, Drizzle, SQLite, pino, the OpenAI SDK, and the Tavily SDK. Planned later provider integration: Gemini provider SDK.
 
-Current contracts package: Zod schemas plus `z.infer` DTO types for HTTP/SSE wire payloads only.
+Current contracts package: Zod schemas plus `z.infer` DTO types for HTTP/SSE wire payloads only, with typed ESLint and TypeScript checks.
 
 ## Commands
 
@@ -26,12 +26,14 @@ Current contracts package: Zod schemas plus `z.infer` DTO types for HTTP/SSE wir
 bun install          # install workspace dependencies
 bun run dev          # start the frontend dev server
 bun run dev:server   # start the backend API server on port 8000
+bun run dev:all      # start frontend and backend dev servers together
+bun run start:server # start the backend API server without watch mode
 bun run format       # format files
 bun run lint         # lint checks
 bun run typecheck    # type checks
 bun run test         # run tests
 bun run build        # type-check and build
-bun run check        # full quality gate: format:check → lint → test → build
+bun run check        # full quality gate: format:check → lint → typecheck → test → build
 ```
 
 Use `bun run test`, not bare `bun test` from the repo root. Contracts and backend tests run through Bun workspace scripts; frontend tests run through Vitest/Vite.

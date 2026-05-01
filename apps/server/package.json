@@ -5,11 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "bun --watch src/index.ts",
-    "lint": "bun run typecheck && bun run lint:eslint",
-    "lint:eslint": "eslint .",
+    "start": "bun src/index.ts",
+    "lint": "bun run lint:eslint",
+    "lint:eslint": "eslint . --max-warnings=0",
     "lint:eslint:fix": "eslint . --fix",
     "lint:fix": "bun run lint:eslint:fix",
     "test": "bun test",
+    "test:watch": "bun test --watch",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "build": "bun run typecheck"
   },
@@ -23,11 +25,12 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@types/bun": "^1.3.4",
-    "eslint": "^10.2.1",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-tsdoc": "^0.5.2",
+    "@eslint/js": "catalog:",
+    "@types/bun": "catalog:",
+    "eslint": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "eslint-plugin-tsdoc": "catalog:",
     "typescript": "catalog:",
-    "typescript-eslint": "^8.59.1"
+    "typescript-eslint": "catalog:"
   }
 }

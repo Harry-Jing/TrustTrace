@@ -6,13 +6,13 @@ For the current frontend, Bun is the package manager and workspace script runner
 
 - Use `bun install` instead of `npm install` / `yarn install` / `pnpm install`.
 - Use `bun run <script>` instead of `npm run <script>` / `yarn` / `pnpm`.
-- Root scripts delegate into the `apps/*` and `packages/*` workspaces. `bun run dev` runs the Vite dev server in `apps/web`; `bun run dev:server` runs the Hono API in `apps/server`.
+- Root scripts are workspace-aware. Focused aliases still use `bun run --cwd ...`; aggregate gates use Bun `--workspaces` / `--filter` with prefixed output. `bun run dev` runs the Vite dev server in `apps/web`; `bun run dev:server` runs the Hono API in `apps/server`; `bun run dev:all` runs both dev servers together.
 - Do not replace frontend tooling with Bun-native equivalents: use Vite for dev/build, Vitest for unit tests, and `vue-tsc` for Vue-aware type checking.
-- Use `bun run test`, not bare `bun test` from the repo root. The root script runs contracts Bun tests, frontend Vitest tests, and backend Bun tests through their workspace scripts.
+- Use `bun run test`, not bare `bun test` from the repo root. The root script fans out through workspace scripts so contracts and backend use Bun tests while the frontend uses Vitest/Vite.
 - Use `bun run build`, not `bun build`, because the root build delegates to the frontend Vite build and the backend type-check build.
 - Use `bunx <package>` instead of `npx <package>` when a one-off package runner is needed.
 - Bun automatically loads `.env`; don't add `dotenv` unless a future non-Bun runtime explicitly needs it.
-- Shared dependency versions that appear in multiple workspaces belong in the root Bun `catalog`; workspace package manifests should reference them with `catalog:`.
+- Shared dependency versions that appear in multiple workspaces belong in the root Bun `catalog`; workspace package manifests should reference them with `catalog:`. This includes cross-workspace TypeScript/ESLint/Zod tooling as well as runtime packages used by more than one workspace.
 - Use `bun outdated -r --no-cache` for dependency audits. Prefer non-major updates that stay within the active runtime/tooling baseline; do not cross the Node/Bun baseline just because a type package has a newer major.
 - The root `tsconfig.json` is a solution file with `files: []` and references to the active workspace projects.
 
@@ -28,13 +28,14 @@ Bun runtime APIs such as `Bun.serve`, `bun:sqlite`, `Bun.sql`, or `Bun.file` are
 - Frontend code must still validate backend JSON with these Zod schemas at the API boundary, then map DTOs into frontend feature/view-model types.
 - Backend code may use the same schemas to validate incoming request bodies and may alias DTO types from contracts when those types describe wire payloads.
 - Add new contract modules only when a real boundary exists; avoid catch-all shared utility modules.
+- Contracts use the same typed ESLint baseline as backend TypeScript (`@eslint/js` recommended + `strictTypeChecked` + `stylisticTypeChecked`, Prettier for formatting, TSDoc syntax warnings). Because contracts sit on the frontend/backend boundary, `strict-boolean-expressions` and `no-unnecessary-condition` stay enabled as errors for both source and tests, and tests do not carry the backend's broader unsafe-fixture relaxations. `bun run lint:contracts` is lint-only; `bun run typecheck:contracts` is the TypeScript check and includes contract tests because they exercise the public schema surface.
 
 ## Backend Workspace
 
 `apps/server` is the current `@trusttrace/server` backend. It uses Bun runtime APIs, Hono, Zod, Drizzle, SQLite, pino, the OpenAI SDK, and the Tavily SDK.
 
 - Default port: `8000`. The frontend dev proxy forwards `/v1` to `http://127.0.0.1:8000`.
-- Backend TypeScript follows Bun's recommended runtime baseline: `lib`/`target` `ESNext`, `module` `Preserve`, `moduleResolution` `bundler`, `moduleDetection` `force`, and `noEmit`, with project stricter checks kept enabled.
+- Backend TypeScript follows Bun's recommended runtime baseline: `lib`/`target` `ESNext`, `module` `Preserve`, `moduleResolution` `bundler`, `moduleDetection` `force`, and `noEmit`, with project stricter checks kept enabled (`exactOptionalPropertyTypes`, `noUncheckedIndexedAccess`, `isolatedModules`, `noImplicitReturns`, and `noUncheckedSideEffectImports`).
 - Default SQLite path: `apps/server/data/trusttrace.sqlite`; leave `TRUSTTRACE_DB_PATH` blank to use it, or set a path relative to `apps/server` when running through `bun run --cwd apps/server ...`. Local database files are ignored by Git.
 - `TRUSTTRACE_LOG_LEVEL` is validated against pino's supported levels: `trace`, `debug`, `info`, `warn`, `error`, `fatal`, and `silent`.
 - Evidence discovery is split from `EvidenceProvider`: claim analysis, source assessment, and result copy remain LLM evidence-provider responsibilities, while candidate URL discovery uses a `SourceDiscoveryProvider` selected by `discoveryStrategy`.
@@ -46,8 +47,8 @@ Bun runtime APIs such as `Bun.serve`, `bun:sqlite`, `Bun.sql`, or `Bun.file` are
 - Backend response DTOs must satisfy the shared Zod schemas in `packages/contracts` before frontend mapping.
 - Backend implementation directories are organized by responsibility: `types/` for DTO groups, `schema/` for Drizzle tables, `database/` for SQLite initialization/migrations, `repositories/` for persistence facades/mappers, `pipeline/` for evidence pipeline steps, `evidenceProvider/` for claim analysis/assessment/copy provider code, `sourceDiscovery/` for candidate URL discovery providers, `sourceSafety/` and `sources/` for URL/fetch/ranking helpers, and `synthesis/` for deterministic result construction.
 - Do not add root-level compatibility barrels for backend internals. Import the concrete module that owns the symbol, for example `database/openDatabase`, `repositories/repositoryFacade`, `repositories/mappers/progressMapper`, `schema/checks`, `sourceSafety/fetchSource`, `sources/ranking`, or `synthesis/buildEvidenceResult`. Directory-local files such as `pipeline/types.ts` or `evidenceProvider/types.ts` are allowed when they define that module's own contract rather than re-exporting old entry points.
-- Backend lint currently runs the server TypeScript strict check; use `bun run lint:server` or the root `bun run lint`.
-- Backend tests may use `bun test` inside `apps/server`, but run them through `bun run test:server` or the root `bun run test` in normal workflow.
+- Backend lint is ESLint-only; run `bun run typecheck:server` for the server TypeScript strict check, or `bun run check` for the full gate.
+- Backend tests may use `bun test` inside `apps/server`, but run them through `bun run test:server` or the root `bun run test` in normal workflow. Use `bun run test:watch:server` for Bun test watch mode.
 - Keep migrations/schema changes small and explicit. The current SQLite schema stores check records, progress events, claim analysis, input extraction, provider calls, source extraction records, and source evaluations.
 
 ## Frontend Quality Tooling
@@ -75,12 +76,15 @@ Frontend tests should protect the boundaries and workflows that are expensive or
 
 ### TrustTrace differences from create-vue
 
-- Bun workspaces: root scripts delegate into `apps/web`, `apps/server`, and `packages/contracts` with `bun run --cwd ...`.
+- Bun workspaces: focused root aliases delegate into `apps/web`, `apps/server`, and `packages/contracts` with `bun run --cwd ...`; aggregate `lint`, `typecheck`, `test`, and `build` scripts use Bun workspace fanout (`--workspaces` / `--filter`) for prefixed output and dependency-aware orchestration.
 - Test files: `*.test.ts` or `*.spec.ts` under `apps/web/src` (not `__tests__/`).
 - Tailwind CSS v4: enabled through `@tailwindcss/vite` and `@import "tailwindcss"` in `src/style.css`.
 - Root-owned Prettier config follows Prettier defaults for semicolons and quotes, with `prettier-plugin-tailwindcss` and `tailwindStylesheet: "./apps/web/src/style.css"` for theme-aware class sorting. Root Prettier scripts pass `--no-cache` so local hooks match fresh CI checkouts instead of trusting stale formatter cache entries.
-- ESLint check scripts intentionally run uncached. ESLint's cache speeds up local linting, but it does not automatically clear when lint plugins are upgraded, so uncached checks keep hooks and CI behavior aligned.
+- ESLint check scripts intentionally run uncached, lint-only, and with `--max-warnings=0`. ESLint's cache speeds up local linting, but it does not automatically clear when lint plugins are upgraded, so uncached checks keep hooks and CI behavior aligned; TypeScript checks stay in the explicit `typecheck` scripts. Non-Vue flat configs use ESLint core `defineConfig()`; all flat configs report unused disable directives and unused inline configs as errors.
+- ESLint global ignores use monorepo-safe `**/dist/**` and `**/coverage/**` patterns for generated output. Workspace-specific runtime artifacts stay narrowly scoped, for example server `data/**`.
 - `eslint.config.mjs` kept as JavaScript to avoid adding `jiti` for config loading, and sets the Vue ESLint project root explicitly for the monorepo workspace.
+- In config files, use ESLint flat-config `name` fields for "what" and short `//` comments for "why".
+- Comment only non-default tradeoffs, exceptions, or tool interactions. Keep JSON tool configs comment-free unless the format explicitly requires JSONC.
 - `.editorconfig` applies repo-wide UTF-8, LF line endings, two-space indentation, trailing whitespace trimming, and final newlines, with Markdown trailing whitespace preserved.
 
 ### Naming
@@ -101,11 +105,12 @@ Frontend tests should protect the boundaries and workflows that are expensive or
 
 These are hard rules for production code under `apps/web/src`:
 
-- TypeScript stays strict. `exactOptionalPropertyTypes` and `noUncheckedIndexedAccess` are enabled so optional properties and indexed reads must be handled explicitly.
-- ESLint extends the Vue-aware `strictTypeChecked` TypeScript ruleset. Keep nullable and fallback logic explicit; prefer `??` for nullish fallback and optional chaining for safe property access.
+- TypeScript stays strict. `exactOptionalPropertyTypes`, `noUncheckedIndexedAccess`, `isolatedModules`, `noImplicitReturns`, and `noUncheckedSideEffectImports` are enabled so optional properties, indexed reads, per-file transpilation safety, missing returns, and side-effect imports are handled explicitly.
+- ESLint extends `@eslint/js` recommended rules plus the Vue-aware `strictTypeChecked` TypeScript ruleset. Keep nullable and fallback logic explicit; prefer `??` for nullish fallback and optional chaining for safe property access.
 - Use `unknown` plus Zod or a type guard for untrusted data. Do not use `any`.
 - Use `import type` for type-only imports. ESLint enforces this with `@typescript-eslint/consistent-type-imports`.
 - Do not use non-null assertions (`!`) in production code. Prove the value exists, provide a fallback, or narrow the type.
+- Keep state changes observable: dead assignments are blocked by `no-useless-assignment`; delete unused updates instead of preserving them as scheduler or state placeholders.
 - Use `null` for business-level “known absent” values such as `result`, `error`, or selected IDs. Use omitted properties/`undefined` for JavaScript absence, optional object fields, and Vue attribute removal.
 - Backend JSON must be parsed and normalized at the API boundary before it reaches components, stores, or composables.
 - Vue SFCs use `<script setup lang="ts">`, type-based `defineProps` / `defineEmits`, explicit button `type` attributes, typed `ref` calls, and no static inline `style` attributes.
@@ -153,11 +158,12 @@ References: [Tailwind utility-first](https://tailwindcss.com/docs/utility-first)
 `bun run check` runs the full local and CI quality gate:
 
 1. `format:check`
-2. `lint` (frontend lint + backend strict TypeScript check)
-3. `test` (contracts Bun tests + frontend Vitest + backend Bun tests)
-4. `build` (contracts type-check build + frontend `vue-tsc`/Vite build + backend type-check build)
+2. `lint` (contracts typed ESLint + frontend Oxlint/ESLint + backend typed ESLint, all with warnings denied)
+3. `typecheck` (contracts `tsc`, frontend `vue-tsc`, backend `tsc`)
+4. `test` (contracts Bun tests + frontend Vitest + backend Bun tests)
+5. `build` (workspace builds in dependency order: contracts/backend type-check builds and frontend `vue-tsc`/Vite build)
 
-`format:check` is repo-wide, runs without Prettier cache, and covers app source, docs, and configuration files from the root Prettier config. ESLint checks also run without cache so local hooks do not trust stale rule/plugin results.
+`format:check` is repo-wide, runs without Prettier cache, and covers app source, docs, and configuration files from the root Prettier config. ESLint checks also run without cache so local hooks do not trust stale rule/plugin results. Aggregate lint/typecheck/test scripts use Bun `--workspaces` fanout with prefixed output; `build` runs workspaces sequentially so dependency packages build before consumers.
 
 Use `bun run test`, not bare `bun test` from the repo root — frontend tests run through Vitest/Vite, and backend tests run through the server workspace script.
 
@@ -171,7 +177,7 @@ Lefthook manages local Git hooks from `lefthook.yml`. `bun install` runs the roo
 | `commit-msg` | `bun run commitlint --edit {1}`           | Enforce Conventional Commit message types listed in `CONTRIBUTING.md`. |
 | `pre-push`   | `bun run check`                           | Run the full local quality gate before publishing commits.             |
 
-Local hooks are a developer safety net and can be bypassed by Git. The GitHub Actions workflow in `.github/workflows/quality.yml` is the source of truth for required checks on pushes and pull requests. Keep CI minimal: install dependencies with Bun and run `bun run check`. To make this non-bypassable on shared branches, configure GitHub branch protection to require the `Quality / check` status before merge.
+Local hooks are a developer safety net and can be bypassed by Git. The GitHub Actions workflow in `.github/workflows/quality.yml` is the source of truth for required checks on pushes and pull requests. Keep CI minimal and least-privileged: grant `contents: read`, check out the pushed commit or pull request head commit, set up Bun from `packageManager`, install with `bun ci` so `bun.lock` is enforced, lint the current commit message with Commitlint, then run `bun run check`. To make this non-bypassable on shared branches, configure GitHub branch protection to require the `Quality / check` status before merge.
 
 ### Configuration files
 
@@ -187,11 +193,12 @@ package.json                     # Bun workspace scripts and root repo tooling
 tsconfig.json                    # Root TypeScript project references
 apps/server/.env.example         # Backend environment variable template
 apps/server/.gitignore           # Backend-local Bun/SQLite ignore patterns
+apps/server/eslint.config.mjs     # Backend typed ESLint flat config
 apps/server/tsconfig.json        # Backend Bun runtime type-checking
 apps/web/.env.example            # Frontend Vite environment variable template
 apps/web/.gitignore              # Frontend-local Vite/Vue ignore patterns
 apps/web/eslint.config.mjs       # ESLint flat config for Vue + TS + Vitest + Oxlint
-apps/web/.oxlintrc.json          # Oxlint correctness pass
+apps/web/.oxlintrc.json          # Oxlint correctness pass and local ignore patterns
 apps/web/env.d.ts                # Vite client types
 apps/web/tsconfig.json           # Frontend TypeScript project references
 apps/web/tsconfig.app.json       # Browser app type-checking
@@ -199,6 +206,7 @@ apps/web/tsconfig.node.json      # Tooling config type-checking
 apps/web/tsconfig.vitest.json    # Test type-checking
 apps/web/vite.config.ts          # Vite config and local /v1 backend proxy
 apps/web/vitest.config.ts        # Vitest config merged with Vite config
+packages/contracts/eslint.config.mjs # Contracts typed ESLint flat config
 packages/contracts/package.json  # Shared API contracts package manifest
 packages/contracts/tsconfig.json # Contracts package strict type-checking
 commitlint.config.mjs             # Official Conventional Commit preset

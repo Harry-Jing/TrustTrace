@@ -2,14 +2,19 @@ name: Quality
 
 on: [push, pull_request]
 
+permissions:
+  contents: read
+
 jobs:
   check:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v6
-      - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: 1.3.13
-      - run: bun install --frozen-lockfile
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: oven-sh/setup-bun@v2
+      - run: bun ci
+      - name: Lint current commit message
+        run: bun run commitlint --last --verbose
       - run: bun run check

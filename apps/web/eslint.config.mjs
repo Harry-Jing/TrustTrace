@@ -1,4 +1,6 @@
+// @ts-check
 import { globalIgnores } from "eslint/config";
+import js from "@eslint/js";
 import {
   configureVueProject,
   defineConfigWithVueTs,
@@ -10,6 +12,7 @@ import pluginOxlint from "eslint-plugin-oxlint";
 import pluginTsdoc from "eslint-plugin-tsdoc";
 import skipFormatting from "eslint-config-prettier/flat";
 
+// Anchor Vue's project helper to this workspace inside the monorepo.
 configureVueProject({
   rootDir: import.meta.dirname,
 });
@@ -20,7 +23,18 @@ export default defineConfigWithVueTs(
     files: ["**/*.{vue,ts,mts,tsx}"],
   },
 
-  globalIgnores(["**/dist/**", "**/dist-ssr/**", "**/coverage/**"]),
+  globalIgnores(["**/dist/**", "**/dist-ssr/**", "**/coverage/**"], "app/global-ignores"),
+
+  {
+    name: "app/linter-options",
+    // Inline ESLint comments must change behavior; stale suppressions fail CI.
+    linterOptions: {
+      reportUnusedDisableDirectives: "error",
+      reportUnusedInlineConfigs: "error",
+    },
+  },
+
+  js.configs.recommended,
 
   ...pluginVue.configs["flat/recommended-error"],
   vueTsConfigs.strictTypeChecked,
@@ -30,12 +44,11 @@ export default defineConfigWithVueTs(
     files: ["src/**/*.{test,spec}.{ts,tsx}"],
   },
 
-  ...pluginOxlint.buildFromOxlintConfigFile(".oxlintrc.json"),
-
   {
     name: "app/strict-code-standards",
     files: ["src/**/*.{vue,ts,mts,tsx}"],
     rules: {
+      "no-useless-assignment": "error",
       "@typescript-eslint/consistent-type-imports": [
         "error",
         { fixStyle: "inline-type-imports", prefer: "type-imports" },
@@ -99,19 +112,20 @@ export default defineConfigWithVueTs(
   },
 
   {
-    // Validates TSDoc syntax in /** ... */ blocks against the official
-    // Microsoft spec — does not require comments, only checks the ones
-    // that exist. `warn` follows the plugin's own recommendation; it
-    // surfaces issues without blocking CI while we tune the policy.
     name: "app/tsdoc",
     files: ["src/**/*.{vue,ts,mts,tsx}"],
     plugins: {
       tsdoc: pluginTsdoc,
     },
     rules: {
+      // Checks existing /** ... */ docs only; it does not require comments.
+      // `warn` stays editor-friendly, while CLI fails via --max-warnings=0.
       "tsdoc/syntax": "warn",
     },
   },
+
+  // Disable ESLint rules that Oxlint already runs so both passes can coexist.
+  ...pluginOxlint.buildFromOxlintConfigFile(".oxlintrc.json"),
 
   skipFormatting,
 );

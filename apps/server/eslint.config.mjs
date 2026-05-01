@@ -1,24 +1,27 @@
 // @ts-check
-import { globalIgnores } from "eslint/config";
+import { defineConfig, globalIgnores } from "eslint/config";
+import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 import pluginTsdoc from "eslint-plugin-tsdoc";
 import skipFormatting from "eslint-config-prettier/flat";
 
-/**
- * Backend ESLint config — async safety + TSDoc validation.
- *
- * Mirrors the frontend's strict-type-checked bar and adds the four
- * async-safety rules that matter most for a Hono server: a forgotten
- * `await` on a `repository.foo()` call is silent data loss, and the
- * default TypeScript checker does not catch it.
- *
- * Type-checked rules require `parserOptions.projectService` to load
- * the workspace `tsconfig.json` — slower than syntax-only lint but
- * the same engine the frontend uses.
- */
-export default tseslint.config(
-  globalIgnores(["dist/**", "data/**", "**/*.config.mjs"]),
+// Backend keeps typed linting for async-safety rules that TypeScript alone misses.
+export default defineConfig(
+  globalIgnores(
+    ["**/dist/**", "**/coverage/**", "data/**", "**/*.config.mjs"],
+    "server/global-ignores",
+  ),
 
+  {
+    name: "server/linter-options",
+    // Inline ESLint comments must change behavior; stale suppressions fail CI.
+    linterOptions: {
+      reportUnusedDisableDirectives: "error",
+      reportUnusedInlineConfigs: "error",
+    },
+  },
+
+  js.configs.recommended,
   ...tseslint.configs.strictTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
 
@@ -27,6 +30,7 @@ export default tseslint.config(
     files: ["src/**/*.ts"],
     languageOptions: {
       parserOptions: {
+        // Required for async-safety rules; slower than syntax-only lint by design.
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
       },
@@ -35,7 +39,7 @@ export default tseslint.config(
       tsdoc: pluginTsdoc,
     },
     rules: {
-      // TSDoc syntax — same level as frontend (`warn`, soft rollout).
+      // Checks existing docs only; CLI treats warnings as failures.
       "tsdoc/syntax": "warn",
 
       // Async safety — forgotten `await` on a repository call silently
@@ -54,22 +58,17 @@ export default tseslint.config(
       "@typescript-eslint/prefer-nullish-coalescing": "error",
       "@typescript-eslint/prefer-optional-chain": "error",
 
-      // strict-boolean-expressions over-fires on backend `if (record)`
-      // patterns where intent is clear; prefer-nullish-coalescing already
-      // catches the dangerous shapes. Keep no-unnecessary-condition as
-      // `warn` since false positives happen with type narrowing.
+      // Backend `if (record)` guards are common; still surface redundant conditions.
       "@typescript-eslint/strict-boolean-expressions": "off",
       "@typescript-eslint/no-unnecessary-condition": "warn",
     },
   },
 
   {
-    // Test files routinely use shaped fixtures and intentional
-    // unsafe casts to exercise edge cases — relax the matching subset
-    // of strict rules so test code stays readable.
     name: "server/test-rule-relaxations",
     files: ["src/__tests__/**/*.ts"],
     rules: {
+      // Tests use fixtures and casts for edge cases; relax only test ergonomics.
       "@typescript-eslint/no-non-null-assertion": "off",
       "@typescript-eslint/no-unsafe-assignment": "off",
       "@typescript-eslint/no-unsafe-member-access": "off",
@@ -77,20 +76,16 @@ export default tseslint.config(
       "@typescript-eslint/no-unsafe-argument": "off",
       "@typescript-eslint/no-unsafe-return": "off",
       "@typescript-eslint/require-await": "off",
-      // Bun's `expect(promise).rejects.toThrow(...)` chain is typed as
-      // returning void / non-Thenable — both rules over-fire on the
-      // canonical async-rejection assertion pattern.
+      // Bun async-rejection matcher chains look void/non-Thenable to TS rules.
       "@typescript-eslint/await-thenable": "off",
       "@typescript-eslint/no-confusing-void-expression": "off",
-      // Tests log numbers, booleans, and shaped objects into matcher
-      // messages routinely.
+      // Matcher messages routinely stringify fixtures.
       "@typescript-eslint/restrict-template-expressions": "off",
-      // Tests may exercise deprecated APIs to verify back-compat.
+      // Back-compat tests may exercise deprecated APIs.
       "@typescript-eslint/no-deprecated": "off",
-      // Test fixtures sometimes import a type that documents intent
-      // even when the test body doesn't reference it.
+      // Fixture-only type imports can document intent.
       "@typescript-eslint/no-unused-vars": "off",
-      // Style consistency for `Array<T>` vs `T[]` doesn't matter in tests.
+      // `Array<T>` vs `T[]` consistency is noise in fixtures.
       "@typescript-eslint/array-type": "off",
     },
   },

@@ -51,11 +51,13 @@ From this package:
 
 ```sh
 bun run dev
-bun run format
 bun run lint
 bun run typecheck
 bun run test
+bun run test:watch
 bun run build
 ```
+
+Formatting is root-owned; run `bun run format` from the repository root.
 
 See [docs/](../../docs/) for conventions, quality tooling, and architecture.
