@@ -1,0 +1,36 @@
+{
+  "name": "@trusttrace/server",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "start": "bun src/index.ts",
+    "lint": "bun run lint:eslint",
+    "lint:eslint": "eslint . --max-warnings=0",
+    "lint:eslint:fix": "eslint . --fix",
+    "lint:fix": "bun run lint:eslint:fix",
+    "test": "bun test",
+    "test:watch": "bun test --watch",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "build": "bun run typecheck"
+  },
+  "dependencies": {
+    "@tavily/core": "^0.7.3",
+    "@trusttrace/contracts": "workspace:*",
+    "drizzle-orm": "^0.45.0",
+    "hono": "^4.12.16",
+    "openai": "^6.35.0",
+    "pino": "^10.1.0",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@eslint/js": "catalog:",
+    "@types/bun": "catalog:",
+    "eslint": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "eslint-plugin-tsdoc": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:"
+  }
+}

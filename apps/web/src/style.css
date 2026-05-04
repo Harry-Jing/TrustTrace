@@ -1,0 +1,751 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Newsreader", ui-serif, Georgia, serif;
+  --font-mono: ui-monospace, "SFMono-Regular", monospace;
+
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-foreground: var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-foreground-subtle: var(--foreground-subtle);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-accent: var(--accent);
+  --color-accent-muted: var(--accent-muted);
+  --color-warning: var(--warning);
+  --color-warning-muted: var(--warning-muted);
+  --color-success: var(--success);
+  --color-success-muted: var(--success-muted);
+
+  /* Domain-semantic tokens for the verdict-card surface only. A
+     diverging green → olive → amber → orange ramp matches the field
+     convention (PolitiFact, Ground News, Ad Fontes Media) where
+     color carries trust intuition. Tokens are domain-scoped (not
+     `--success` / `--warning`) so the verdict surface stays visually
+     distinct from generic UI status, and so future palette changes to
+     evidence don't bleed into toasts / settings badges. Each tone
+     ships paired: saturated for borders/text, -muted for badge fills. */
+  --color-evidence-strong: var(--evidence-strong);
+  --color-evidence-strong-muted: var(--evidence-strong-muted);
+  --color-evidence-mixed: var(--evidence-mixed);
+  --color-evidence-mixed-muted: var(--evidence-mixed-muted);
+  --color-evidence-weak: var(--evidence-weak);
+  --color-evidence-weak-muted: var(--evidence-weak-muted);
+  --color-evidence-thin: var(--evidence-thin);
+  --color-evidence-thin-muted: var(--evidence-thin-muted);
+
+  /* Domain-semantic tokens for the per-source polarity surface
+     (supports / contradicts / neutral). Equal-chroma cool/warm pair
+     (teal affirm / maroon oppose) so neither side reads as reward
+     or alarm — a source contradicting a false claim is precisely
+     what TrustTrace wants to surface, not a "warning". Hues are
+     deliberately picked outside the verdict-card ramp (forest
+     green / rose-red) so the two domain palettes don't bleed. */
+  --color-evidence-relation-affirm: var(--evidence-relation-affirm);
+  --color-evidence-relation-affirm-muted: var(--evidence-relation-affirm-muted);
+  --color-evidence-relation-oppose: var(--evidence-relation-oppose);
+  --color-evidence-relation-oppose-muted: var(--evidence-relation-oppose-muted);
+
+  /* Domain-semantic tokens for the evidence ladder weight surface
+     (tier 1 strongest → tier 4 weakest). Single low-chroma slate
+     hue, lightness ramping monotonically — sequential encoding for
+     ordinal data, per Munzner / Bertin / ColorBrewer. Avoids the
+     prior nominal-hue palette where tier-4 reused --warning and
+     read as "snippet sources are dangerous" rather than "lower
+     weight". */
+  --color-evidence-tier-1: var(--evidence-tier-1);
+  --color-evidence-tier-2: var(--evidence-tier-2);
+  --color-evidence-tier-3: var(--evidence-tier-3);
+  --color-evidence-tier-4: var(--evidence-tier-4);
+
+  --color-card: var(--card);
+  --color-nav: var(--nav);
+
+  --shadow-input-rest: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.03);
+  --shadow-input-focus: 0 0 0 3px var(--accent-fade), 0 8px 24px rgba(0, 0, 0, 0.05);
+  --shadow-card-hover: 0 8px 24px rgba(0, 0, 0, 0.07);
+  /* Theme-aware nav scrolled-shadow. Indirection via `--nav-scrolled-shadow`
+     follows the same pattern as the color tokens above: the underlying var
+     is redefined in :root and [data-theme="dark"] so a black-alpha drop
+     reads as a soft separator in light mode, while the dark variant uses
+     a hairline highlight that stays visible on a near-black background. */
+  --shadow-nav-scrolled: var(--nav-scrolled-shadow);
+  /* Theme-aware thumb / small-control shadow. Same indirection as the nav
+     shadow above — pure black-alpha disappears on a near-black surface, so
+     the dark variant uses a hairline white highlight to keep the thumb
+     legible. Used by the settings range-slider thumb today. */
+  --shadow-thumb: var(--thumb-shadow);
+
+  /* Typography — minor third (1.2) modular scale on a 4px line-height
+     grid, base 16px. Methodology mirrors Atlassian Design System
+     (Jira/Confluence/Trello, ~10M+ web DAU): seven distinct sizes
+     where multiple roles share a size and differentiation comes from
+     weight + tracking + uppercase rather than size alone. Cross-checked
+     against GitHub Primer and shadcn/ui. Mobile/desktop unified for
+     all body & heading tokens — only the hero (h1) uses clamp(). The
+     12px floor follows Atlassian's 11→12 accessibility bump and the
+     16px body baseline matches every modern web system surveyed.
+
+     Sizes:        12 → 14 → 16 → 20 → 24 → 32 → clamp(40,5vw,56)
+     Step ratios:  +17% +14% +25% +20% +33% +75%
+     Sub-floor:    10 (pill only — see comment above text-pill token).
+     Same-size pair @12: caption + eyebrow (separated by letter-spacing).
+     Same-size pair @14: body-sm + label. */
+
+  --text-caption: 12px;
+  --text-caption--line-height: 1.4;
+
+  --text-eyebrow: 12px;
+  --text-eyebrow--line-height: 1.4;
+  --text-eyebrow--letter-spacing: 0.12em;
+  --text-eyebrow--font-weight: 500;
+
+  /* Larger eyebrow at the body-sm size (14px). Same letter-spacing and
+     weight as `--text-eyebrow` — the size differentiates a section-level
+     header (eyebrow-lg, e.g. SETTINGS · TRUSTTRACE) from a sub-block label
+     (eyebrow, e.g. AT A GLANCE). Without this paired token the section
+     headers had to bolt `tracking-[0.12em]` onto `text-label` by hand at
+     every call site. */
+  --text-eyebrow-lg: 14px;
+  --text-eyebrow-lg--line-height: 1.4;
+  --text-eyebrow-lg--letter-spacing: 0.12em;
+  --text-eyebrow-lg--font-weight: 500;
+
+  /* Pill / badge text — uppercase mono in chip-style components
+     (EvidenceBadge "EVIDENCE STRONG", BaseTagBadge "checking…", etc.).
+     Sits at 10px, deliberately BELOW the system's 12px floor. Pills
+     are auxiliary metadata (state chips, tags) read by shape + color
+     more than by parsing — the 12px floor protects body-text legibility,
+     and pill content is scannable rather than readable, so it can
+     sub-floor without an a11y cost. This puts us in Notion micro-tag
+     territory (10/0.06em); shadcn/Vercel/Primer run pills at 12 and
+     Linear/Stripe at 11 — we go a step further to keep chips visually
+     quiet next to the serif headers and 16px body.
+
+     The 0.06em letter-spacing is mandatory, not decorative: uppercase
+     monospace text is visually compressed (every glyph is cap-height,
+     no ascender/descender variation, identical advance widths), and
+     the smaller the size the more tracking it needs to breathe. At
+     10px we use 0.06em (~0.6px) vs the 12px norm of 0.04em — the
+     convention scales inverse to size, not linearly with it. Without
+     this, "EVIDENCE STRONG" reads as a wall of glyphs.
+
+     Weight stays at 500 to match caption/eyebrow. Notion uses 600 at
+     10px, but we lean on letter-spacing + uppercase + mono for emphasis
+     rather than added weight, which keeps the chip visually quiet.
+
+     Distinct from text-eyebrow (12px / 0.12em, section labels where
+     extra tracking signals "header for the block below") and
+     text-label (14px, mixed-case form labels where larger size aids
+     scannability). */
+  --text-pill: 10px;
+  --text-pill--line-height: 1.4;
+  --text-pill--letter-spacing: 0.06em;
+  --text-pill--font-weight: 500;
+
+  --text-body-sm: 14px;
+  --text-body-sm--line-height: 1.5;
+
+  --text-label: 14px;
+  --text-label--line-height: 1.4;
+  --text-label--font-weight: 500;
+
+  /* Body baseline — 16px is iOS-input-safe (no auto-zoom on focus) and
+     the universal modern web standard. */
+  --text-body: 16px;
+  --text-body--line-height: 1.5;
+
+  /* Heading weights: all 500 (Medium), not 600 (Semibold). This codebase
+     pairs every heading token with font-serif (Newsreader) — a high-
+     contrast magazine serif that already carries strong visual mass at
+     any weight. Going to 600 reads as "news-page bold"; 500 reads as
+     "magazine editorial" which fits TrustTrace's calm, evidence-first
+     tone. NYT, Medium, Stripe Press follow the same "serif display at
+     400-500" tradition. Differentiation from body text comes from size
+     + font-family + letter-spacing rather than from weight alone. */
+  --text-h4: 20px;
+  --text-h4--line-height: 1.2;
+  --text-h4--letter-spacing: -0.005em;
+  --text-h4--font-weight: 500;
+
+  --text-h3: 24px;
+  --text-h3--line-height: 1.2;
+  --text-h3--letter-spacing: -0.01em;
+  --text-h3--font-weight: 500;
+
+  --text-h2: 32px;
+  --text-h2--line-height: 1.15;
+  --text-h2--letter-spacing: -0.015em;
+  --text-h2--font-weight: 500;
+
+  /* h1 is the only fluid token: 40px on mobile, growing linearly to
+     56px on a ~1120px viewport. Matches the Atlassian/Linear/Vercel
+     pattern of static body + fluid hero. Weight 500 (not 600) because
+     this token is paired with font-serif (Newsreader) at every site
+     where it's used; Newsreader's optical sizing already adds visual
+     mass at display sizes, so 600 reads as bold-ish. NYT, Stripe
+     Press, Medium all use serif display at 400-500 weight. */
+  --text-h1: clamp(40px, 5vw, 56px);
+  --text-h1--line-height: 1.05;
+  --text-h1--letter-spacing: -0.025em;
+  --text-h1--font-weight: 500;
+
+  --container-page: 1120px;
+  --container-focus: 920px;
+  --container-form: 880px;
+  --container-alert: 520px;
+  /* `readable`, not `prose`: Tailwind reserves max-w-prose for 65ch. */
+  --container-readable: 640px;
+  /* Narrow text column for retry guidance, error help text, and ladder
+     rollup copy — sits below `alert` (520) so the ~one-sentence body sits
+     in a more compact column than a full alert callout. */
+  --container-narrow: 400px;
+
+  --ease-snappy: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --animate-up: fade-up 0.5s ease both;
+  --animate-in-delayed: fade-in 0.4s ease 0.3s both;
+  --animate-celeb-pop: celeb-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  --animate-celeb-glow: celeb-glow 1.2s ease-out 0.3s both;
+  --animate-pulse-dot: pulse-dot 1.5s infinite;
+  --animate-pulse-ring: pulse-ring 1.8s ease-in-out infinite;
+}
+
+:root {
+  --background: #faf9f6;
+  --surface: #f0efe9;
+  --foreground: #1b1f2a;
+  --foreground-muted: #3b3f4a;
+  --foreground-subtle: #65686f; /* AA: on bg 5.34:1, on card 5.61:1 */
+  --border: #e0dfd9;
+  --border-strong: #d0cfc8;
+  --accent: #475b8a;
+  --accent-muted: #e9edf5;
+  --accent-fade: rgba(71, 91, 138, 0.08);
+  --warning: #9c5a26; /* AA: on bg 4.99:1, on warning-muted 4.66:1 */
+  --warning-muted: #fbf1e6;
+  --warning-fade: rgba(156, 90, 38, 0.08);
+  --success: #3d6630; /* AA: on bg 6.05:1, on white 6.36:1 */
+  --success-muted: #ecf2e0;
+  --success-fade: rgba(61, 102, 48, 0.08);
+  /* Evidence ordinal — equal-lightness OKLCH ramp (Refactoring UI
+     "sequential-categorical" recipe: hue carries category, chroma
+     carries severity, lightness stays constant so each stop reads
+     as the same visual weight). Hues 150° → 75° → 39° → 25° skip
+     the olive zone (~110°) that made the previous palette read
+     muddy, and chroma rises from 0.13 → 0.21 so thin's red feels
+     more alarming without breaking harmony. All four text/-muted
+     pairs clear WCAG AA on both paper bg and -muted bg. */
+  --evidence-strong: #2f7a52;
+  --evidence-strong-muted: #eaf1ec;
+  --evidence-mixed: #8a6a1f;
+  --evidence-mixed-muted: #f2ebd8;
+  --evidence-weak: #a85a24;
+  --evidence-weak-muted: #f1e2d2;
+  --evidence-thin: #b0464e;
+  --evidence-thin-muted: #f2dddc;
+  /* Polarity pair — equal-chroma cool/warm so neither side reads
+     as reward or alarm. Deep teal sits outside the verdict ramp's
+     forest-green band; maroon sits outside both the rose-red of
+     evidence-thin and the orange of warning.
+
+     -muted stops sit at HSL S≈32-40% / L≈74% — saturated enough that
+     the chip is a fast scan target (user's primary affordance for
+     "does this source support or contradict the claim"), but still
+     visibly tonal rather than full-saturation alarm-color. The
+     earlier ~19% saturation was tuned for "secondary metadata"
+     visual weight, but the chip's actual functional role is
+     scan-by-color, not background metadata — the higher saturation
+     matches that role.
+
+     The chip carries no border — at the new saturation level the
+     muted bg vs cream paper bg (#faf9f6, L≈0.95) opens up to a
+     ~0.21 delta-L which is enough chip-edge definition on its own.
+     The earlier border-token (GitHub IssueLabel adaptive-border
+     pattern) was needed only because the original muted stops sat
+     so close to paper-L that the chip was indistinguishable
+     without one.
+
+     Text tokens (-affirm, -oppose) sit darker than the saturated-bg
+     would suggest — chosen to clear WCAG AA contrast (≥4.5:1) on the
+     new muted bg, since chip text is 10px mono and AA Normal applies. */
+  --evidence-relation-affirm: #2a525a; /* 188°, 36%, 26% — text on muted bg, contrast 5.12 */
+  --evidence-relation-affirm-muted: #a3d2d6; /* 187°, 32%, 74% */
+  --evidence-relation-oppose: #6a2a3a; /* 343°, 43%, 29% — text on muted bg, contrast 4.78 */
+  --evidence-relation-oppose-muted: #d99fb3; /* 343°, 40%, 74% */
+  /* Tier weight ramp — single low-chroma slate, lightness only.
+     tier-1 is dark enough that text-card on its fill clears AA;
+     tier-3/-4 are light enough that the number circle switches to
+     outline-only with foreground text (the ColorBrewer crossover
+     pattern). Each stop differs from --border so the scope-bar
+     fill stays visible. */
+  --evidence-tier-1: #2e3848;
+  --evidence-tier-2: #5e6878;
+  --evidence-tier-3: #9094a0;
+  --evidence-tier-4: #b8bbc2;
+  --card: #ffffff;
+  --nav: rgba(250, 249, 246, 0.92);
+  --nav-scrolled-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --thumb-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="dark"] {
+  --background: #111110;
+  --surface: #1c1c1a;
+  --foreground: #eeeee8;
+  --foreground-muted: #c5c5bc;
+  --foreground-subtle: #898982; /* AA: on bg 5.13:1 */
+  --border: #2e2e2a;
+  --border-strong: #3a3a34;
+  --accent: #e8a230;
+  --accent-muted: #2a2418;
+  --accent-fade: rgba(232, 162, 48, 0.1);
+  --warning: #e85d4a;
+  --warning-muted: #2a1a16;
+  --warning-fade: rgba(232, 93, 74, 0.1);
+  --success: #7eb55f;
+  --success-muted: #1d2618;
+  --success-fade: rgba(126, 181, 95, 0.12);
+  /* Evidence ordinal — same equal-lightness OKLCH recipe mirrored
+     for dark mode: lightness lifted to ~L77 so each stop reads as a
+     bright accent against the near-black background, hues 150° →
+     75° → 39° → 25° preserved, chroma rising left-to-right. -muted
+     variants drop to ~L20 with low chroma so the chips read as
+     softly tinted rather than glaring. */
+  --evidence-strong: #62c088;
+  --evidence-strong-muted: #0f1f17;
+  --evidence-mixed: #e0b05c;
+  --evidence-mixed-muted: #231a0c;
+  --evidence-weak: #e89866;
+  --evidence-weak-muted: #221408;
+  --evidence-thin: #ee7b7e;
+  --evidence-thin-muted: #22120f;
+  /* Polarity pair, dark — same recipe as light, lifted to read as
+     bright accents on near-black with -muted dropped to deep
+     low-chroma tints so chips stay softly tinted, not glaring. */
+  --evidence-relation-affirm: #75bcc3;
+  --evidence-relation-affirm-muted: #0e2123;
+  --evidence-relation-oppose: #dd8298;
+  --evidence-relation-oppose-muted: #22151a;
+  /* Tier weight ramp, dark — same single-hue lightness ramp,
+     inverted so tier-1 is the brightest stop (heaviest visual
+     weight against a near-black background) and tier-4 the
+     quietest. Each stop differs from --border so the scope-bar
+     fill stays visible against the dark surface. */
+  --evidence-tier-1: #e2e2d8;
+  --evidence-tier-2: #a8a89e;
+  --evidence-tier-3: #73736c;
+  --evidence-tier-4: #52524b;
+  --card: #1c1c1a;
+  --nav: rgba(17, 17, 16, 0.92);
+  /* Dark nav-scrolled shadow combines a faint highlight (visible on the
+     dark side) and a soft drop (visible against the page surface). A
+     pure black-alpha drop disappears on a near-black background. */
+  --nav-scrolled-shadow: 0 1px 0 rgba(255, 255, 255, 0.04), 0 1px 3px rgba(0, 0, 0, 0.4);
+  /* Same recipe as `--nav-scrolled-shadow` for small controls (slider
+     thumbs etc.) — a faint white highlight reads against near-black where
+     a pure black-alpha drop would vanish. */
+  --thumb-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+@layer base {
+  html {
+    background: var(--background);
+    color: var(--foreground);
+  }
+
+  body {
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+  }
+
+  #app {
+    min-height: 100vh;
+    background: var(--background);
+    color: var(--foreground);
+    transition:
+      background 0.4s,
+      color 0.4s,
+      border-color 0.4s;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  button,
+  input,
+  textarea {
+    font-family: inherit;
+    color: inherit;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: color-mix(in srgb, var(--foreground-subtle) 80%, transparent);
+  }
+
+  ::selection {
+    background: var(--accent-muted);
+    color: var(--foreground);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  #main-content:focus {
+    outline: none;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes tooltip-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes tooltip-leave {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@keyframes page-forward-enter-kf {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes page-forward-leave-kf {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+}
+
+@keyframes page-back-enter-kf {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes page-back-leave-kf {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+}
+
+@keyframes celeb-pop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes celeb-glow {
+  0% {
+    box-shadow: 0 0 0 0 var(--accent-fade);
+  }
+  70% {
+    box-shadow: 0 0 0 40px transparent;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes pulse-ring {
+  0%,
+  100% {
+    box-shadow: 0 0 0 4px var(--accent-fade);
+  }
+  50% {
+    box-shadow: 0 0 0 8px var(--accent-fade);
+  }
+}
+
+@keyframes connector-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@utility anim-tooltip-in {
+  transform-origin: bottom center;
+  animation: tooltip-enter 0.25s ease both;
+}
+
+@utility anim-tooltip-out {
+  transform-origin: bottom center;
+  animation: tooltip-leave 0.2s ease both;
+}
+
+@utility anim-connector-shimmer {
+  background: linear-gradient(90deg, transparent 0%, var(--accent) 50%, transparent 100%);
+  animation: connector-shimmer 1.8s linear infinite;
+}
+
+@utility step-circle-pop {
+  animation: celeb-pop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* `border-medium` sits between Tailwind's `border` (1px) and `border-2`
+   (2px). 1.5px is the optical sweet spot for serif-tone outlines on circle
+   indicators and card glow rings — see ProgressStepper, SettingsRadioCard,
+   ClaimInputCard, EvidenceLadder. v4 `@utility` replaces the v3 plugin
+   pattern for one-off custom border-widths. */
+@utility border-medium {
+  border-width: 1.5px;
+}
+
+/* Tone-transition duration. Theme + verdict-color tokens fade between
+   light/dark and between scenarios at this duration; sits between
+   Tailwind's canonical 300/500 stops by design (slower than UI hover so
+   a tone shift reads as a state-change cue, faster than 500 so it stays
+   responsive). Defined as a custom utility because Tailwind v4 does not
+   register `--duration-*` as an auto-utility namespace. */
+@utility duration-tone {
+  transition-duration: 400ms;
+}
+
+@layer components {
+  .tt-btn {
+    transition:
+      transform 0.15s,
+      box-shadow 0.15s,
+      background 0.2s,
+      color 0.2s,
+      border-color 0.2s;
+  }
+
+  @media (hover: hover) {
+    .tt-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+  }
+
+  .tt-btn:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+
+  /* Decouple visual size from hit area for icon buttons. Apple HIG
+     mandates 44pt minimum tappable area; SwiftUI implements this via
+     `contentShape()` and React Native via `hitSlop`. Web parallel: a
+     transparent ::before centered on the button, sized to at least
+     44×44 — visual button stays at its design size, hit area always
+     reaches 44px. Click on the extended zone bubbles to the button. */
+  .tt-icon-btn {
+    position: relative;
+  }
+
+  .tt-icon-btn::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+  }
+
+  .page-forward-enter-active {
+    animation: page-forward-enter-kf 0.35s ease both;
+  }
+
+  .page-forward-leave-active {
+    animation: page-forward-leave-kf 0.25s ease both;
+  }
+
+  .page-back-enter-active {
+    animation: page-back-enter-kf 0.35s ease both;
+  }
+
+  .page-back-leave-active {
+    animation: page-back-leave-kf 0.25s ease both;
+  }
+
+  .page-same-enter-active {
+    animation: fade-in 0.3s ease both;
+  }
+
+  .page-same-leave-active {
+    animation: fade-in 0.25s ease reverse both;
+  }
+
+  .skip-link {
+    position: fixed;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 50;
+    transform: translateY(-150%);
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    background: var(--card);
+    color: var(--foreground);
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    transition: transform 0.15s ease;
+  }
+
+  .skip-link:focus {
+    transform: translateY(0);
+  }
+
+  .expand-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s ease;
+  }
+
+  .expand-panel[data-open="true"] {
+    grid-template-rows: 1fr;
+  }
+
+  .expand-panel > .expand-panel-inner {
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 0.2s ease 0.1s;
+  }
+
+  .expand-panel[data-open="true"] > .expand-panel-inner {
+    opacity: 1;
+  }
+
+  .card-enter-active {
+    animation: fade-up 0.4s ease both;
+  }
+
+  .card-leave-active {
+    animation: fade-in 0.2s ease reverse both;
+    position: absolute;
+  }
+
+  .card-move {
+    transition: transform 0.3s ease;
+  }
+
+  .phase-header-enter-active {
+    transition:
+      opacity 0.25s ease,
+      transform 0.25s var(--ease-snappy);
+  }
+  .phase-header-leave-active {
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s var(--ease-snappy);
+  }
+  .phase-header-enter-from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  .phase-header-leave-to {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  .step-mark-enter-active,
+  .step-mark-leave-active {
+    transition:
+      opacity 0.18s ease,
+      transform 0.18s ease;
+  }
+  .step-mark-enter-from,
+  .step-mark-leave-to {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-delay: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

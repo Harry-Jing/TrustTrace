@@ -1,0 +1,18 @@
+pre-commit:
+  parallel: true
+  jobs:
+    - name: format check
+      run: bun run format:check
+
+    - name: lint
+      run: bun run lint
+
+commit-msg:
+  jobs:
+    - name: conventional commit message
+      run: bun run commitlint --edit {1}
+
+pre-push:
+  jobs:
+    - name: full quality gate
+      run: bun run check

@@ -1,0 +1,45 @@
+<script setup lang="ts">
+import {
+  TooltipArrow,
+  TooltipContent,
+  TooltipPortal,
+  TooltipProvider,
+  TooltipRoot,
+  TooltipTrigger,
+} from "reka-ui";
+
+withDefaults(
+  defineProps<{
+    text: string;
+    label?: string;
+  }>(),
+  { label: "Show details" },
+);
+</script>
+
+<template>
+  <TooltipProvider :delay-duration="0" :skip-delay-duration="100">
+    <TooltipRoot>
+      <TooltipTrigger as-child>
+        <button
+          type="button"
+          class="tt-icon-btn inline-flex size-6 cursor-help items-center justify-center rounded-full border border-border bg-transparent text-caption text-foreground-subtle"
+          :aria-label="label"
+        >
+          ?
+        </button>
+      </TooltipTrigger>
+      <TooltipPortal>
+        <TooltipContent
+          side="top"
+          :side-offset="8"
+          :collision-padding="12"
+          class="z-50 w-65 rounded-md bg-foreground p-3 text-caption text-background shadow-lg data-[state=closed]:anim-tooltip-out data-[state=delayed-open]:anim-tooltip-in data-[state=instant-open]:anim-tooltip-in"
+        >
+          {{ text }}
+          <TooltipArrow class="fill-foreground" :width="10" :height="5" />
+        </TooltipContent>
+      </TooltipPortal>
+    </TooltipRoot>
+  </TooltipProvider>
+</template>

@@ -1,0 +1,172 @@
+<script setup lang="ts">
+import { computed, ref, watch } from "vue";
+import { useRoute } from "vue-router";
+
+import BaseButton from "@/components/BaseButton.vue";
+import BasePageFooter from "@/components/BasePageFooter.vue";
+import BaseTagBadge from "@/components/BaseTagBadge.vue";
+import CheckErrorIllustration from "@/features/checks/components/CheckErrorIllustration.vue";
+import { useMockRecordSync } from "@/dev/composables/useMockRecordSync";
+import { getCheck } from "@/features/checks/api/checksApi";
+import { useCreateCheck } from "@/features/checks/composables/useCreateCheck";
+import { describeRequestError } from "@/features/checks/constants/apiErrorCopy";
+import { getErrorCodeMeta } from "@/features/checks/constants/errorCopy";
+import { useChecksStore } from "@/features/checks/stores/checks.store";
+import type { CheckApiError } from "@/features/checks/types";
+import { useAsyncData } from "@/shared/composables/useAsyncData";
+
+const FALLBACK_EXPLANATION =
+  "An unexpected error occurred while processing your check. If this keeps happening, the service may be experiencing issues.";
+
+const route = useRoute();
+const showDetail = ref(false);
+const checks = useChecksStore();
+const { createCheck, isSubmitting, submitError } = useCreateCheck();
+const detailId = "error-detail";
+
+const checkId = computed(() => String(route.params.checkId ?? ""));
+
+const { data: record, reload } = useAsyncData(() => getCheck(checkId.value));
+
+// Refresh when the route's :checkId swaps in place (e.g. dev panel
+// claim picker `router.replace`s to a different checkId on the same
+// /error route). The page component is keyed on `route.path` in
+// AppShell so it remounts in practice today, but watching keeps the
+// page robust if that key strategy ever changes.
+watch(checkId, () => {
+  void reload();
+});
+
+// DEV: panel-driven re-fail on the same checkId (route.replace would be
+// a no-op, so the watch above won't fire). No-op in production.
+useMockRecordSync(checkId, () => reload());
+
+const error = computed<CheckApiError | null>(() => record.value?.error ?? null);
+const errorCode = computed(() => error.value?.code ?? "UNKNOWN_ERROR");
+const errorCategory = computed(() => error.value?.category ?? "unknown error");
+const errorMessage = computed(
+  () => error.value?.message ?? "Something went wrong. You can retry with the same claim.",
+);
+const traceId = computed(() => error.value?.traceId ?? null);
+
+// `errorCodeMeta` is the web-owned source of truth for per-code user copy.
+// Contracts own the stable error-code enum; the frontend owns retry guidance
+// and other presentation-specific details.
+const errorCodeMeta = computed(() => getErrorCodeMeta(errorCode.value));
+const isRetryable = computed(
+  () => errorCodeMeta.value?.retryable ?? error.value?.retryable ?? true,
+);
+const retryInput = computed(() => record.value?.input ?? checks.currentInput);
+const canRetry = computed(() => isRetryable.value && retryInput.value !== null);
+const retryHelp = computed(() => {
+  if (errorCodeMeta.value?.retryHelp) return errorCodeMeta.value.retryHelp;
+  if (canRetry.value) return "You can retry with the same claim.";
+  if (isRetryable.value) return "Return to the claim editor to start a new check.";
+  return "Please try again with a different claim.";
+});
+const retryErrorMessage = computed(() =>
+  submitError.value
+    ? describeRequestError(
+        submitError.value,
+        "Could not retry this check. Please edit the claim and try again.",
+      )
+    : null,
+);
+
+const errorExplanation = computed(() => errorCodeMeta.value?.explanation ?? FALLBACK_EXPLANATION);
+
+async function retryCheck() {
+  if (!retryInput.value) return;
+
+  try {
+    await createCheck(retryInput.value);
+  } catch {
+    // useCreateCheck exposes submitError for this page.
+  }
+}
+</script>
+
+<template>
+  <div class="mx-auto max-w-alert px-6 pt-25 pb-20 text-center">
+    <div class="animate-up">
+      <CheckErrorIllustration />
+
+      <BaseTagBadge tone="warn">{{ errorCategory }}</BaseTagBadge>
+
+      <h1 class="mx-auto mt-5 mb-2.5 font-serif text-h2">
+        {{ errorMessage }}
+      </h1>
+
+      <p class="mx-auto mb-7 max-w-narrow text-body-sm text-foreground-subtle">
+        {{ retryHelp }}
+      </p>
+
+      <div class="flex justify-center gap-2.5">
+        <BaseButton
+          v-if="canRetry"
+          variant="primary"
+          size="lg"
+          :disabled="isSubmitting"
+          @click="retryCheck"
+        >
+          {{ isSubmitting ? "Retrying…" : "Retry check" }}
+        </BaseButton>
+        <BaseButton variant="secondary" size="lg" :to="{ name: 'landing' }">
+          Edit claim
+        </BaseButton>
+      </div>
+
+      <p v-if="retryErrorMessage" class="mt-5 text-caption text-warning" role="alert">
+        {{ retryErrorMessage }}
+      </p>
+
+      <div v-if="traceId" class="mt-7">
+        <span class="font-mono text-eyebrow text-foreground-subtle">trace · {{ traceId }}</span>
+      </div>
+
+      <!-- Expandable explanation -->
+      <div class="mx-auto mt-6 max-w-narrow text-left">
+        <button
+          type="button"
+          class="flex items-center gap-1.5 border-none bg-transparent p-0 font-mono text-caption text-foreground-subtle"
+          :aria-controls="detailId"
+          :aria-expanded="showDetail"
+          @click="showDetail = !showDetail"
+        >
+          <svg
+            class="size-2.5 transition-transform duration-200"
+            :class="showDetail ? 'rotate-90' : ''"
+            viewBox="0 0 8 8"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path d="M1.5 0.5l5 3.5-5 3.5z" />
+          </svg>
+          What does this error mean?
+        </button>
+
+        <div class="expand-panel" :data-open="showDetail">
+          <div class="expand-panel-inner">
+            <div
+              :id="detailId"
+              class="mt-2.5 rounded-lg border border-border bg-surface p-3.5 text-left text-body-sm text-foreground-muted"
+            >
+              <p class="mb-2">
+                <strong>{{ errorCode }}</strong> — {{ errorExplanation }}
+              </p>
+              <p class="m-0 text-foreground-subtle">
+                {{
+                  isRetryable
+                    ? "Wait a moment and retry. If this keeps happening, the provider may be experiencing an outage."
+                    : "If this keeps happening, please contact support."
+                }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <BasePageFooter>TrustTrace &middot; evidence-first credibility</BasePageFooter>
+  </div>
+</template>

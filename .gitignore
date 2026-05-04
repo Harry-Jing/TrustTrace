@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Build/test
+coverage/
+
+# TypeScript
+*.tsbuildinfo
+
+# Env
+/.env
+/.env.*
+!/.env.example
+
+# Logs
+logs/
+*.log
+
+# OS/editor
+.DS_Store
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Python
+__pycache__/
+*.py[cod]

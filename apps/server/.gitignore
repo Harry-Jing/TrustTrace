@@ -1,0 +1,43 @@
+# Env
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+
+# Build/test
+coverage/
+dist/
+build/
+out/
+
+# Logs/runtime
+logs/
+*.log
+*.pid
+*.seed
+*.pid.lock
+
+# Caches
+*.tsbuildinfo
+.cache/
+.eslintcache
+
+# SQLite
+data/*.sqlite
+data/*.sqlite-*
+data/*.db
+data/*.db-*
+*.sqlite
+*.sqlite-*
+*.db
+*.db-*
+*.db-journal
+*.db-wal
+*.db-shm
+
+# OS/editor
+.idea/
+.DS_Store
+*.sw?
